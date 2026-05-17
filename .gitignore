@@ -1,0 +1,24 @@
+# SQLite persistent runtime files
+backend/arche.db
+
+# OS specific metadata
+.DS_Store
+Thumbs.db
+
+# IDE and local editor configurations
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Frontend build outputs and packages
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+.next/
+out/
+pnpm-debug.log*
