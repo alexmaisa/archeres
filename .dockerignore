@@ -1,0 +1,24 @@
+# Ignore local package manager folders
+node_modules
+**/node_modules
+frontend/node_modules
+backend/vendor
+
+# Ignore local builds
+.next
+**/out
+frontend/.next
+frontend/out
+
+# Ignore Git versioning
+.git
+.gitignore
+
+# Ignore AI Agent telemetry rules
+.agents
+
+# Ignore local databases
+arche.db
+arche.db-journal
+backend/arche.db
+backend/arche.db-journal
