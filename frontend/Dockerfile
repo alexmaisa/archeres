@@ -8,7 +8,7 @@ RUN npm install -g pnpm
 
 # Pre-cache dependencies
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy source code and build Static Export
 COPY . .
