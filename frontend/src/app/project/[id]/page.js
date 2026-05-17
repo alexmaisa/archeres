@@ -1,7 +1,7 @@
 import WorkspaceClient from "./WorkspaceClient";
 
 export async function generateStaticParams() {
-  return [];
+  return [{ id: "1" }];
 }
 
 export default function WorkspacePage() {
