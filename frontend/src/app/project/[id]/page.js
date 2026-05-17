@@ -1217,3 +1217,7 @@ const styles = {
     fontSize: "0.85rem",
   },
 };
+
+export async function generateStaticParams() {
+  return [];
+}
