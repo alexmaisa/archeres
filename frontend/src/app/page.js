@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import "../../app/i18n"; // register translation bundles
+import "./i18n"; // register translation bundles
 
 export default function Home() {
   const { t, i18n } = useTranslation();
