@@ -1,5 +1,5 @@
 import "./globals.css";
-import "./i18n";
+import Providers from "./providers";
 
 export const metadata = {
   title: "Arche - Scientific Research Methodology Planner",
@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
