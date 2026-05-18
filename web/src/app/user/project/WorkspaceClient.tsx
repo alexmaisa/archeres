@@ -65,6 +65,18 @@ export default function WorkspaceClient() {
     setAlertOpen(true);
   };
 
+  interface EduDetailContent {
+    title: string;
+    badge: string;
+    definition: string;
+    characteristics: string[];
+    examples: string[];
+    tips: string;
+  }
+
+  const [eduPopupOpen, setEduPopupOpen] = useState<boolean>(false);
+  const [eduPopupData, setEduPopupData] = useState<EduDetailContent | null>(null);
+
   // Wizard states
   const [approach, setApproach] = useState<string>("quant");
   const [design, setDesign] = useState<string>("Experimental");
@@ -584,6 +596,401 @@ Aligned with the scale of measurements and variable distribution, statistical hy
     }
   };
 
+  const getEduDetailContent = (itemId: string, lang: string): EduDetailContent => {
+    const isId = lang === "id";
+    switch (itemId) {
+      case "quant_approach":
+        return {
+          title: isId ? "Pendekatan Kuantitatif" : "Quantitative Approach",
+          badge: isId ? "Paradigma Riset" : "Research Paradigm",
+          definition: isId
+            ? "Berdasarkan filsafat Positivisme (Creswell, 2018), pendekatan kuantitatif berfokus pada pengujian teori secara deduktif melalui pengukuran objektif dan analisis statistik terhadap hubungan antarvariabel. Pendekatan ini berasumsi bahwa realitas sosial bersifat objektif, tunggal, dan dapat diukur menggunakan instrumen terstandardisasi untuk menghasilkan temuan yang dapat digeneralisasikan secara luas."
+            : "Grounded in Positivist philosophy (Creswell, 2018), the quantitative approach focuses on testing objective theories deductively by examining relationships among measurable variables. It assumes that social reality is objective, singular, and independent of the researcher, using standardized instruments to gather numerical data that can be statistically analyzed and generalized.",
+          characteristics: isId
+            ? [
+                "Logika Deduktif: Berawal dari teori, merumuskan hipotesis, mengumpulkan data lapangan, lalu menguji secara statistik untuk membuktikan/menolak hipotesis.",
+                "Instrumen Terstandardisasi: Menggunakan kuesioner skala Likert tertutup, tes terstandar, atau instrumen pengukuran fisik.",
+                "Analisis Statistik: Menggunakan statistik deskriptif dan inferensial (seperti korelasi, regresi berganda, t-test, ANOVA) untuk menarik generalisasi.",
+                "Objektivitas Peneliti: Peneliti memposisikan diri secara independen dari subjek riset untuk menjamin reliabilitas dan replikabilitas."
+              ]
+            : [
+                "Deductive Logic: Starts with an established theory, derives specific hypotheses, collects empirical data, and tests to confirm or reject the theory.",
+                "Standardized Instruments: Relies on closed-ended Likert scales, structured questionnaires, tests, or hardware measurements.",
+                "Statistical Analysis: Employs descriptive and inferential statistics (e.g., correlation, regression, t-tests, ANOVA) to analyze numerical data.",
+                "Researcher Objectivity: The researcher maintains an independent stance from the subjects to prevent bias and ensure replicability."
+              ],
+          examples: isId
+            ? [
+                "Judul: 'Pengaruh Budaya Organisasi dan Kompensasi Kerja Terhadap Kinerja Karyawan Sektor Teknologi (Survei Regresi Berganda pada 250 Responden)'",
+                "Judul: 'Uji Eksperimental Efektivitas Suplemen Omega-3 Terhadap Konsentrasi Belajar Siswa Sekolah Menengah Atas'"
+              ]
+            : [
+                "Title: 'The Influence of Organizational Culture and Compensation on Employee Performance in the Tech Sector (A Multiple Regression Survey of 250 Respondents)'",
+                "Title: 'An Experimental Trial of Omega-3 Supplementation on Cognitive Focus and Academic Performance in High School Students'"
+              ],
+          tips: isId
+            ? "Selalu lakukan uji validitas (Construct/Content) dan reliabilitas (seperti nilai Alpha Cronbach > 0.60) pada instrumen kuesioner Anda melalui uji coba terbatas (pilot test) sebelum menyebarkan instrumen riset secara luas guna menjamin presisi data numerik Anda."
+            : "Always conduct a pilot test to evaluate construct/content validity and verify scale reliability (e.g., Cronbach's Alpha > 0.60) on your closed-ended questionnaire before full-scale deployment to ensure robust numerical measurements."
+        };
+      case "qual_approach":
+        return {
+          title: isId ? "Pendekatan Kualitatif" : "Qualitative Approach",
+          badge: isId ? "Paradigma Riset" : "Research Paradigm",
+          definition: isId
+            ? "Mengakar pada filsafat Konstruktivisme Sosial dan Interpretivisme (Patton, 2015), pendekatan kualitatif mengeksplorasi dan memahami makna subjektif yang dilekatkan oleh individu atau sekelompok orang pada masalah sosial atau kemanusiaan. Penelitian kualitatif bersifat induktif, di mana peneliti membangun pola, kategori, dan teori dari tingkat bawah ke atas dengan berinteraksi langsung dalam konteks alamiah subjek."
+            : "Rooted in Social Constructivist and Interpretivist paradigms (Patton, 2015), the qualitative approach explores and understands the subjective meanings individuals or groups ascribe to social or human problems. It is deeply inductive, with the researcher functioning as the key instrument to build conceptual frameworks, themes, and deep insights directly from naturalistic field experiences.",
+          characteristics: isId
+            ? [
+                "Setting Alamiah: Peneliti mengumpulkan informasi langsung di lapangan di mana partisipan mengalami masalah atau fenomena nyata.",
+                "Peneliti sebagai Instrumen Utama: Mengumpulkan data sendiri melalui wawancara mendalam, observasi partisipatif, atau analisis dokumen.",
+                "Logika Induktif: Membangun pola, kategori, dan tema dari bawah ke atas (bottom-up) dari data mentah hingga membentuk konsep abstrak.",
+                "Perspektif Emik: Menekankan pada pemahaman makna terdalam yang diungkapkan langsung oleh partisipan (suara subjek)."
+              ]
+            : [
+                "Natural Setting: Researchers collect data directly in the field where participants experience the issue or lived phenomenon.",
+                "Researcher as Key Instrument: Data is gathered directly by the researcher via in-depth interviews, participant observations, or document analysis.",
+                "Inductive Logic: Builds patterns, categories, and thematic units from the bottom up—from raw narratives to abstract conceptualizations.",
+                "Emic Perspective: Prioritizes understanding the participants' authentic meanings, feelings, and contextual perspectives."
+              ],
+          examples: isId
+            ? [
+                "Judul: 'Studi Fenomenologi Pengalaman Koping Psikologis Penyintas Bencana Alam di Daerah Pesisir'",
+                "Judul: 'Dinamika Adaptasi Sosial Suku Terasing dalam Menghadapi Digitalisasi Pendidikan (Studi Kasus Etnografi di Pedalaman Papua)'"
+              ]
+            : [
+                "Title: 'A Phenomenological Study of the Psychological Coping Experiences of Inshore Natural Disaster Survivors'",
+                "Title: 'The Dynamics of Social Adaptation of Indigenous Tribes Facing Educational Digitalization (An Ethnographic Case Study in Remote Papua)'"
+              ],
+          tips: isId
+            ? "Untuk menjamin keabsahan data kualitatif, gunakan teknik Triangulasi (sumber data, peneliti, teori, atau metodologis) dan Lakukan Member Checking (mengembalikan transkrip wawancara kepada informan) guna memastikan transkrip bebas dari interpretasi bias peneliti."
+            : "To ensure qualitative rigor, practice active Triangulation (of sources, methods, or investigators) and utilize Member Checking to verify that transcripts and thematic analyses accurately reflect the participants' true voices and are free of researcher bias."
+        };
+      case "mixed_approach":
+        return {
+          title: isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach",
+          badge: isId ? "Paradigma Riset" : "Research Paradigm",
+          definition: isId
+            ? "Berdasar pada filsafat Pragmatisme (Creswell, 2018), metode campuran mengintegrasikan pengumpulan dan analisis data kuantitatif serta kualitatif secara sistematis dalam satu studi tunggal. Asumsi dasarnya adalah bahwa penggabungan kedua jenis data memberikan pemahaman yang jauh lebih komprehensif terhadap masalah penelitian dibandingkan bila hanya menggunakan satu pendekatan saja."
+            : "Grounded in Pragmatic philosophy (Creswell, 2018), mixed methods research systematically integrates both quantitative and qualitative data collection and analysis within a single study. The core premise is that combining numerical precision and narrative depth yields a richer, more comprehensive understanding of the research problem than either approach alone.",
+          characteristics: isId
+            ? [
+                "Integrasi Data: Menggabungkan, menghubungkan, atau menyematkan data kuantitatif dan kualitatif pada fase analisis atau interpretasi.",
+                "Pragmatisme: Memilih metode yang paling cocok dan praktis untuk memecahkan masalah penelitian tanpa terikat pada dikotomi paradigma.",
+                "Desain Sistematis: Menggunakan salah satu dari 3 desain utama: Konvergen Paralel, Sekuensial Eksplanatori, atau Sekuensial Eksploratori.",
+                "Fleksibilitas Riset: Mampu menjawab pertanyaan 'berapa banyak' (kuantitatif) sekaligus 'bagaimana dan mengapa' (kualitatif) secara sinergis."
+              ]
+            : [
+                "Rigorous Data Integration: Merges, connects, or embeds quantitative and qualitative databases at specific analytical stages.",
+                "Pragmatic Epistemology: Employs multiple methods to solve a single research question without being restricted by paradigms.",
+                "Systematic Frameworks: Explicitly utilizes one of three main designs: Convergent Parallel, Explanatory Sequential, or Exploratory Sequential.",
+                "Synergistic Inquiry: Uniquely equipped to answer both 'what/how much' (quantitative) and 'how/why' (qualitative) questions together."
+              ],
+          examples: isId
+            ? [
+                "Judul: 'Evaluasi Efektivitas Program Jaminan Kesehatan Nasional: Studi Sekuensial Eksplanatori Terhadap Kepuasan Pasien (Kuantitatif) dan Analisis Hambatan Pelayanan (Kualitatif)'",
+                "Judul: 'Model Pengembangan Aplikasi E-learning Berbasis Kebutuhan Pengguna: Studi Eksploratori Sekuensial (Eksplorasi Wawancara dilanjutkan Uji Validasi Kuantitatif)'"
+              ]
+            : [
+                "Title: 'Evaluating the Effectiveness of the National Health Insurance Program: An Explanatory Sequential Study of Patient Satisfaction Survey (Quant) and Quality Barrier Analysis (Qual)'",
+                "Title: 'Designing a User-Centric E-learning Application: An Exploratory Sequential Study of User Experience Interviews (Qual) Followed by Quantitative Validation (Quant)'"
+              ],
+          tips: isId
+            ? "Tantangan utama studi mixed methods adalah alokasi waktu dan keahlian ganda. Nyatakan secara eksplisit dalam bab metodologi Anda pada fase mana integrasi data terjadi (apakah pada saat pengumpulan, analisis, atau pada saat pembahasan temuan)."
+            : "The primary challenge in mixed methods is double the labor and time. Explicitly state in your methodology chapter at which stage integration occurs—whether during data collection, analysis, or during final discussion and interpretation."
+        };
+      
+      // Dynamic Research Designs
+      case "Experimental":
+        return {
+          title: "Experimental Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Menurut John W. Creswell (2018), desain eksperimental digunakan ketika peneliti ingin menetapkan hubungan sebab-akibat yang jelas antara variabel bebas dan terikat dengan memberikan perlakuan khusus pada satu kelompok dan membandingkannya dengan kelompok lain yang tidak menerima perlakuan tersebut."
+            : "According to John W. Creswell (2018), experimental designs aim to establish causal relationships between independent and dependent variables by introducing a specific treatment to an experimental group and comparing outcomes against a control group.",
+          characteristics: isId
+            ? [
+                "Manipulasi Variabel: Peneliti mengendalikan pemberian variabel bebas secara aktif.",
+                "Kontrol Variabel Luar: Menggunakan kelompok kontrol dan penugasan acak (random assignment) untuk mencegah variabel pengganggu.",
+                "Pengukuran Pretest-Posttest: Melakukan pengukuran sebelum dan sesudah perlakuan untuk melihat selisih nilai."
+              ]
+            : [
+                "Active Manipulation: The researcher controls and introduces the independent variable treatment.",
+                "Extraneous Control: Employs a control group and random assignment (in True Experimental) to eliminate confounding factors.",
+                "Pretest-Posttest Assessment: Measures the dependent variable before and after the experimental treatment."
+              ],
+          examples: isId
+            ? [
+                "Eksperimen Murni: Menguji efek obat baru dengan membagi 100 pasien secara acak ke kelompok obat nyata dan kelompok placebo.",
+                "Quasi-Eksperimen: Pengaruh metode e-learning baru pada hasil belajar kelas A (eksperimen) dibanding kelas B (kontrol) tanpa merombak formasi kelas."
+              ]
+            : [
+                "True Experimental: Evaluating a drug's efficacy by randomly assigning 100 patients to a treatment group or a placebo group.",
+                "Quasi-Experimental: Assessing a new e-learning curriculum in Class A (experimental) vs Class B (control) without disrupting natural classroom assignments."
+              ],
+          tips: isId
+            ? "Waspadai bias efek partisipan (Hawthorne Effect) di mana subjek merespons secara berbeda hanya karena mereka tahu mereka sedang diamati. Gunakan metode pembatasan informasi (blinding) bila memungkinkan."
+            : "Guard against the Hawthorne Effect, where participants alter behavior simply because they know they are being studied. Use blinding protocols if feasible."
+        };
+      case "Correlational":
+        return {
+          title: "Correlational Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Berdasarkan Mark Saunders dkk. (2019), desain korelasional menguji kekuatan dan arah hubungan statistik antara dua atau lebih variabel tanpa memanipulasi variabel tersebut secara aktif. Desain ini sangat berguna ketika eksperimen tidak dapat dilakukan karena alasan etis atau praktis."
+            : "According to Mark Saunders et al. (2019), correlational designs measure the statistical association, strength, and direction of relationships between two or more variables without active researcher manipulation.",
+          characteristics: isId
+            ? [
+                "Non-Manipulatif: Data dikumpulkan dari variabel dalam kondisi alami tanpa intervensi lapangan.",
+                "Koefisien Korelasi: Menggunakan koefisien Pearson (r) untuk data interval/rasio, Spearman untuk ordinal, atau regresi berganda.",
+                "Hubungan Non-Kausal: Tidak dapat membuktikan hubungan sebab-akibat secara langsung (Korelasi tidak sama dengan Kausalitas)."
+              ]
+            : [
+                "Non-Manipulative: Variables are measured in their natural states without intervention or active experimental change.",
+                "Correlation Coefficients: Evaluated via Pearson's r, Spearman's rank, or multiple regression analyses.",
+                "Non-Causal Associations: Identifies statistical links, but cannot prove causation directly (Correlation does not equal Causation)."
+              ],
+          examples: isId
+            ? [
+                "Korelasional Sederhana: Hubungan antara jumlah jam tidur harian dengan indeks prestasi kumulatif (IPK) mahasiswa.",
+                "Prediktif: Analisis regresi linier berganda untuk memprediksi harga saham berdasarkan volume penjualan dan inflasi harian."
+              ]
+            : [
+                "Simple Correlation: Exploring the relationship between nightly sleep duration and cumulative GPA in college students.",
+                "Predictive Correlation: Utilizing multiple linear regression to predict stock prices based on quarterly sales volume and inflation."
+              ],
+          tips: isId
+            ? "Meskipun korelasi terbukti signifikan secara statistik, selalu ingat untuk tidak menyimpulkan sebab-akibat secara mutlak. Selalu jelaskan variabel ketiga yang potensial (confounding variables) yang mungkin menghubungkan keduanya."
+            : "Never equate correlation with absolute causation. Discuss potential confounding variables in your discussion chapter that might explain the statistical link between your observed variables."
+        };
+      case "Survey / Descriptive":
+        return {
+          title: "Survey / Descriptive Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Menerapkan kuesioner terstruktur atau jajak pendapat terstandardisasi pada sampel terpilih untuk menggambarkan, meringkas, dan melaporkan secara kuantitatif sikap, pendapat, tren, atau karakteristik populasi (Creswell, 2018)."
+            : "Applies structured questionnaires or standardized polls to a selected sample to quantitatively profile, summarize, and report the attitudes, opinions, trends, or demographics of a broader population (Creswell, 2018).",
+          characteristics: isId
+            ? [
+                "Standardisasi Tinggi: Setiap responden menerima pertanyaan yang sama persis dan pilihan jawaban terstruktur.",
+                "Generalisasi Populasi: Menggunakan teknik probability sampling agar temuan sampel dapat ditarik ke populasi luas.",
+                "Analisis Deskriptif: Menyajikan persentase, rata-rata (mean), median, modus, standar deviasi, dan grafik frekuensi."
+              ]
+            : [
+                "High Standardization: Every participant is presented with identical questions and structured response options.",
+                "Population Generalizability: Relies on representative probability sampling to infer sample findings onto the larger cohort.",
+                "Descriptive Telemetry: Reports findings using percentages, means, medians, modes, standard deviations, and frequency charts."
+              ],
+          examples: isId
+            ? [
+                "Survei Sensus: Profil tingkat kesejahteraan rumah tangga di suatu kecamatan pasca-pandemi.",
+                "Evaluatif: Survei indeks kepuasan pelanggan terhadap kualitas layanan perbankan digital."
+              ]
+            : [
+                "Census Survey: Profiling the socioeconomic welfare index of households in a municipality post-pandemic.",
+                "Evaluative Survey: Assessing customer satisfaction indexes toward digital banking application interfaces."
+              ],
+          tips: isId
+            ? "Pertahankan tingkat respons (response rate) yang tinggi (di atas 60%) untuk menghindari bias non-respons. Susun kuesioner dengan bahasa yang lugas, tidak bertele-tele, dan hindari pertanyaan ganda (double-barreled questions)."
+            : "Maintain a high response rate (above 60%) to prevent non-response bias. Keep your questionnaire items concise, clear, and completely free of double-barreled or leading questions."
+        };
+      case "Case Study":
+        return {
+          title: "Case Study Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Eksplorasi mendalam terhadap kasus tunggal atau ganda yang dibatasi oleh waktu, tempat, dan aktivitas secara menyeluruh menggunakan berbagai metode pengumpulan data yang kaya (wawancara, observasi, dokumen) dalam konteks aslinya (Yin, 2018)."
+            : "A multi-faceted, in-depth exploration of a single or multiple bounded cases (individuals, organizations, programs, or events) over time using rich, triangulated data sources within their real-life contexts (Yin, 2018).",
+          characteristics: isId
+            ? [
+                "Kasus Dibatasi (Bounded System): Fokus pada fenomena spesifik yang dibatasi oleh unit organisasi, waktu, atau batas geografis.",
+                "Sumber Data Beragam: Mengintegrasikan hasil wawancara mendalam, catatan observasi lapangan, arsip dokumen resmi, hingga artefak fisik.",
+                "Analisis Kontekstual: Mengutamakan kedalaman deskripsi konteks kasus daripada generalisasi statistik ke populasi luas."
+              ]
+            : [
+                "Bounded System: Focuses on a specific phenomenon bounded by time, place, organizational constraints, or social groups.",
+                "Triangulated Data: Synthesizes in-depth interview transcripts, participant observations, official archives, and physical artifacts.",
+                "Contextual Depth: Prioritizes rich, thick description of the specific case over statistical generalizability."
+              ],
+          examples: isId
+            ? [
+                "Kasus Tunggal Mendalam: Studi kasus mengenai strategi bertahan hidup dan manajemen krisis di sebuah perusahaan startup yang hampir bangkrut.",
+                "Kasus Ganda: Studi kasus komparatif mengenai proses integrasi budaya kerja digital di tiga sekolah dasar terpencil."
+              ]
+            : [
+                "Single Case: A deep case study profiling the survival strategies and turnaround crisis management of a near-bankrupt tech startup.",
+                "Multiple Case Study: A comparative study of the digital culture integration process across three remote primary schools."
+              ],
+          tips: isId
+            ? "Tantangan utama studi kasus adalah batasan lingkup (scope creep). Tentukan batas kasus Anda dengan sangat jelas sejak awal (misalnya: 'Studi kasus dibatasi pada unit HRD PT X selama masa restrukturisasi tahun 2025')."
+            : "The primary pitfall is scope creep. Clearly define your case boundaries in Step 1 (e.g., 'This study is strictly bounded to the HR division of PT X during the 2025 corporate restructuring phase')."
+        };
+      case "Phenomenology":
+        return {
+          title: "Phenomenology Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Menurut Michael Quinn Patton (2015), fenomenologi bertujuan mengeksplorasi dan mendeskripsikan struktur kesadaran terdalam dan esensi bersama dari pengalaman hidup (lived experiences) beberapa individu terkait fenomena sosial tertentu."
+            : "According to Michael Quinn Patton (2015), phenomenological designs aim to explore and describe the psychological essence and core structure of lived experiences shared by several individuals regarding a specific social or medical phenomenon.",
+          characteristics: isId
+            ? [
+                "Pengalaman Hidup (Lived Experiences): Meneliti makna subjektif yang dialami langsung oleh subjek riset secara intim.",
+                "Prinsip Epoch / Bracketing: Peneliti secara aktif menangguhkan opini pribadi agar tidak membiaskan cerita asli subjek.",
+                "Pernyataan Signifikan: Mengekstrak kutipan penting dari wawancara untuk membangun kluster tema konseptual."
+              ]
+            : [
+                "Lived Experiences: Targets the authentic subjective meanings experienced firsthand by participants.",
+                "Bracketing (Epoché): The researcher consciously suspends personal preconceptions to allow the phenomenon to speak for itself.",
+                "Horizonalization & Themes: Extracts significant statements from transcripts to formulate shared, invariant universal essences."
+              ],
+          examples: isId
+            ? [
+                "Klinis: Pengalaman langsung pasien yang berhasil sembuh dari koma jangka panjang.",
+                "Sosial: Pengalaman hidup imigran generasi pertama dalam mempertahankan identitas budaya di lingkungan baru."
+              ]
+            : [
+                "Clinical: The lived experiences of patients recovering from long-term vegetative states or comas.",
+                "Social: The lived experiences of first-generation immigrants maintaining cultural identities in highly dissimilar host societies."
+              ],
+          tips: isId
+            ? "Lakukan bracketing (epoché) dengan rajin menulis jurnal refleksi pribadi selama riset. Ini membantu Anda memisahkan bias teoretis Anda dengan cerita murni dari pengalaman hidup informan Anda."
+            : "Maintain a reflexive research journal to assist in bracketing. This helps you actively distinguish between your theoretical assumptions and the pure, authentic accounts of your participants."
+        };
+      case "Grounded Theory":
+        return {
+          title: "Grounded Theory framework",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Desain kualitatif sistematis di mana peneliti memformulasikan teori atau penjelasan konseptual tingkat abstrak mengenai suatu proses, aksi, atau interaksi sosial yang berakar langsung pada data empiris lapangan (Charmaz, 2014)."
+            : "A systematic qualitative design where the researcher derives an abstract, conceptual theory explaining a process, action, or social interaction rooted directly ('grounded') in empirical field data (Charmaz, 2014).",
+          characteristics: isId
+            ? [
+                "Theoretical Sampling: Pengumpulan data diarahkan secara dinamis oleh kebutuhan pengembangan teori yang sedang dibangun.",
+                "Constant Comparative Analysis: Terus-menerus membandingkan data baru dengan kode lama untuk membangun kategori abstrak.",
+                "Tiga Tahap Pengodean: Pengodean Terbuka (Open Coding), Pengodean Aksial (Axial Coding), dan Pengodean Selektif (Selective Coding)."
+              ]
+            : [
+                "Theoretical Sampling: Participant selection is dynamically guided by the needs of the emerging conceptual framework.",
+                "Constant Comparative Method: Continuously compares new data incidents with existing codes to refine abstract categories.",
+                "Three-Tier Coding: Follows Open Coding (concept building), Axial Coding (relationship mapping), and Selective Coding (theory synthesis)."
+              ],
+          examples: isId
+            ? [
+                "Organisasional: Membangun teori baru mengenai proses adaptasi kepemimpinan karismatik dalam perusahaan merger lintas batas.",
+                "Klinis: Model pengambilan keputusan pasien dalam memilih pengobatan alternatif dibanding kemoterapi."
+              ]
+            : [
+                "Organizational: Formulating a theory of leadership adaptation processes in cross-border corporate mergers.",
+                "Clinical: Constructing a conceptual model of patient decision-making processes when choosing alternative medicine over chemotherapy."
+              ],
+          tips: isId
+            ? "Jangan tergesa-gesa memaksakan teori yang sudah ada ke data Anda. Biarkan konsep dan kategori teoritis muncul secara alami dari transkrip Anda melalui metode analisis perbandingan konstan."
+            : "Do not pre-impose existing models onto your transcripts. Allow theoretical concepts to emerge organically from the narratives through constant comparison and theoretical saturation."
+        };
+      case "Convergent Parallel":
+        return {
+          title: "Convergent Parallel Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Desain mixed methods satu fase di mana peneliti mengumpulkan data kuantitatif dan data kualitatif secara bersamaan (paralel), menganalisis kedua basis data secara terpisah, dan kemudian membandingkan atau menggabungkan temuan tersebut untuk melihat apakah kedua data saling memperkuat atau bertentangan (Creswell, 2018)."
+            : "A single-phase mixed methods design where the researcher collects and analyzes quantitative and qualitative databases concurrently (parallel), then merges or compares results to evaluate if findings corroborate or contradict each other (Creswell, 2018).",
+          characteristics: isId
+            ? [
+                "Simultan / Paralel: Kedua jenis data dikumpulkan dalam satu periode waktu tunggal secara paralel.",
+                "Bobot Setara (Equal Weight): Bobot kuantitatif dan kualitatif dianggap setara dalam menjawab pertanyaan riset.",
+                "Analisis Konvergensi: Penggabungan data biasanya dilakukan pada tahap diskusi temuan dengan memetakan tabel matriks perbandingan."
+              ]
+            : [
+                "Concurrent Collection: Both quantitative and qualitative datasets are gathered within the same timeframe.",
+                "Equal Weighting: Both databases are prioritized equally in addressing the study's central research questions.",
+                "Convergence Analysis: Merges databases during interpretation, often using side-by-side comparison matrix tables."
+              ],
+          examples: isId
+            ? [
+                "Studi Pendidikan: Menyebarkan kuesioner skala motivasi belajar kuantitatif ke 200 siswa bersamaan dengan melakukan Focus Group Discussion (FGD) dengan 15 guru.",
+                "Studi Kesehatan: Mengukur data klinis tekanan darah pasien bersamaan dengan mewawancarai mereka mengenai kenyamanan psikologis di bangsal."
+              ]
+            : [
+                "Education: Distributing quantitative academic motivation scales to 200 students while concurrently conducting FGDs with 15 teachers.",
+                "Healthcare: Tracking quantitative clinical blood pressure data of patients while concurrently conducting qualitative interviews about psychological comfort."
+              ],
+          tips: isId
+            ? "Tantangan terbesar adalah menangani temuan yang bertentangan (divergent findings) (misal: data survei menunjukkan kepuasan tinggi, tetapi wawancara menunjukkan ketidakpuasan mendalam). Laporkan kontradiksi ini secara jujur karena itulah letak nilai tambah mixed methods."
+            : "Be prepared for divergent findings (e.g., survey scores indicate high satisfaction, but interviews yield deep complaints). Address these contradictions honestly in your discussion chapter; this divergence represents the true value of mixed methods."
+        };
+      case "Explanatory Sequential":
+        return {
+          title: "Explanatory Sequential Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Desain mixed methods dua fase di mana peneliti memulai dengan pengumpulan dan analisis data kuantitatif untuk melihat tren umum, lalu diikuti oleh fase kualitatif (wawancara mendalam) guna menjelaskan hasil statistik kuantitatif tersebut secara mendalam dan kontekstual (Creswell, 2018)."
+            : "A two-phase mixed methods framework starting with the collection and analysis of quantitative data to identify broad trends, followed by a qualitative phase to explain and contextualize those statistical results (Creswell, 2018).",
+          characteristics: isId
+            ? [
+                "Dua Fase Berurutan: Fase kuantitatif dilakukan terlebih dahulu, disusul penuh oleh fase kualitatif.",
+                "Bobot Kuantitatif Dominan: Riset biasanya diutamakan pada hasil kuantitatif, kualitatif berfungsi sebagai penjelas.",
+                "Sampling Terkoneksi: Informan kualitatif dipilih secara purposive langsung dari responden survei kuantitatif fase pertama."
+              ]
+            : [
+                "Two-Phase Sequence: The quantitative study is executed first, directly informing the subsequent qualitative phase.",
+                "Quantitative Priority: The study is typically driven by quantitative metrics, using qualitative findings as explanatory support.",
+                "Connected Sampling: Qualitative informants are purposefully selected from the respondents who participated in the first phase."
+              ],
+          examples: isId
+            ? [
+                "Fase 1: Survei kuantitatif menemukan bahwa 80% karyawan mengalami penurunan kepuasan kerja pasca-merger. Fase 2: Wawancara mendalam dengan 10 karyawan untuk menggali 'mengapa' dan 'bagaimana' merger memicu penurunan tersebut.",
+                "Fase 1: Uji statistik mendapati metode terapi X memiliki tingkat keberhasilan rendah. Fase 2: Wawancara klinis dengan pasien untuk memahami hambatan pemulihan."
+              ]
+            : [
+                "Example: Phase 1: Survey finds that 80% of employees experienced low job satisfaction post-merger. Phase 2: In-depth interviews with 10 employees to explain exactly 'why' and 'how' the merger triggered this decrease.",
+                "Example: Phase 1: Quantitative trial shows clinical Therapy X has an unexpectedly low recovery rate. Phase 2: Qualitative interviews to explain patients' underlying barriers."
+              ],
+          tips: isId
+            ? "Dalam laporan riset Anda, nyatakan secara spesifik hasil kuantitatif mana (seperti outlier statistik atau hasil yang tidak signifikan) yang perlu ditindaklanjuti dan dijelaskan pada fase kualitatif kedua."
+            : "In your methodology chapter, explicitly detail which quantitative results (such as statistical outliers or non-significant findings) required qualitative explanation in the second phase."
+        };
+      case "Exploratory Sequential":
+        return {
+          title: "Exploratory Sequential Design",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId
+            ? "Desain mixed methods dua fase di mana peneliti memulai dengan eksplorasi kualitatif terlebih dahulu untuk memahami fenomena yang belum banyak diteliti, lalu menggunakan temuan tersebut (seperti variabel atau instrumen baru) untuk dirancang dan diuji secara kuantitatif pada fase kedua (Creswell, 2018)."
+            : "A two-phase mixed methods design starting with qualitative exploration to understand an under-researched topic, then using those findings to construct variables, hypotheses, or scales that are tested quantitatively in the second phase (Creswell, 2018).",
+          characteristics: isId
+            ? [
+                "Eksplorasi Awal: Mengumpulkan data kualitatif terlebih dahulu karena variabel atau teori belum diketahui.",
+                "Pengembangan Kuesioner/Alat: Hasil wawancara kualitatif digunakan untuk merumuskan butir-butir pertanyaan instrumen kuesioner baru.",
+                "Pengujian Kuantitatif: Menyebarkan instrumen baru tersebut ke sampel yang lebih luas untuk pengujian statistik."
+              ]
+            : [
+                "Qualitative Priority: Initial exploratory qualitative database is gathered first because variables or theories are unknown.",
+                "Scale/Instrument Development: Narrative themes from Phase 1 are translated directly into items of a new survey instrument.",
+                "Quantitative Testing: Deploys and statistically validates the newly developed tool on a broader representative sample."
+              ],
+          examples: isId
+            ? [
+                "Fase 1: Wawancara mendalam dengan tetua adat untuk mengeksplorasi kearifan lokal mitigasi bencana. Fase 2: Menyusun skala kuesioner mitigasi bencana lokal dan mengujinya secara statistik pada 400 warga.",
+                "Fase 1: Menggali perilaku belanja baru gen-Z di platform VR. Fase 2: Mengembangkan skala kuesioner belanja VR dan memvalidasinya secara kuantitatif."
+              ]
+            : [
+                "Example: Phase 1: Interviews with tribal elders to explore indigenous disaster mitigation concepts. Phase 2: Formulating a standardized questionnaire based on those concepts and validating it statistically with 400 villagers.",
+                "Example: Phase 1: In-depth interviews to discover gen-Z shopping behavior in virtual reality spaces. Phase 2: Constructing a scale based on Phase 1 themes and testing it on 500 respondents."
+              ],
+          tips: isId
+            ? "Desain ini ideal untuk merancang kuesioner kustom yang sangat spesifik secara budaya atau kontekstual. Pastikan Anda menjelaskan secara runtut bagaimana tema kualitatif diterjemahkan menjadi butir kuesioner kuantitatif."
+            : "This design is ideal for developing custom questionnaires that are highly localized or culturally sensitive. Clearly explain how qualitative themes were systematically converted into quantitative questionnaire scale items."
+        };
+      default:
+        return {
+          title: "Research Concept",
+          badge: isId ? "Desain Penelitian" : "Research Design",
+          definition: isId ? "Pilih salah satu pendekatan dan desain riset di panel kiri untuk memetakan detail metodologis akademis Anda secara spesifik." : "Select a research paradigm and design type on the left panel to begin detailing your scientific research methodology.",
+          characteristics: [],
+          examples: [],
+          tips: ""
+        };
+    }
+  };
+
   const renderEducationalPanel = () => {
     const isId = i18n.language === "id";
     
@@ -602,7 +1009,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 : "The first step in methodology design is establishing the paradigm that aligns with your research questions and scientific objectives."}
             </p>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupData(getEduDetailContent("quant_approach", i18n.language));
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconChart size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
                 {isId ? "Pendekatan Kuantitatif" : "Quantitative Approach"}
@@ -612,9 +1026,22 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Menitikberatkan pada pengujian teori secara deduktif melalui pengukuran numerik, analisis statistik, dan pembuktian empiris yang objektif." 
                   : "Focuses on testing theories deductively using numerical measurements, statistical analysis, and objective evidence."}
               </p>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
+                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
+                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
+                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
+                </span>
+              </div>
             </div>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupData(getEduDetailContent("qual_approach", i18n.language));
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconFileText size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
                 {isId ? "Pendekatan Kualitatif" : "Qualitative Approach"}
@@ -624,9 +1051,22 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Mengeksplorasi makna deskriptif, pola naratif, serta pengalaman hidup manusia secara mendalam menggunakan logika induktif." 
                   : "Explores descriptive meanings, narrative patterns, human experiences, semi-structured interviews, and inductive analysis."}
               </p>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
+                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
+                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
+                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
+                </span>
+              </div>
             </div>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupData(getEduDetailContent("mixed_approach", i18n.language));
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconMerge size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
                 {isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach"}
@@ -636,6 +1076,12 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Mengintegrasikan presisi data kuantitatif dan kedalaman narasi kualitatif secara sinergis untuk memecahkan masalah penelitian yang kompleks." 
                   : "Synergistically combines numerical precision and narrative depth to address multi-layered research problems."}
               </p>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
+                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
+                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
+                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
+                </span>
+              </div>
             </div>
             
             <div style={styles.eduTip}>
@@ -651,13 +1097,21 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             </div>
 
             {design !== "Undetermined" && (
-              <div style={{
-                ...styles.eduCard,
-                background: "rgba(168, 85, 247, 0.04)",
-                border: "1px solid rgba(168, 85, 247, 0.25)",
-                boxShadow: "0 0 10px rgba(168, 85, 247, 0.1)",
-                marginTop: "0.5rem"
-              }}>
+              <div
+                className="arche-edu-card arche-edu-card-active"
+                style={{
+                  ...styles.eduCard,
+                  background: "rgba(168, 85, 247, 0.04)",
+                  border: "1px solid rgba(168, 85, 247, 0.25)",
+                  boxShadow: "0 0 10px rgba(168, 85, 247, 0.1)",
+                  marginTop: "0.5rem",
+                  cursor: "pointer"
+                }}
+                onClick={() => {
+                  setEduPopupData(getEduDetailContent(design, i18n.language));
+                  setEduPopupOpen(true);
+                }}
+              >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <IconWrench size={16} style={{ color: "#c084fc" }} />
                   <span style={{ fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#c084fc" }}>
@@ -670,6 +1124,12 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 <p style={styles.eduCardBody}>
                   {renderDesignExplanation(design, isId)}
                 </p>
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
+                  <span style={{ fontSize: "0.62rem", color: "rgba(168, 85, 247, 0.5)", display: "flex", alignItems: "center", gap: "3px" }}>
+                    <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
+                    {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -1782,6 +2242,93 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               >
                 {t("common.understand") || "Got It"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Educational Popup Modal */}
+      {eduPopupOpen && eduPopupData && (
+        <div className="arche-modal-overlay animate-fade-in" onClick={() => setEduPopupOpen(false)}>
+          <div
+            className="arche-modal-card glass-panel"
+            style={{
+              maxWidth: "600px",
+              padding: "2rem",
+              borderRadius: "16px",
+              maxHeight: "85vh",
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.5rem",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="arche-modal-header" style={{ marginBottom: "0", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "1rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <span style={{ fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#c084fc", background: "rgba(168, 85, 247, 0.12)", padding: "0.3rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(168, 85, 247, 0.2)" }}>
+                  {eduPopupData.badge}
+                </span>
+                <h2 className="arche-modal-title" style={{ fontSize: "1.4rem", marginTop: "0.6rem", color: "white", fontWeight: 800 }}>
+                  {eduPopupData.title}
+                </h2>
+              </div>
+              <button onClick={() => setEduPopupOpen(false)} className="arche-modal-close" style={{ background: "transparent", border: "none", color: "rgba(255, 255, 255, 0.5)", fontSize: "1.1rem", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "white"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)"}>✕</button>
+            </div>
+
+            {/* Content Body */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", color: "rgba(255, 255, 255, 0.85)" }}>
+              {/* Definition */}
+              <div>
+                <p style={{ fontSize: "0.95rem", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.8)" }}>
+                  {eduPopupData.definition}
+                </p>
+              </div>
+
+              {/* Key Characteristics */}
+              {eduPopupData.characteristics.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "white", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    📋 {i18n.language === "id" ? "Karakteristik Utama" : "Key Characteristics"}
+                  </h4>
+                  <ul style={{ paddingLeft: "1.2rem", fontSize: "0.88rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.4rem", color: "rgba(255, 255, 255, 0.7)" }}>
+                    {eduPopupData.characteristics.map((c, i) => (
+                      <li key={i} style={{ listStyleType: "disc" }}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Research Examples */}
+              {eduPopupData.examples.length > 0 && (
+                <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: "1.2rem", borderRadius: "12px", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)" }}>
+                  <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <IconBook size={16} />
+                    {i18n.language === "id" ? "🔍 Contoh Penelitian" : "🔍 Research Example"}
+                  </h4>
+                  <ul style={{ paddingLeft: "1.2rem", fontSize: "0.88rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.5rem", color: "rgba(255, 255, 255, 0.75)" }}>
+                    {eduPopupData.examples.map((ex, i) => (
+                      <li key={i} style={{ listStyleType: "circle", fontStyle: "italic" }}>{ex}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Academic Tips */}
+              {eduPopupData.tips && (
+                <div style={{ background: "rgba(168, 85, 247, 0.05)", border: "1px dashed rgba(168, 85, 247, 0.3)", padding: "1.2rem", borderRadius: "12px" }}>
+                  <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#fbbf24", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <IconLightbulb size={16} />
+                    {i18n.language === "id" ? "💡 Tips Akademis" : "💡 Academic Tips"}
+                  </h4>
+                  <p style={{ fontSize: "0.85rem", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)" }}>
+                    {eduPopupData.tips}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
