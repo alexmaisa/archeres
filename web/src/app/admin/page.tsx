@@ -396,9 +396,11 @@ export default function AdminPage() {
                 <text
                   x={paddingLeft - 8}
                   y={y + 3}
-                  fill="rgba(255,255,255,0.3)"
+                  fill="rgba(255,255,255,0.4)"
                   fontSize="9.5"
+                  fontWeight="600"
                   textAnchor="end"
+                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision" }}
                 >
                   {gridLabel}
                 </text>
@@ -434,8 +436,9 @@ export default function AdminPage() {
                     y={y - 4}
                     fill="white"
                     fontSize="9.5"
-                    fontWeight="bold"
+                    fontWeight="700"
                     textAnchor="middle"
+                    style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}
                   >
                     {val}
                   </text>
@@ -445,9 +448,11 @@ export default function AdminPage() {
                 <text
                   x={x + barW / 2}
                   y={height - 7}
-                  fill="rgba(255,255,255,0.4)"
+                  fill="rgba(255,255,255,0.6)"
                   fontSize="9.5"
+                  fontWeight="600"
                   textAnchor="middle"
+                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "0.01em" }}
                 >
                   {getMonthLabel(mStr)}
                 </text>
@@ -548,9 +553,11 @@ export default function AdminPage() {
                 <text
                   x={paddingLeft - 8}
                   y={y + 3}
-                  fill="rgba(255,255,255,0.3)"
+                  fill="rgba(255,255,255,0.4)"
                   fontSize="9.5"
+                  fontWeight="600"
                   textAnchor="end"
+                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision" }}
                 >
                   {gridLabel}
                 </text>
@@ -587,11 +594,11 @@ export default function AdminPage() {
             <g key={`u-${idx}`}>
               <circle cx={p.x} cy={p.y} r="5" fill="#f43f5e" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
               <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#f43f5e" strokeWidth="1" opacity="0.2" />
-              {p.val > 0 && (
-                <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">
-                  {p.val}
-                </text>
-              )}
+                {p.val > 0 && (
+                  <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="700" textAnchor="middle" style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}>
+                    {p.val}
+                  </text>
+                )}
             </g>
           ))}
 
@@ -600,11 +607,11 @@ export default function AdminPage() {
             <g key={`l-${idx}`}>
               <circle cx={p.x} cy={p.y} r="5" fill="#10b981" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
               <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#10b981" strokeWidth="1" opacity="0.2" />
-              {p.val > 0 && (
-                <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">
-                  {p.val}
-                </text>
-              )}
+                {p.val > 0 && (
+                  <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="700" textAnchor="middle" style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}>
+                    {p.val}
+                  </text>
+                )}
             </g>
           ))}
 
@@ -616,9 +623,11 @@ export default function AdminPage() {
                 key={`lbl-${idx}`}
                 x={x}
                 y={height - 6}
-                fill="rgba(255,255,255,0.4)"
+                fill="rgba(255,255,255,0.6)"
                 fontSize="9.5"
+                fontWeight="600"
                 textAnchor="middle"
+                style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "0.01em" }}
               >
                 {getMonthLabel(mStr)}
               </text>
