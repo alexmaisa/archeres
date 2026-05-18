@@ -282,11 +282,21 @@ const resources = {
   }
 };
 
+let defaultLng = 'en';
+
+if (typeof window !== 'undefined') {
+  // Automatically detect browser/OS language preference (e.g., id, id-ID, en-US)
+  const browserLang = window.navigator.language || (window.navigator as any).userLanguage || '';
+  if (browserLang.toLowerCase().startsWith('id')) {
+    defaultLng = 'id';
+  }
+}
+
 i18n
   .use(reactI18nInit)
   .init({
     resources,
-    lng: 'en', // Default language
+    lng: defaultLng,
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false // React already escapes values
