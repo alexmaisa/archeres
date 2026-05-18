@@ -83,3 +83,28 @@ For rapid, non-Docker local pair-programming, developer lifecycle controls are m
 * **`make test`:** Executes the rigorous unit testing suite (`backend/utils/sample_test.go`) validating Cochran, Slovin, Daniel, Yamane, and Lemeshow mathematics ceiling rounded assertions.
 * **`make clean`:** Purges Next.js caches and deletes local `backend/arche.db` databases to reset onboarding states cleanly.
 * **`make help`:** Prints a beautifully formatted, color-coded index of all targets.
+
+---
+
+## 🔒 5. Zero-Knowledge End-to-End Encryption (E2EE) Paradigm
+
+To guarantee absolute confidentiality and protect the intellectual property of researchers, Arche implements a **Zero-Knowledge E2EE cryptographic system** directly in the user's browser. This guarantees that not even system administrators or backend database owners can read the research ideas.
+
+### Key Architectural Pillars:
+* **Client-Side Cryptography (Web Crypto API):**
+  * Encryption and decryption occur exclusively inside the client's browser using the native browser `window.crypto.subtle` API.
+  * Hashed ciphertexts are sent to the backend as standard base64 strings, requiring zero modifications to GORM or SQLite database schemas.
+* **PBKDF2 Key Derivation:**
+  * When a user logs in, a unique 256-bit AES cryptographic key is derived locally in browser RAM using **PBKDF2 with SHA-256**, utilizing the user's email as the salt and password as input with 100,000 iterations.
+  * The derived key is held in RAM-only **`sessionStorage`** as `user_vault_key` and is immediately destroyed when the user logs out or closes the browser tab.
+* **AES-GCM-256 Encryption:**
+  * Data payload structures are encrypted using **AES-GCM-256** with a cryptographically secure, random 12-byte Initialization Vector (IV).
+  * Serialized outputs are stored in GORM string columns in the single format: `iv_base64:ciphertext_base64`.
+* **Encrypted Scope:**
+  * **Projects:** `Title` and `Description`.
+  * **Research Design:** `Approach` (e.g. Quantitative), `DesignType` (e.g. Quasi-Experimental), `VariablesJson` (complete variable indicator mapping), and `AnalysisMethod`.
+  * **Unencrypted Metadata:** Statistical metrics like calculated sample size, margin of error, confidence level, and formula types remain unencrypted to support aggregate platform-wide telemetry without compromising research concepts.
+* **One-Time Master Recovery Key:**
+  * On successful registration, the client generates a secure random 256-bit recovery token and prompts the user to download an `arche_recovery_key_[email].txt` backup key file. Since the architecture is strictly zero-knowledge, this is the absolute only way to recover vault contents if a password is forgotten.
+* **Graceful Fallback:**
+  * The decryption utility falls back to plaintext if data does not match the encrypted serialization format, ensuring seamless backward compatibility with older plaintext projects.
