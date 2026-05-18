@@ -26,6 +26,23 @@ interface StepItem {
   desc: string;
 }
 
+interface MathFormula {
+  name: string;
+  formula: string;
+  context: string;
+}
+
+interface ScaleAdvice {
+  scale: string;
+  tests: string;
+  context: string;
+}
+
+interface ChapterSection {
+  title: string;
+  desc: string;
+}
+
 interface AboutContent {
   metaTitle: string;
   title: string;
@@ -34,6 +51,15 @@ interface AboutContent {
   howItWorksSteps: StepItem[];
   featuresTitle: string;
   featuresList: CardItem[];
+  mathSectionTitle: string;
+  mathSectionDesc: string;
+  mathFormulas: MathFormula[];
+  scaleSectionTitle: string;
+  scaleSectionDesc: string;
+  scaleAdvices: ScaleAdvice[];
+  chapterSectionTitle: string;
+  chapterSectionDesc: string;
+  chapterSections: ChapterSection[];
   stackTitle: string;
   stackDesc: string;
   ctaBack: string;
@@ -108,6 +134,29 @@ export default function AboutPage() {
           desc: "Learn methodology concepts as you compile drafts. The app offers Stevens' scale definitions and dynamic formula guidance on every screen."
         }
       ],
+      mathSectionTitle: "Mathematical Estimator Equations",
+      mathSectionDesc: "Archeres performs real-time sampling size estimations using rigorous math models verified by senior academic examiners.",
+      mathFormulas: [
+        { name: "Slovin Formula", formula: "n = N / (1 + N * e²)", context: "Ideal for basic research with known, finite populations under general margin of error." },
+        { name: "Cochran Formula", formula: "n = Z² * p * q / e²", context: "Designed for infinite or extremely large populations where proportion parameters are estimated." },
+        { name: "Lemeshow Equation", formula: "n = Z² * P * (1-P) / d²", context: "The standard for epidemiological, healthcare, and clinical studies with unknown population sizes." },
+        { name: "Yamane Formula", formula: "n = N / (1 + N * d²)", context: "A highly consistent estimator for finite populations based on rigorous confidence intervals." },
+        { name: "Daniel Formula", formula: "n = Z² * P * (1-P) / d²", context: "Used for estimating binary prevalence stats with high confidence tolerance controls." }
+      ],
+      scaleSectionTitle: "Stevens' Scales & Statistical Advice",
+      scaleSectionDesc: "Classifying study variables using Stevens' taxonomy of scales automatically triggers the appropriate statistical test recommendations.",
+      scaleAdvices: [
+        { scale: "Nominal & Ordinal Scales", tests: "Non-Parametric Tests", context: "Chi-Square, Wilcoxon, Mann-Whitney U, Spearman Rho correlation, and Kruskal-Wallis analysis." },
+        { scale: "Interval & Ratio Scales", tests: "Parametric Tests", context: "Pearson Correlation, Independent/Paired t-Test, ANOVA, and Simple/Multiple Linear Regression models." }
+      ],
+      chapterSectionTitle: "Chapter III Thesis Blueprint Framework",
+      chapterSectionDesc: "The generated Chapter 3 markdown draft is structured to conform strictly with international peer-reviewed thesis guidelines.",
+      chapterSections: [
+        { title: "Part A: Research Philosophy", desc: "Outlines the scientific paradigm, approach (quantitative/qualitative), and standard design rationale." },
+        { title: "Part B: Variables Operationalization Matrix", desc: "A comprehensive table linking variables, conceptual definitions, operational indicators, and Stevens scales." },
+        { title: "Part C: Population & Sampling Protocol", desc: "Documents the exact mathematical formula choice, variable parameters, and ceiling rounding justifications." },
+        { title: "Part D: Statistical Hypothesis Strategy", desc: "Outlines the specific parametric or non-parametric test schedules chosen to verify the study's claims." }
+      ],
       stackTitle: "Our Technology Stack",
       stackDesc: "Archeres is engineered with high-speed, lightweight components: Next.js App Router for dynamic glassmorphic rendering, Go Fiber for high-performance concurrent REST APIs, and SQLite with GORM for robust, isolated telemetry databases.",
       ctaBack: "Back to Home",
@@ -158,6 +207,29 @@ export default function AboutPage() {
           desc: "Belajar secara aktif saat merancang draf penelitian. Pahami konsep dasar skala pengukuran Stevens, kegunaan setiap rumus sampel, serta konteks akademisnya langsung pada alur kerja Anda."
         }
       ],
+      mathSectionTitle: "Formulasi Matematika Ukuran Sampel",
+      mathSectionDesc: "Archeres melakukan estimasi ukuran sampel secara real-time menggunakan model matematika rigor yang teruji di hadapan penguji akademik.",
+      mathFormulas: [
+        { name: "Rumus Slovin", formula: "n = N / (1 + N * e²)", context: "Sangat ideal untuk penelitian umum dengan populasi terbatas yang diketahui ukuran pastinya." },
+        { name: "Rumus Cochran", formula: "n = Z² * p * q / e²", context: "Dikhususkan bagi populasi besar tak terbatas dengan estimasi proporsi parameter tertentu." },
+        { name: "Persamaan Lemeshow", formula: "n = Z² * P * (1-P) / d²", context: "Standar baku riset klinis, kedokteran, dan epidemiologi kesehatan dengan jumlah populasi tidak diketahui." },
+        { name: "Rumus Yamane", formula: "n = N / (1 + N * d²)", context: "Estimator konsisten untuk populasi terbatas dengan basis tingkat kepercayaan presisi tinggi." },
+        { name: "Rumus Daniel", formula: "n = Z² * P * (1-P) / d²", context: "Digunakan untuk estimasi prevalensi biner pada studi diagnosis dengan toleransi margin terkendali." }
+      ],
+      scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
+      scaleSectionDesc: "Pengelompokan variabel berdasarkan taksonomi Stevens secara otomatis mengarahkan peneliti pada rekomendasi uji hipotesis yang valid.",
+      scaleAdvices: [
+        { scale: "Skala Nominal & Ordinal", tests: "Uji Non-Parametris", context: "Uji Chi-Square, Wilcoxon Sign-Rank, Mann-Whitney U, korelasi Spearman Rank, dan Kruskal-Wallis." },
+        { scale: "Skala Interval & Rasio", tests: "Uji Parametris", context: "Korelasi Pearson Product-Moment, t-Test (Independen/Berpasangan), ANOVA, dan Regresi Linear Sederhana/Berganda." }
+      ],
+      chapterSectionTitle: "Kerangka Blueprint Dokumen BAB III",
+      chapterSectionDesc: "Draf berkas markdown BAB III yang dihasilkan disusun secara sistematis agar selaras dengan pedoman penulisan karya ilmiah universitas.",
+      chapterSections: [
+        { title: "Bagian A: Pendekatan & Desain Penelitian", desc: "Menguraikan paradigma keilmuan yang dipilih (kuantitatif/kualitatif) serta alasan ilmiah di balik desain studi." },
+        { title: "Bagian B: Matriks Operasionalisasi Variabel", desc: "Tabel komprehensif yang menghubungkan variabel, definisi konseptual, indikator operasional, dan skala pengukuran Stevens." },
+        { title: "Bagian C: Protokol Populasi & Perhitungan Sampel", desc: "Mendokumentasikan alasan pemilihan rumus sampel, parameter yang diinput, serta argumen matematis pembulatan ke atas." },
+        { title: "Bagian D: Rencana Pengujian Hipotesis Statistik", desc: "Menyusun jadwal pengujian hipotesis (parametris/non-parametris) untuk menjawab seluruh rumusan masalah penelitian." }
+      ],
       stackTitle: "Fondasi Teknologi Berkinerja Tinggi",
       stackDesc: "Archeres dirancang menggunakan arsitektur modern berkecepatan tinggi: Next.js App Router untuk antarmuka glassmorphic yang responsif, Go Fiber untuk kinerja konkurensi API backend yang efisien, serta basis data SQLite terisolasi via GORM untuk keandalan penyimpanan telemetri secara lokal.",
       ctaBack: "Kembali ke Beranda",
@@ -192,7 +264,7 @@ export default function AboutPage() {
     marginTop: "80px",
     marginBottom: "80px",
     padding: isMobile ? "1rem" : "2rem 1.5rem",
-    gap: "3rem"
+    gap: "3.5rem"
   };
 
   return (
@@ -293,6 +365,92 @@ export default function AboutPage() {
                   <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>{f.desc}</p>
                 </div>
               </div>
+            ))}
+          </div>
+        </section>
+
+        {/* NEW EXPLORATIVE SECTION A: Mathematical formulas detail */}
+        <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
+          <h2 style={styles.sectionHeader}>{copy.mathSectionTitle}</h2>
+          <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+            {copy.mathSectionDesc}
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: "1.5rem"
+          }}>
+            {copy.mathFormulas.map((f, idx) => (
+              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "white" }}>{f.name}</h3>
+                  <span style={{ fontSize: "0.72rem", color: "#c084fc", background: "rgba(192,132,252,0.1)", padding: "0.2rem 0.5rem", borderRadius: "6px", fontFamily: "monospace" }}>Formula</span>
+                </div>
+                <div style={{ background: "rgba(0,0,0,0.15)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "center" }}>
+                  <code style={{ fontSize: "1rem", fontWeight: 800, color: "#38bdf8", fontFamily: "monospace" }}>
+                    {f.formula}
+                  </code>
+                </div>
+                <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>
+                  {f.context}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* NEW EXPLORATIVE SECTION B: Scale measurement guidelines advice */}
+        <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
+          <h2 style={styles.sectionHeader}>{copy.scaleSectionTitle}</h2>
+          <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+            {copy.scaleSectionDesc}
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: "1.5rem"
+          }}>
+            {copy.scaleAdvices.map((sa, idx) => (
+              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "0.75rem", borderLeft: idx === 0 ? "3px solid #38bdf8" : "3px solid #34d399" }}>
+                <div>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "white" }}>{sa.scale}</h3>
+                  <span style={{ fontSize: "0.75rem", color: idx === 0 ? "#38bdf8" : "#34d399", fontWeight: 700 }}>
+                    {sa.tests}
+                  </span>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <p style={{ fontSize: "0.85rem", color: "white", fontWeight: 600, lineHeight: 1.4 }}>
+                    {sa.context}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* NEW EXPLORATIVE SECTION C: Generated chapters outline blueprint */}
+        <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
+          <h2 style={styles.sectionHeader}>{copy.chapterSectionTitle}</h2>
+          <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+            {copy.chapterSectionDesc}
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
+            gap: "1.5rem"
+          }}>
+            {copy.chapterSections.map((ch, idx) => (
+              <React.Fragment key={idx}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#a78bfa" }}></div>
+                  <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "white" }}>{ch.title}</h3>
+                </div>
+                <div className="glass-panel" style={{ padding: "1rem 1.25rem", borderRadius: "12px", display: "flex", alignItems: "center" }}>
+                  <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>
+                    {ch.desc}
+                  </p>
+                </div>
+              </React.Fragment>
             ))}
           </div>
         </section>
