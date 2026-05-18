@@ -422,7 +422,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
             <h3 style={styles.eduTitle}>{isId ? "Menentukan Pendekatan & Desain" : "Understanding Approach & Design"}</h3>
             <p style={styles.eduIntro}>
               {isId 
-                ? "Langkah pertama dalam menyusun metodologi adalah menentukan paradigma penelitian yang sesuai dengan tujuan dan rumusan masalah Anda." 
+                ? "Langkah awal dalam merumuskan metodologi adalah menetapkan paradigma penelitian yang selaras dengan rumusan masalah serta tujuan ilmiah Anda." 
                 : "The first step in methodology design is establishing the paradigm that aligns with your research questions and scientific objectives."}
             </p>
 
@@ -430,7 +430,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <h4 style={styles.eduCardTitle}>📊 {isId ? "Pendekatan Kuantitatif" : "Quantitative Approach"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Berfokus pada pengujian hipotesis menggunakan data numerik, analisis statistik, logika deduktif, dan pembuktian objektif." 
+                  ? "Menitikberatkan pada pengujian teori secara deduktif melalui pengukuran numerik, analisis statistik, dan pembuktian empiris yang objektif." 
                   : "Focuses on testing theories deductively using numerical measurements, statistical analysis, and objective evidence."}
               </p>
             </div>
@@ -439,7 +439,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <h4 style={styles.eduCardTitle}>📝 {isId ? "Pendekatan Kualitatif" : "Qualitative Approach"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Mengeksplorasi makna, pola narasi, pemahaman mendalam tentang perilaku manusia, wawancara mendalam, dan logika induktif." 
+                  ? "Mengeksplorasi makna deskriptif, pola naratif, serta pengalaman hidup manusia secara mendalam menggunakan logika induktif." 
                   : "Explores descriptive meanings, narrative patterns, human experiences, semi-structured interviews, and inductive analysis."}
               </p>
             </div>
@@ -448,16 +448,16 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <h4 style={styles.eduCardTitle}>🔀 {isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Menggabungkan keunggulan data angka (kuantitatif) dan penjelasan mendalam (kualitatif) untuk menjawab masalah penelitian yang kompleks." 
+                  ? "Mengintegrasikan presisi data kuantitatif dan kedalaman narasi kualitatif secara sinergis untuk memecahkan masalah penelitian yang kompleks." 
                   : "Synergistically combines numerical precision and narrative depth to address multi-layered research problems."}
               </p>
             </div>
             
             <div style={styles.eduTip}>
-              <strong>💡 {isId ? "Rekomendasi Akademis:" : "Academic Insight:"}</strong>
+              <strong>💡 {isId ? "Wawasan Akademis:" : "Academic Insight:"}</strong>
               <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
                 {isId 
-                  ? "Pilihlah Kuantitatif jika ingin menggeneralisasi populasi besar. Pilihlah Kualitatif jika ingin memahami konteks sosial secara mendalam." 
+                  ? "Gunakan pendekatan Kuantitatif untuk menggeneralisasi temuan pada populasi yang luas. Sebaliknya, pilih pendekatan Kualitatif untuk mendalami dinamika fenomena sosial secara kontekstual." 
                   : "Choose Quantitative to generalize findings across large cohorts. Choose Qualitative to explore social contexts deeply."}
               </p>
             </div>
@@ -466,41 +466,41 @@ Aligned with the scale of measurements and variable distributions, statistical h
       case 2:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: KALKULASI UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}</div>
-            <h3 style={styles.eduTitle}>{isId ? "Batas Populasi & Kekuatan Statistik" : "Population Bounds & Statistical Power"}</h3>
+            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: PENENTUAN UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}</div>
+            <h3 style={styles.eduTitle}>{isId ? "Batasan Populasi & Validitas Statistik" : "Population Bounds & Statistical Power"}</h3>
             <p style={styles.eduIntro}>
               {isId 
-                ? "Menentukan jumlah subjek minimal yang valid secara matematis agar hasil penelitian Anda diakui secara ilmiah." 
+                ? "Menghitung batas minimum subjek sampel yang valid secara matematis agar hasil penelitian Anda memenuhi syarat kepercayaan statistik." 
                 : "Calculating the mathematically sound minimum subject size required for your study to attain valid statistical confidence."}
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>👥 {isId ? "Populasi Sasaran (N) vs Sampel (n)" : "Target Population (N) vs Sample (n)"}</h4>
+              <h4 style={styles.eduCardTitle}>👥 {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Populasi (N) adalah seluruh kelompok subjek yang diteliti. Sampel (n) adalah perwakilan kecil yang dipilih secara ilmiah untuk diambil datanya." 
+                  ? "Populasi (N) mencakup keseluruhan subjek penelitian yang menjadi target generalisasi, sedangkan Sampel (n) adalah representasi sebagian populasi yang dipilih secara metodologis." 
                   : "Population (N) is the entire subject pool under study. Sample (n) is the scientifically chosen subgroup representing them."}
               </p>
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📉 {isId ? "Margin of Error (e) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}</h4>
+              <h4 style={styles.eduCardTitle}>📉 {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Margin of error (e) menunjukkan toleransi kesalahan (misal 5%). Tingkat kepercayaan menunjukkan seberapa yakin sampel mencerminkan populasi (standar 95%)." 
+                  ? "Margin of Error (e) mencerminkan batas toleransi kesalahan estimasi (contoh: 5%). Tingkat Kepercayaan (Confidence Level) menunjukkan derajat keyakinan bahwa karakteristik sampel mencerminkan populasi (standar akademis adalah 95%)." 
                   : "Margin of error (e) represents allowable estimation error (e.g., 5%). Confidence level shows study certainty (academic standard is 95%)."}
               </p>
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📐 {isId ? "Rumus Ilmiah yang Digunakan" : "Validated Mathematical Formulas"}</h4>
+              <h4 style={styles.eduCardTitle}>📐 {isId ? "Formulasi Matematis yang Sah" : "Validated Mathematical Formulas"}</h4>
               <p style={styles.eduCardBody}>
                 {formula === "slovin" 
                   ? (isId 
-                    ? "Rumus Slovin: Digunakan secara praktis ketika ukuran populasi (N) diketahui, namun prevalensi atribut populasi tidak terprediksi." 
+                    ? "Formula Slovin: Diterapkan secara praktis ketika jumlah populasi (N) terukur secara pasti, namun proporsi karakteristik populasinya belum diketahui secara spesifik." 
                     : "Slovin Formula: Applied practically when population size (N) is finite and known, but attribute proportions are unknown.")
                   : (isId 
-                    ? "Rumus Lemeshow: Sangat ideal untuk populasi besar atau tidak terhingga (misalnya pasien klinik medis) dengan estimasi prevalensi." 
+                    ? "Formula Lemeshow: Sangat ideal untuk populasi yang berukuran besar atau tidak terhingga (seperti pasien rumah sakit) dengan mengacu pada proporsi prevalensi tertentu." 
                     : "Lemeshow Formula: Highly suited for infinite or unknown population sizes (e.g., clinical trials) with estimated prevalence.")}
               </p>
             </div>
@@ -510,10 +510,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
             <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}</div>
-            <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Peran Variabel" : "Measurement Scales & Structural Roles"}</h3>
+            <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Konstruk Variabel" : "Measurement Scales & Structural Roles"}</h3>
             <p style={styles.eduIntro}>
               {isId 
-                ? "Menentukan bagaimana variabel penelitian Anda diklasifikasikan dan diukur secara matematis." 
+                ? "Merumuskan bagaimana indikator penelitian diidentifikasi, diukur, dan dihubungkan secara struktural untuk kebutuhan analisis data." 
                 : "Defining how your research indicators are classified, measured, and structurally structured for data analysis."}
             </p>
 
@@ -521,25 +521,25 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <h4 style={styles.eduCardTitle}>⛓️ {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Independen (sebab) mempengaruhi dependen (akibat). Mediator menjembatani hubungan keduanya, sedangkan Moderator memodifikasi kekuatan hubungan tersebut." 
+                  ? "Variabel Independen (stimulus) mempengaruhi variabel Dependen (respons). Mediator menjembatani mata rantai kausalitas, sementara Moderator memodifikasi kekuatan pengaruh hubungan tersebut." 
                   : "Independent (cause) influences Dependent (effect). Mediator bridges the causal chain, whereas Moderator alters relationship strength."}
               </p>
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📏 {isId ? "4 Skala Pengukuran (Stevens' Taxonomy)" : "Four Measurement Scales"}</h4>
+              <h4 style={styles.eduCardTitle}>📏 {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Nominal (Kategori murni), Ordinal (Kategori berperingkat), Interval (Jarak teratur tanpa nol mutlak), dan Rasio (Pengukuran presisi dengan nilai nol mutlak)." 
+                  ? "Nominal (klasifikasi kategori tanpa tingkatan), Ordinal (memiliki peringkat/urutan), Interval (jarak antar nilai setara namun tanpa nilai nol mutlak), dan Rasio (skala pengukuran paling presisi karena memiliki nilai nol mutlak)." 
                   : "Nominal (Categorical), Ordinal (Ranked), Interval (Equal distances, no true zero), and Ratio (Absolute zero point)."}
               </p>
             </div>
 
             <div style={styles.eduTip}>
-              <strong>📊 {isId ? "Uji Statistik yang Disarankan:" : "Recommended Statistical Test:"}</strong>
+              <strong>📊 {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}</strong>
               <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
                 {isId 
-                  ? `Berdasarkan konfigurasi Anda, metode analisis '${analysisMethod}' adalah pilihan tepat untuk memproses hipotesis penelitian.` 
+                  ? `Berdasarkan karakteristik variabel Anda, metode analisis '${analysisMethod}' merupakan pilihan statistik yang paling valid untuk menguji hipotesis penelitian.` 
                   : `Aligned with your variables, the '${analysisMethod}' method is the ideal statistical choice to test your hypotheses.`}
               </p>
             </div>
@@ -549,27 +549,27 @@ Aligned with the scale of measurements and variable distributions, statistical h
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
             <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: SISTEMATIKA METODOLOGI" : "TUTORIAL: METHODOLOGY SYSTEMATICS"}</div>
-            <h3 style={styles.eduTitle}>{isId ? "Rancangan Akhir & Replikabilitas" : "Finalizing Design & Replicability"}</h3>
+            <h3 style={styles.eduTitle}>{isId ? "Finalisasi Desain & Replikabilitas Riset" : "Finalizing Design & Replicability"}</h3>
             <p style={styles.eduIntro}>
               {isId 
-                ? "Selamat! Draf Bab III Anda kini telah siap untuk diintegrasikan ke dalam naskah skripsi atau penelitian Anda." 
+                ? "Selamat! Draf akademik Bab III Anda kini telah tersusun secara sistematis dan siap diintegrasikan ke dalam naskah skripsi atau tesis Anda." 
                 : "Congratulations! Your Chapter 3 academic draft is now structured and ready for inclusion in your thesis."}
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>🔁 {isId ? "Prinsip Replikabilitas" : "Replicability Principle"}</h4>
+              <h4 style={styles.eduCardTitle}>🔁 {isId ? "Prinsip Replikabilitas Riset" : "Replicability Principle"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Tujuan utama menulis Bab III dengan bahasa yang baku dan ilmiah adalah agar peneliti lain dapat mengulangi eksperimen Anda dengan hasil yang konsisten." 
+                  ? "Tujuan utama penulisan Bab III secara presisi dan ilmiah adalah memastikan langkah-langkah metodologi Anda diuraikan secara transparan agar peneliti masa depan dapat mereplikasi riset ini dengan hasil yang konsisten." 
                   : "The central goal of Chapter 3 is to state your procedures so clearly that any future researcher can duplicate your study easily."}
               </p>
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📁 {isId ? "Ekspor & Format File" : "Export Options"}</h4>
+              <h4 style={styles.eduCardTitle}>📁 {isId ? "Pilihan Ekspor Naskah" : "Export Options"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Anda dapat mengekspor draf dalam format Markdown (.md) untuk dibuka di aplikasi pengolah kata seperti Microsoft Word, Obsidian, atau Notion." 
+                  ? "Anda dapat mengunduh draf dalam format Markdown (.md) yang dapat dibuka secara instan menggunakan Microsoft Word, Notion, Obsidian, atau aplikasi pengolah dokumen lainnya." 
                   : "Export your draft in Markdown format (.md) which can be directly opened in Microsoft Word, Notion, Obsidian, or text editors."}
               </p>
             </div>
