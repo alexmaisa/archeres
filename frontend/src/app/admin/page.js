@@ -688,7 +688,9 @@ const styles = {
   },
   approachPill: {
     background: "rgba(255, 255, 255, 0.02)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: "4px",
     color: "rgba(255, 255, 255, 0.5)",
     fontSize: "0.7rem",
@@ -709,7 +711,9 @@ const styles = {
   },
   vacuumBtn: {
     background: "rgba(239, 68, 68, 0.1)",
-    border: "1px solid rgba(239, 68, 68, 0.25)",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "rgba(239, 68, 68, 0.25)",
     color: "#fca5a5",
     borderRadius: "4px",
     fontSize: "0.72rem",
