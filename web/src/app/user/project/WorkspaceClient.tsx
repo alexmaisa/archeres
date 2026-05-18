@@ -979,6 +979,105 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? "Desain ini ideal untuk merancang kuesioner kustom yang sangat spesifik secara budaya atau kontekstual. Pastikan Anda menjelaskan secara runtut bagaimana tema kualitatif diterjemahkan menjadi butir kuesioner kuantitatif."
             : "This design is ideal for developing custom questionnaires that are highly localized or culturally sensitive. Clearly explain how qualitative themes were systematically converted into quantitative questionnaire scale items."
         };
+      case "qual_purposive":
+        return {
+          title: isId ? "Purposive & Non-Probability Sampling" : "Purposive & Non-Probability Sampling",
+          badge: isId ? "Teknik Sampling" : "Sampling Technique",
+          definition: isId
+            ? "Mengacu pada karya legendaris Michael Quinn Patton (2015) dan John Creswell (2018), purposive sampling adalah teknik non-probabilitas di mana subjek, informan, atau kasus dipilih secara sengaja berdasarkan kriteria tertentu (inclusion criteria) yang kaya akan informasi (information-rich). Tujuannya bukan untuk melakukan generalisasi statistik ke populasi luas, melainkan untuk mendalami fenomena secara mendalam dari sudut pandang informan yang paling menguasai masalah penelitian."
+            : "Grounded in the authoritative scholarship of Michael Quinn Patton (2015) and John Creswell (2018), purposive sampling is a non-probability sampling technique where participants, cases, or sites are selected intentionally based on specific, information-rich criteria. The primary goal is not statistical generalization to a broad population, but rather to extract in-depth understanding from individuals who are highly knowledgeable about the research phenomenon.",
+          characteristics: isId
+            ? [
+                "Kriteria Inklusi/Eksklusi: Peneliti merumuskan kriteria ketat untuk menentukan kelayakan subjek (misalnya masa kerja, pengalaman langsung).",
+                "Kasus Kaya Informasi: Memilih kasus yang menawarkan pelajaran berharga mendalam terkait inti rumusan masalah.",
+                "Pemilihan Non-Acak: Subjek dipilih secara subjektif oleh peneliti berdasarkan kapasitas akademis mereka untuk menerangkan fenomena.",
+                "Fleksibilitas Desain: Ukuran sampel tidak kaku sejak awal studi dan dapat berkembang dinamis selama proses pengumpulan data."
+              ]
+            : [
+                "Inclusion/Exclusion Criteria: Employs strict, predetermined criteria to identify eligible participants (e.g., tenure, direct lived experiences).",
+                "Information-Rich Cases: Targets specific cases that yield high-quality, deep insights about the core of the research inquiry.",
+                "Non-Random Selection: Relies on the researcher's subjective judgment rather than random probability formulas.",
+                "Design Flexibility: Sample sizes are dynamic and can be adapted based on emergent findings in the field."
+              ],
+          examples: isId
+            ? [
+                "Judul: 'Analisis Strategi Bertahan Pelaku UMKM Mikro Perempuan Selama Krisis Ekonomi: Studi Kasus Purposive pada 15 Wirausaha dengan Kriteria Usaha > 5 Tahun.'",
+                "Judul: 'Pengalaman Lived-Experience Dokter Spesialis Paru di Rumah Sakit Rujukan dalam Menangani Gelombang Pertama Pandemi COVID-19.'"
+              ]
+            : [
+                "Title: 'Survival Strategies of Female Micro-Enterprise Owners During Economic Crises: A Purposive Study of 15 Entrepreneurs with >5 Years Tenure.'",
+                "Title: 'The Lived Experiences of Pulmonary Specialists in Referral Hospitals During the Critical First Wave of COVID-19 Patients.'"
+              ],
+          tips: isId
+            ? "Tuliskan kriteria inklusi dan eksklusi Anda secara eksplisit di Bab III. Jelaskan secara rasional mengapa subjek-subjek tersebut terpilih dan bagaimana mereka dapat menjawab pertanyaan penelitian Anda."
+            : "Explicitly justify your inclusion and exclusion criteria in your Methodology chapter. Clearly explain why these specific participants are uniquely qualified to address your research questions."
+        };
+      case "qual_saturation":
+        return {
+          title: isId ? "Prinsip Kejenuhan Data (Data Saturation)" : "Data Saturation Principle",
+          badge: isId ? "Ukuran Sampel" : "Sample Size",
+          definition: isId
+            ? "Merupakan standar emas (gold standard) penentuan ukuran sampel kualitatif berdasarkan pemikiran klasik Glaser & Strauss (1967) serta studi empiris modern Guest, Bunce, & Johnson (2006). Kejenuhan data tercapai ketika proses pengumpulan informasi baru dari partisipan tambahan tidak lagi menghasilkan kode baru, tema baru, atau wawasan teoretis baru. Peneliti kualitatif tidak dipandu oleh rumus matematis (seperti Slovin), melainkan oleh kelengkapan konseptual data."
+            : "Coined by Glaser & Strauss (1967) and empirically validated by Guest, Bunce, & Johnson (2006), data saturation is the gold standard for sample size determination in qualitative inquiry. It is achieved when collecting data from subsequent participants yields no new codes, themes, categories, or conceptual insights. Qualitative researchers are guided not by mathematical formulas (like Slovin), but by conceptual density and depth.",
+          characteristics: isId
+            ? [
+                "Kelengkapan Konseptual: Analisis data dilakukan secara simultan dengan pengumpulan data guna mengukur kejenuhan tema secara dinamis.",
+                "Studi Homogen: Penelitian dengan kelompok homogen (karakteristik serupa) biasanya mencapai kejenuhan pada 12 hingga 20 wawancara.",
+                "Tidak Ada Kode Baru: Indikator utama kejenuhan adalah ketika wawancara baru hanya mengulangi pola informasi dari subjek sebelumnya.",
+                "Theoretical Saturation: Khusus Grounded Theory, pengumpulan data dihentikan setelah kategori teoretis terisi penuh dan solid."
+              ]
+            : [
+                "Emergent Analysis: Data analysis is conducted simultaneously with collection to dynamically assess conceptual redundancy.",
+                "Homogeneous Cohorts: For groups sharing similar backgrounds, saturation is commonly reached within 12 to 20 comprehensive interviews.",
+                "No New Codes: The primary indicator is when subsequent transcript analyses yield zero new analytical codes.",
+                "Theoretical Saturation: Particularly in Grounded Theory, sampling ends when theoretical categories are fully saturated and validated."
+              ],
+          examples: isId
+            ? [
+                "Kejenuhan data pada studi fenomenologi transisi kepemimpinan CEO baru dicapai setelah wawancara mendalam ke-14, di mana tidak ada lagi tema baru yang muncul.",
+                "Kejenuhan tema dalam studi kasus adopsi kurikulum baru oleh guru sekolah dasar tercapai setelah wawancara mendalam dengan 16 informan kunci."
+              ]
+            : [
+                "Example: Data saturation in a phenomenological study on CEO leadership transitions was reached at the 14th participant, as subsequent interviews yielded identical themes.",
+                "Example: Thematic saturation in a case study of teacher adaptation to a new school curriculum was fully accomplished after interviewing 16 key informants."
+              ],
+          tips: isId
+            ? "Dalam draf metodologi, sertakan kutipan akademis (seperti Guest et al., 2006) untuk mempertahankan rasionalitas penentuan jumlah sampel Anda. Tunjukkan bukti audit trail analisis data untuk membuktikan bahwa kejenuhan memang telah tercapai."
+            : "In your methodology chapter, cite empirical benchmarks (e.g., Guest et al., 2006) to defend your target sample size. Provide an audit trail or saturation table indicating at which interview no new themes emerged."
+        };
+      case "qual_alternative":
+        return {
+          title: isId ? "Metode Penarikan Lainnya" : "Alternative Qualitative Methods",
+          badge: isId ? "Teknik Sampling" : "Sampling Technique",
+          definition: isId
+            ? "Selain purposive dasar, terdapat variasi teknik sampling non-probabilitas yang sangat spesifik untuk tujuan teoretis tertentu. Di antaranya adalah Snowball Sampling (mengikuti pola rujukan berantai untuk populasi sensitif/tersembunyi) dan Theoretical Sampling (digunakan dalam Grounded Theory untuk merekrut informan baru guna memvalidasi teori yang sedang berkembang)."
+            : "Qualitative inquiry offers specialized non-probability sampling strategies suited to unique field conditions and theoretical goals. This includes Snowball Sampling (chain-referral networks useful for hidden or sensitive populations) and Theoretical Sampling (primarily utilized in Grounded Theory, where new participants are recruited based on emergent conceptual categories to build a model).",
+          characteristics: isId
+            ? [
+                "Snowball/Chain-Referral: Meminta partisipan saat ini merekomendasikan orang lain yang mereka kenal dengan kriteria serupa.",
+                "Theoretical Sampling: Pengambilan sampel didikte oleh kebutuhan pengisian dan pengembangan konsep teori baru, bukan kriteria kaku sejak awal.",
+                "Extreme/Deviant Case Sampling: Memilih kasus luar biasa (misal tingkat keberhasilan super tinggi atau kegagalan ekstrem) untuk dipelajari.",
+                "Convenience Sampling: Mengambil sampel terdekat yang mudah dijangkau, namun memiliki tingkat kredibilitas ilmiah paling rendah."
+              ]
+            : [
+                "Snowball/Chain-Referral: Asks current participants to nominate peers, mapping social networks to reach hidden cohorts.",
+                "Theoretical Sampling: Sampling is driven strictly by emergent conceptual needs rather than predetermined demographic quotas.",
+                "Extreme/Deviant Case Sampling: Selects highly unusual cases (e.g., outstanding successes or failures) to learn from extreme contexts.",
+                "Convenience Sampling: Reaches nearby participants out of convenience; recognized as having the lowest scientific rigor and should be justified carefully."
+              ],
+          examples: isId
+            ? [
+                "Penggunaan Snowball Sampling untuk wawancara mendalam dengan penyintas KDRT yang enggan berbicara secara terbuka tanpa rujukan tepercaya.",
+                "Penggunaan Theoretical Sampling dalam Grounded Theory untuk mewawancarai staf manajerial guna mengonfirmasi teori koordinasi konflik yang sedang dirumuskan."
+              ]
+            : [
+                "Example: Using Snowball Sampling to perform semi-structured interviews with domestic abuse survivors who would not participate without a trusted introduction.",
+                "Example: Using Theoretical Sampling in a Grounded Theory study to select senior managers to test and refine a newly emerging model."
+              ],
+          tips: isId
+            ? "Jika menggunakan Snowball Sampling, jelaskan langkah mitigasi terhadap bias jaringan sosial yang homogen. Nyatakan secara transparan bagaimana mata rantai rujukan awal dibentuk."
+            : "If employing Snowball Sampling, detail your mitigation steps against social network homogeneity bias. Transparently describe how the initial seed participants were selected."
+        };
       default:
         return {
           title: "Research Concept",
@@ -1125,7 +1224,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   : "Learning how qualitative informants are purposefully selected based on information richness and identifying the data saturation point."}
               </p>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_purposive");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
                   {isId ? "Purposive & Non-Probability Sampling" : "Purposive & Non-Probability Sampling"}
@@ -1137,7 +1243,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_saturation");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
                   {isId ? "Prinsip Kejenuhan Data (Data Saturation)" : "Data Saturation Principle"}
@@ -1149,7 +1262,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_alternative");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
                   {isId ? "Metode Penarikan Lainnya" : "Alternative Qualitative Methods"}
