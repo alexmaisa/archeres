@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"archeres/backend/config"
+	"archeres/backend/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -64,9 +66,25 @@ func JWTMiddleware(c *fiber.Ctx) error {
 	}
 
 	role, _ := claims["role"].(string)
+	userID := uint(userIDFloat)
 
-	c.Locals("userID", uint(userIDFloat))
-	c.Locals("userRole", role)
+	// Verify that the user still exists in the database to prevent session hijacking/stale sessions
+	var user models.User
+	if err := config.DB.Select("id, role").First(&user, userID).Error; err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Sesi tidak valid. Pengguna tidak ditemukan di sistem.",
+		})
+	}
+
+	// Double check that the role hasn't changed in the database to prevent privilege escalation
+	if user.Role != role {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Peran pengguna telah berubah. Silakan login kembali.",
+		})
+	}
+
+	c.Locals("userID", userID)
+	c.Locals("userRole", user.Role)
 
 	return c.Next()
 }
