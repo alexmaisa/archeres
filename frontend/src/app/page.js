@@ -9,10 +9,19 @@ export default function Home() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Set mounted flag to prevent React SSR hydration mismatches
+  // Monitor screen resize for bulletproof responsive viewports
   useEffect(() => {
     setMounted(true);
+    setIsMobile(window.innerWidth <= 768);
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (!mounted) return null;
@@ -26,8 +35,6 @@ export default function Home() {
       subtitle: "Formulate mathematically sound sample sizes, operationalize conceptual indicators, and compile structured Chapter III thesis drafts instantaneously.",
       ctaStart: "Get Started Free",
       ctaLogin: "Access Workspace",
-      featTitle: "Engineered for Scientific Precision",
-      featSubtitle: "Empowering students and professional researchers with rigorous mathematical and methodological paradigms.",
       features: [
         {
           icon: "🧬",
@@ -56,8 +63,6 @@ export default function Home() {
       subtitle: "Rumuskan ukuran sampel minimal secara matematis, petakan skala indikator variabel konsep Anda, dan susun draf Bab III metodologi secara instan.",
       ctaStart: "Mulai Sekarang Gratis",
       ctaLogin: "Akses Workspace",
-      featTitle: "Dirancang untuk Presisi Ilmiah",
-      featSubtitle: "Membantu mahasiswa dan peneliti profesional merumuskan desain metodologi dengan metodologis yang ketat.",
       features: [
         {
           icon: "🧬",
@@ -85,13 +90,44 @@ export default function Home() {
 
   const copy = content[currentLang] || content["en"];
 
+  // Layout calculations dynamically adapting based on screen layout type
+  const containerStyle = {
+    ...styles.landingContainer,
+    height: isMobile ? "auto" : "100vh",
+    overflowY: isMobile ? "auto" : "hidden"
+  };
+
+  const mainContainerStyle = {
+    ...styles.mainContainer,
+    flexDirection: isMobile ? "column" : "row",
+    height: isMobile ? "auto" : "calc(100vh - 105px)",
+    marginTop: "60px",
+    marginBottom: "45px",
+    padding: isMobile ? "3rem 1rem" : "1.5rem 0",
+    gap: isMobile ? "2.5rem" : "3.5rem"
+  };
+
+  const heroStyle = {
+    ...styles.heroSection,
+    alignItems: isMobile ? "center" : "flex-start",
+    textAlign: isMobile ? "center" : "left",
+    maxWidth: isMobile ? "600px" : "500px",
+    padding: isMobile ? "1rem 0" : "0"
+  };
+
+  const gridStyle = {
+    ...styles.featuresGrid,
+    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+    maxWidth: isMobile ? "600px" : "620px"
+  };
+
   return (
-    <div style={styles.landingContainer}>
+    <div style={containerStyle}>
       {/* Background Decorative Neon Orbs */}
       <div style={styles.orbPurple}></div>
       <div style={styles.orbCyan}></div>
 
-      {/* 1. HEADER SECTION */}
+      {/* 1. COMPACT FIXED HEADER */}
       <header style={styles.header}>
         <div style={styles.brand}>
           <span style={styles.brandLogo}>🧬</span>
@@ -127,44 +163,50 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. HERO SECTION */}
-      <section style={styles.heroSection}>
-        <span style={styles.badge}>🔬 PLATFORM v1.0 DELIVERED</span>
-        <h1 style={styles.heroTitle}>{copy.title}</h1>
-        <p style={styles.heroSubtitle}>{copy.subtitle}</p>
+      {/* 2. DYNAMIC SPLIT-SCREEN WORKSPACE CONTAINER */}
+      <main style={mainContainerStyle}>
+        {/* Left Side: Hero Information */}
+        <section style={heroStyle}>
+          <span style={styles.badge}>🔬 PLATFORM v1.0 DELIVERED</span>
+          <h1 style={styles.heroTitle}>{copy.title}</h1>
+          <p style={styles.heroSubtitle}>{copy.subtitle}</p>
 
-        <div style={styles.ctaButtonGroup}>
-          <button onClick={() => router.push("/auth/register")} className="btn btn-primary" style={styles.primaryCta}>
-            🚀 {copy.ctaStart}
-          </button>
-          <button onClick={() => router.push("/auth/login")} className="btn btn-outline" style={styles.secondaryCta}>
-            🔑 {copy.ctaLogin}
-          </button>
-        </div>
-      </section>
+          <div style={styles.ctaButtonGroup}>
+            <button 
+              onClick={() => router.push("/auth/register")} 
+              className="btn btn-primary" 
+              style={styles.primaryCta}
+            >
+              🚀 {copy.ctaStart}
+            </button>
+            <button 
+              onClick={() => router.push("/auth/login")} 
+              className="btn btn-outline" 
+              style={styles.secondaryCta}
+            >
+              🔑 {copy.ctaLogin}
+            </button>
+          </div>
+        </section>
 
-      {/* 3. FEATURE MATRIX */}
-      <section style={styles.featureSection}>
-        <div style={styles.featureHeader}>
-          <h2 style={styles.featureSectionTitle}>{copy.featTitle}</h2>
-          <p style={styles.featureSectionSubtitle}>{copy.featSubtitle}</p>
-        </div>
-
-        <div style={styles.featuresGrid}>
+        {/* Right Side: Features 2x2 Translucent Layout */}
+        <section style={gridStyle}>
           {copy.features.map((f, i) => (
             <div key={i} style={styles.featureCard} className="glass-panel">
-              <span style={styles.featureIcon}>{f.icon}</span>
-              <h3 style={styles.featureName}>{f.name}</h3>
+              <div style={styles.cardHeader}>
+                <span style={styles.featureIcon}>{f.icon}</span>
+                <h3 style={styles.featureName}>{f.name}</h3>
+              </div>
               <p style={styles.featureDesc}>{f.desc}</p>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* 4. FOOTER */}
+      {/* 3. COMPACT FIXED FOOTER */}
       <footer style={styles.footer}>
         <p style={styles.footerText}>
-          &copy; {new Date().getFullYear()} {t("common.appName")} Inc. {t("common.tagline")}
+          &copy; 2026 Benny Maisa. Arche: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
         </p>
       </footer>
     </div>
@@ -173,7 +215,6 @@ export default function Home() {
 
 const styles = {
   landingContainer: {
-    minHeight: "100vh",
     width: "100vw",
     backgroundColor: "hsl(var(--bg-color))",
     color: "white",
@@ -183,6 +224,17 @@ const styles = {
     position: "relative",
     overflowX: "hidden",
     padding: "0 2rem",
+    boxSizing: "border-box"
+  },
+  mainContainer: {
+    width: "100%",
+    maxWidth: "1200px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    zIndex: 10,
+    position: "relative",
+    boxSizing: "border-box"
   },
   // Background Glows
   orbPurple: {
@@ -192,7 +244,7 @@ const styles = {
     width: "350px",
     height: "350px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(0,0,0,0) 70%)",
+    background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, rgba(0,0,0,0) 70%)",
     filter: "blur(60px)",
     zIndex: 0,
     pointerEvents: "none",
@@ -204,33 +256,40 @@ const styles = {
     width: "400px",
     height: "400px",
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(0,0,0,0) 70%)",
+    background: "radial-gradient(circle, rgba(6,182,212,0.08) 0%, rgba(0,0,0,0) 70%)",
     filter: "blur(60px)",
     zIndex: 0,
     pointerEvents: "none",
   },
-  // Header Style
+  // Compact Fixed Header Style
   header: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "60px",
     width: "100%",
-    maxWidth: "1200px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "1.75rem 0",
+    padding: "0 2rem",
+    background: "rgba(10, 10, 10, 0.75)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
     borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-    zIndex: 10,
-    position: "relative",
+    zIndex: 100,
+    boxSizing: "border-box",
   },
   brand: {
     display: "flex",
     alignItems: "center",
-    gap: "0.6rem",
+    gap: "0.5rem",
   },
   brandLogo: {
-    fontSize: "1.5rem",
+    fontSize: "1.3rem",
   },
   brandName: {
-    fontSize: "1.5rem",
+    fontSize: "1.3rem",
     fontWeight: 850,
     fontFamily: "'Outfit', sans-serif",
     letterSpacing: "-0.02em",
@@ -241,7 +300,7 @@ const styles = {
   headerActions: {
     display: "flex",
     alignItems: "center",
-    gap: "1.5rem",
+    gap: "1.25rem",
   },
   langBar: {
     display: "flex",
@@ -254,10 +313,10 @@ const styles = {
     background: "transparent",
     border: "none",
     color: "rgba(255,255,255,0.4)",
-    padding: "0.35rem 0.65rem",
+    padding: "0.25rem 0.55rem",
     borderRadius: "6px",
     cursor: "pointer",
-    fontSize: "0.75rem",
+    fontSize: "0.7rem",
     fontWeight: 700,
     transition: "all 0.2s ease",
   },
@@ -268,9 +327,9 @@ const styles = {
   signInHeaderBtn: {
     background: "transparent",
     border: "none",
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(255,255,255,0.75)",
     cursor: "pointer",
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
     fontWeight: 600,
     transition: "color 0.2s ease",
     ":hover": {
@@ -279,128 +338,122 @@ const styles = {
   },
   // Hero Styles
   heroSection: {
-    width: "100%",
-    maxWidth: "850px",
-    textAlign: "center",
-    padding: "7.5rem 0 5rem 0",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
     zIndex: 10,
     position: "relative",
+    boxSizing: "border-box"
   },
   badge: {
-    fontSize: "0.75rem",
+    fontSize: "0.7rem",
     fontWeight: 800,
     color: "#22d3ee",
-    border: "1px solid rgba(34,211,238,0.25)",
-    background: "rgba(34,211,238,0.04)",
-    padding: "0.4rem 1rem",
+    border: "1px solid rgba(34,211,238,0.2)",
+    background: "rgba(34,211,238,0.03)",
+    padding: "0.35rem 0.85rem",
     borderRadius: "50px",
-    letterSpacing: "0.08em",
-    marginBottom: "1.75rem",
+    letterSpacing: "0.06em",
+    marginBottom: "1rem",
     display: "inline-block",
   },
   heroTitle: {
-    fontSize: "3.2rem",
+    fontSize: "2.35rem",
     fontWeight: 900,
     fontFamily: "'Outfit', sans-serif",
-    lineHeight: 1.15,
+    lineHeight: 1.18,
     letterSpacing: "-0.03em",
     color: "white",
-    marginBottom: "1.5rem",
+    marginBottom: "1rem",
   },
   heroSubtitle: {
-    fontSize: "1.15rem",
-    color: "rgba(255,255,255,0.6)",
-    lineHeight: 1.5,
-    maxWidth: "680px",
-    marginBottom: "3rem",
+    fontSize: "0.95rem",
+    color: "rgba(255,255,255,0.55)",
+    lineHeight: 1.45,
+    marginBottom: "2rem",
+    maxWidth: "460px"
   },
   ctaButtonGroup: {
     display: "flex",
-    gap: "1.25rem",
+    gap: "1rem",
     width: "100%",
-    justifyContent: "center",
   },
   primaryCta: {
-    padding: "0.95rem 2.25rem",
-    fontSize: "1.05rem",
-    minWidth: "200px",
+    padding: "0.75rem 1.75rem",
+    fontSize: "0.95rem",
+    flex: 1,
+    maxWidth: "200px"
   },
   secondaryCta: {
-    padding: "0.95rem 2.25rem",
-    fontSize: "1.05rem",
-    minWidth: "200px",
+    padding: "0.75rem 1.75rem",
+    fontSize: "0.95rem",
+    flex: 1,
+    maxWidth: "200px"
   },
   // Feature Matrix Section
-  featureSection: {
-    width: "100%",
-    maxWidth: "1200px",
-    padding: "5rem 0 8rem 0",
-    zIndex: 10,
-    position: "relative",
-  },
-  featureHeader: {
-    textAlign: "center",
-    marginBottom: "4rem",
-  },
-  featureSectionTitle: {
-    fontSize: "2rem",
-    fontWeight: 800,
-    color: "white",
-    fontFamily: "'Outfit', sans-serif",
-    letterSpacing: "-0.01em",
-  },
-  featureSectionSubtitle: {
-    fontSize: "0.95rem",
-    color: "rgba(255,255,255,0.45)",
-    marginTop: "0.5rem",
-  },
   featuresGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "1.5rem",
+    flex: 1.1,
+    gap: "1rem",
+    zIndex: 10,
+    position: "relative",
+    boxSizing: "border-box"
   },
   featureCard: {
-    padding: "2rem 1.75rem",
-    borderRadius: "16px",
+    padding: "1.25rem",
+    borderRadius: "14px",
     display: "flex",
     flexDirection: "column",
-    gap: "0.75rem",
+    gap: "0.5rem",
+    boxSizing: "border-box",
     transition: "transform 0.2s ease, border-color 0.2s ease",
-    ":hover": {
-      transform: "translateY(-4px)",
-      borderColor: "rgba(124,58,237,0.3)",
-    }
+  },
+  cardHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem"
   },
   featureIcon: {
-    fontSize: "2rem",
+    fontSize: "1.5rem",
     display: "block",
-    marginBottom: "0.25rem",
   },
   featureName: {
-    fontSize: "1.15rem",
+    fontSize: "1rem",
     fontWeight: 700,
     color: "white",
   },
   featureDesc: {
-    fontSize: "0.88rem",
-    color: "rgba(255,255,255,0.5)",
-    lineHeight: 1.45,
+    fontSize: "0.8rem",
+    color: "rgba(255,255,255,0.45)",
+    lineHeight: 1.35,
   },
-  // Footer
+  // Compact Fixed Footer Style
   footer: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "45px",
     width: "100%",
-    maxWidth: "1200px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0 2rem",
+    background: "rgba(10, 10, 10, 0.75)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
     borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-    padding: "2.5rem 0",
-    textAlign: "center",
-    zIndex: 10,
-    marginTop: "auto",
+    zIndex: 100,
+    boxSizing: "border-box",
   },
   footerText: {
-    fontSize: "0.8rem",
-    color: "rgba(255,255,255,0.35)",
+    fontSize: "0.75rem",
+    color: "rgba(255,255,255,0.4)",
+    textAlign: "center",
+    maxWidth: "1000px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
   }
 };
