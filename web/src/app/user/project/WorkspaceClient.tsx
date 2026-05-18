@@ -26,6 +26,7 @@ interface ResearchDesign {
   analysisMethod?: string;
   variables?: string;
   sampleSize?: number;
+  samplingTechnique?: string;
 }
 
 interface WorkspaceProject {
@@ -59,6 +60,7 @@ export default function WorkspaceClient() {
   const [proportion, setProportion] = useState<number>(0.5);
   const [variables, setVariables] = useState<VariableDefinition[]>([]);
   const [analysisMethod, setAnalysisMethod] = useState<string>("Multiple Linear Regression");
+  const [samplingTechnique, setSamplingTechnique] = useState<string>("Simple Random Sampling");
   
   // Real-time calculated sample size
   const [sampleSize, setSampleSize] = useState<number>(286);
@@ -82,7 +84,23 @@ export default function WorkspaceClient() {
   useEffect(() => {
     calculateSample();
   }, [formula, popSize, confLevel, marginError, proportion]);
-
+  const handleApproachChange = (apId: string) => {
+    setApproach(apId);
+    if (apId === "quant") {
+      setFormula("slovin");
+      setSamplingTechnique("Simple Random Sampling");
+      setDesign("Experimental");
+    } else if (apId === "qual") {
+      setFormula("saturation");
+      setSamplingTechnique("Purposive Sampling");
+      setDesign("Case Study");
+      setSampleSize(15); // Default qualitative target
+    } else if (apId === "mixed") {
+      setFormula("slovin");
+      setSamplingTechnique("Sequential Mixed Sampling");
+      setDesign("Convergent Parallel");
+    }
+  };
   const fetchProjectDetails = async () => {
     setLoading(true);
     try {
@@ -119,6 +137,7 @@ export default function WorkspaceClient() {
         if (rd.marginOfError !== undefined) setMarginError(rd.marginOfError);
         if (rd.estimatedProportion !== undefined) setProportion(rd.estimatedProportion);
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
+        if (rd.samplingTechnique) setSamplingTechnique(rd.samplingTechnique);
         if (rd.variables) {
           try {
             setVariables(JSON.parse(rd.variables));
@@ -152,6 +171,9 @@ export default function WorkspaceClient() {
 
   // 6 Scientifically Validated Formulas client-side (matches Golang backend precision tests)
   const calculateSample = () => {
+    if (formula === "saturation") {
+      return;
+    }
     const N = Number(popSize);
     const e = Number(marginError);
     const p = Number(proportion);
@@ -280,7 +302,8 @@ export default function WorkspaceClient() {
             estimatedProportion: Number(proportion),
             analysisMethod: payloadAnalysis,
             variables: payloadVariables,
-            sampleSize: Number(sampleSize)
+            sampleSize: Number(sampleSize),
+            samplingTechnique
           }
         }),
       });
@@ -313,55 +336,115 @@ export default function WorkspaceClient() {
   // Dynamic Markdown compiler
   const generateMarkdownDraft = (lang: string) => {
     if (lang === "id") {
-      return `# BAB III: METODOLOGI PENELITIAN
+      let approachText = "Kuantitatif";
+      if (approach === "qual") approachText = "Kualitatif";
+      else if (approach === "mixed") approachText = "Metode Campuran (Mixed Methods)";
 
-## 3.1 Pendekatan dan Desain Penelitian
-Penelitian ini menggunakan pendekatan ilmiah **${approach === "quant" ? "Kuantitatif" : approach === "qual" ? "Kualitatif" : "Metode Campuran (Mixed)"}** dengan desain penelitian **${design}**. Kerangka kerja ini dipilih secara sistematis untuk menjawab rumusan masalah dengan mengumpulkan serta menganalisis data secara objektif.
+      let introSection = `Penelitian ini menggunakan pendekatan ilmiah **${approachText}** dengan desain penelitian **${design}**. Kerangka kerja ini dipilih secara sistematis untuk menjawab rumusan masalah dengan mengumpulkan serta menganalisis data secara objektif.`;
 
-## 3.2 Populasi dan Sampel
-Populasi sasaran dalam penelitian ini didefinisikan sebesar **${popSize}** unit. Mengingat keterbatasan waktu, tenaga, dan finansial, penentuan ukuran sampel minimal dilakukan dengan menerapkan formula **${formula.toUpperCase()}**.
-Parameter pengujian yang dikonfigurasi:
-* Batas Toleransi Kesalahan ($e$ / $d$): **${marginError * 100}%**
+      let popSamplingSection = "";
+      if (approach === "quant") {
+        popSamplingSection = `Populasi sasaran dalam penelitian ini didefinisikan sebesar **${popSize}** unit. Mengingat keterbatasan waktu, tenaga, dan finansial, penentuan ukuran sampel minimal dilakukan dengan menerapkan formula **${formula.toUpperCase()}** dengan parameter pengujian:
+* Batas Toleransi Kesalahan ($e$): **${marginError * 100}%**
 * Tingkat Kepercayaan ($1-\\alpha$): **${confLevel * 100}%**
 * Proporsi Atribut Estimasi ($p$): **${proportion}**
 
 Berdasarkan rumus tersebut, diperoleh ukuran sampel minimal yang representatif sebanyak **${sampleSize}** subjek penelitian.
+
+Pengambilan sampel dilakukan secara operasional menggunakan teknik **${samplingTechnique}**. Penggunaan teknik ini bertujuan untuk menjamin sifat representatif sampel dari populasi target sehingga kesimpulan hasil pengujian hipotesis memiliki validitas eksternal yang tinggi.`;
+      } else if (approach === "qual") {
+        popSamplingSection = `Penelitian kualitatif ini tidak bertujuan untuk melakukan generalisasi statistik terhadap populasi yang luas, melainkan untuk mendalami makna, pola interaksi, dan mendapatkan pemahaman mendalam secara kontekstual. Oleh karena itu, penentuan subjek penelitian/informan dilakukan dengan menggunakan teknik **Non-Probability Sampling**, khususnya **${samplingTechnique}** berdasarkan kriteria inklusi dan eksklusi yang telah ditetapkan secara ketat.
+
+Ukuran sampel atau jumlah informan dalam penelitian ini tidak ditentukan oleh rumus estimasi probabilitas numerik, melainkan didasarkan pada prinsip ilmiah **Saturasi Data (Data Saturation)**. Pengumpulan data akan dihentikan ketika data yang diperoleh telah jenuh, yaitu saat tidak ada informasi baru, variasi tema, atau pola narasi baru yang ditemukan dari informan tambahan. Target awal informan yang direncanakan untuk wawancara mendalam/satuan kajian adalah sebanyak **${sampleSize}** responden yang dianggap representatif.`;
+      } else if (approach === "mixed") {
+        let mixedDesignExplanation = "";
+        if (design === "Convergent Parallel") {
+          mixedDesignExplanation = `Penelitian ini menggunakan Desain Paralel Konvergen (Convergent Parallel Design), di mana data kuantitatif dan kualitatif dikumpulkan secara bersamaan dalam periode yang sama namun dianalisis secara terpisah sebelum diintegrasikan pada tahap interpretasi akhir.`;
+        } else if (design === "Explanatory Sequential") {
+          mixedDesignExplanation = `Penelitian ini menggunakan Desain Sekuensial Eksplanatori (Explanatory Sequential Design), yang diawali dengan pengumpulan dan analisis data kuantitatif (Fase Pertama) untuk menguji hipotesis secara luas, dilanjutkan dengan pengumpulan data kualitatif (Fase Kedua) untuk memperdalam dan menjelaskan temuan statistik.`;
+        } else if (design === "Exploratory Sequential") {
+          mixedDesignExplanation = `Penelitian ini menggunakan Desain Sekuensial Eksploratori (Exploratory Sequential Design), yang diawali dengan pengumpulan dan analisis data kualitatif (Fase Pertama) untuk mengeksplorasi fenomena secara kontekstual, dilanjutkan dengan pengumpulan data kuantitatif (Fase Kedua) untuk menguji dan memperluas temuan kualitatif tersebut pada populasi yang lebih luas.`;
+        }
+
+        popSamplingSection = `${mixedDesignExplanation} Oleh karena itu, penentuan sampel menggunakan strategi **${samplingTechnique}** yang terbagi atas dua fase:
+
+1. **Fase Kuantitatif:** Populasi diidentifikasi sebesar **${popSize}** unit. Ukuran sampel minimal dihitung menggunakan formula **${formula.toUpperCase()}** (Margin of Error: **${marginError * 100}%**, Confidence Level: **${confLevel * 100}%**), menghasilkan sampel minimal sebanyak **${sampleSize}** responden. Pengambilan sampel fase ini menggunakan teknik Probability Sampling yang relevan.
+2. **Fase Kualitatif:** Penentuan subjek dilakukan secara purposif (*Non-Probability*) dengan prinsip **Saturasi Data (Data Saturation)** guna memperoleh kedalaman wawasan kualitatif.`;
+      }
+
+      return `# BAB III: METODOLOGI PENELITIAN
+
+## 3.1 Pendekatan dan Desain Penelitian
+${introSection}
+
+## 3.2 Populasi dan Sampel
+${popSamplingSection}
 
 ## 3.3 Variabel dan Indikator Penelitian
 Variabel-variabel operasional yang dilibatkan dalam penelitian ini dikelompokkan berdasarkan peran metodologis beserta skala pengukuran statistiknya sebagai berikut:
 
 | Indikator Variabel | Peran Metodologis | Skala Pengukuran |
 | :--- | :--- | :--- |
-${variables.map(v => `| ${v.name || "Unnamed"} | ${v.role} | ${v.scale} |`).join("\n")}
+${variables.length > 0 ? variables.map(v => `| ${v.name || "Unnamed"} | ${v.role} | ${v.scale} |`).join("\n") : "| Belum ada variabel | - | - |"}
 
 ## 3.4 Rencana Analisis Data
 Berdasarkan jenis variabel dan skala data yang telah dipetakan, hipotesis penelitian ini akan diuji menggunakan instrumen statistik inferensial:
 * **${analysisMethod || "Statistik Deskriptif dan Inferensial"}**
 `;
     } else {
-      return `# CHAPTER III: RESEARCH METHODOLOGY
+      let approachText = "Quantitative";
+      if (approach === "qual") approachText = "Qualitative";
+      else if (approach === "mixed") approachText = "Mixed Methods";
 
-## 3.1 Research Approach and Design
-This study adopts a **${approach === "quant" ? "Quantitative" : approach === "qual" ? "Quantitative (Survey)" : "Mixed Methods"}** research paradigm, utilizing an **${design}** research design framework. This framework is selected to systematically compile, analyze, and test data hypotheses.
+      let introSection = `This study adopts a **${approachText}** research paradigm, utilizing an **${design}** research design framework. This framework is selected to systematically compile, analyze, and test data hypotheses.`;
 
-## 3.2 Population and Sampling
-The target population for this study is identified at **${popSize}** individuals. Due to resource constraints, the minimum statistically viable sample size is determined using the **${formula.toUpperCase()}** equation.
-Configured testing parameters:
+      let popSamplingSection = "";
+      if (approach === "quant") {
+        popSamplingSection = `The target population for this study is identified at **${popSize}** individuals. Due to resource constraints, the minimum statistically viable sample size is determined using the **${formula.toUpperCase()}** equation with the following parameters:
 * Margin of Error ($e$): **${marginError * 100}%**
 * Confidence Level ($1-\\alpha$): **${confLevel * 100}%**
 * Estimated Attribute Proportion ($p$): **${proportion}**
 
 Consequently, a calculated minimum sample size of **${sampleSize}** subjects is required to achieve high statistical power.
 
+Subject selection is executed utilizing the **${samplingTechnique}** method. The selection of this technique is strictly aligned with ensuring random representativeness from the target population to guarantee high external validity.`;
+      } else if (approach === "qual") {
+        popSamplingSection = `This qualitative study does not aim to achieve statistical generalization across a broad population, but rather to obtain deep, contextual understanding of the investigated phenomenon. Consequently, participant selection is executed using **Non-Probability Sampling**, specifically **${samplingTechnique}** based on predefined inclusion and exclusion criteria.
+
+The sample size is not determined by mathematical probability estimation formulas, but is strictly guided by the principle of **Data Saturation**. Data collection will proceed until saturation is achieved—the point at which subsequent interviews yield no new insights, thematic categories, or conceptual patterns. The initial target sample size is set at **${sampleSize}** participants who possess rich information relevant to the study's scope.`;
+      } else if (approach === "mixed") {
+        let mixedDesignExplanation = "";
+        if (design === "Convergent Parallel") {
+          mixedDesignExplanation = `This study employs a Convergent Parallel Design, where quantitative and qualitative data are collected concurrently during the same timeframe but analyzed independently before integrating during final interpretation.`;
+        } else if (design === "Explanatory Sequential") {
+          mixedDesignExplanation = `This study adopts an Explanatory Sequential Design, beginning with a quantitative phase (First Phase) to test broad hypotheses, followed by a qualitative phase (Second Phase) to explain and contextualize the statistical findings.`;
+        } else if (design === "Exploratory Sequential") {
+          mixedDesignExplanation = `This study utilizes an Exploratory Sequential Design, beginning with a qualitative phase (First Phase) to explore phenomena, followed by a quantitative phase (Second Phase) to test and generalize the findings on a wider population.`;
+        }
+
+        popSamplingSection = `${mixedDesignExplanation} Accordingly, the sampling strategy utilizes **${samplingTechnique}** divided across two distinct phases:
+
+1. **Quantitative Strand:** The target population is defined at **${popSize}** units. The minimum sample size is calculated using the **${formula.toUpperCase()}** equation (Margin of Error: **${marginError * 100}%**, Confidence Level: **${confLevel * 100}%**), requiring a minimum of **${sampleSize}** respondents.
+2. **Qualitative Strand:** Participants are selected using purposive (*Non-Probability*) sampling, guided strictly by **Data Saturation** principles to yield rich qualitative depth.`;
+      }
+
+      return `# CHAPTER III: RESEARCH METHODOLOGY
+
+## 3.1 Research Approach and Design
+${introSection}
+
+## 3.2 Population and Sampling
+${popSamplingSection}
+
 ## 3.3 Research Variables and Measurement Scales
 The research variables, along with their specific methodological roles and measurement scales, are mapped below:
 
 | Variable Indicator | Methodological Role | Measurement Scale |
 | :--- | :--- | :--- |
-${variables.map(v => `| ${v.name || "Unnamed"} | ${v.role} | ${v.scale} |`).join("\n")}
+${variables.length > 0 ? variables.map(v => `| ${v.name || "Unnamed"} | ${v.role} | ${v.scale} |`).join("\n") : "| No variables added | - | - |"}
 
 ## 3.4 Data Analysis Plan
-Aligned with the scale of measurements and variable distributions, statistical hypothesis testing will be executed using:
+Aligned with the scale of measurements and variable distribution, statistical hypothesis testing will be executed using:
 * **${analysisMethod || "Descriptive and Inferential Statistics"}**
 `;
     }
@@ -471,60 +554,164 @@ Aligned with the scale of measurements and variable distributions, statistical h
           </div>
         );
       case 2:
-        return (
-          <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>
-              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-              {isId ? "TUTORIAL: PENENTUAN UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}
-            </div>
-            <h3 style={styles.eduTitle}>{isId ? "Batasan Populasi & Validitas Statistik" : "Population Bounds & Statistical Power"}</h3>
-            <p style={styles.eduIntro}>
-              {isId 
-                ? "Menghitung batas minimum subjek sampel yang valid secara matematis agar hasil penelitian Anda memenuhi syarat kepercayaan statistik." 
-                : "Calculating the mathematically sound minimum subject size required for your study to attain valid statistical confidence."}
-            </p>
-
-            <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>
-                <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
-                {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}
-              </h4>
-              <p style={styles.eduCardBody}>
+        if (approach === "qual") {
+          return (
+            <div className="animate-fade-in" style={styles.eduContainer}>
+              <div style={styles.eduBadge}>
+                <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {isId ? "TUTORIAL: SAMPLING KUALITATIF" : "TUTORIAL: QUALITATIVE SAMPLING"}
+              </div>
+              <h3 style={styles.eduTitle}>{isId ? "Saturasi Tematik & Purposive Sampling" : "Thematic Saturation & Purposive Sampling"}</h3>
+              <p style={styles.eduIntro}>
                 {isId 
-                  ? "Populasi (N) mencakup keseluruhan subjek penelitian yang menjadi target generalisasi, sedangkan Sampel (n) adalah representasi sebagian populasi yang dipilih secara metodologis." 
-                  : "Population (N) is the entire subject pool under study. Sample (n) is the scientifically chosen subgroup representing them."}
+                  ? "Mempelajari bagaimana informan kualitatif dipilih secara sengaja berdasarkan kedalaman informasi dan cara menentukan titik kejenuhan data." 
+                  : "Learning how qualitative informants are purposefully selected based on information richness and identifying the data saturation point."}
               </p>
-            </div>
 
-            <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>
-                <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#fca5a5" }} />
-                {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}
-              </h4>
-              <p style={styles.eduCardBody}>
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
+                  {isId ? "Purposive & Non-Probability Sampling" : "Purposive & Non-Probability Sampling"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Pemilihan informan didasarkan pada kriteria tertentu yang relevan dengan fokus riset (kriteria inklusi), bukan secara acak, guna menggali informasi terkaya dan terdalam." 
+                    : "Informants are chosen intentionally based on specific relevant criteria (inclusion criteria) rather than randomly, to gather the richest qualitative insights."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                  {isId ? "Prinsip Kejenuhan Data (Data Saturation)" : "Data Saturation Principle"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Pengumpulan data dihentikan ketika wawancara baru tidak lagi menghasilkan kode, tema, atau wawasan konseptual baru (standar homogen berkisar antara 12-20 subjek)." 
+                    : "Data collection stops when subsequent interviews yield no new codes, themes, or conceptual categories (typically 12-20 participants for homogeneous cohorts)."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
+                  {isId ? "Metode Penarikan Lainnya" : "Alternative Qualitative Methods"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Gunakan Snowball Sampling untuk populasi tersembunyi/sensitif dengan meminta referensi informan dari subjek sebelumnya, atau Theoretical Sampling untuk Grounded Theory." 
+                    : "Utilize Snowball Sampling for hard-to-reach populations by seeking chain-referrals, or Theoretical Sampling to guide emergent Grounded Theory."}
+                </p>
+              </div>
+            </div>
+          );
+        } else if (approach === "mixed") {
+          return (
+            <div className="animate-fade-in" style={styles.eduContainer}>
+              <div style={styles.eduBadge}>
+                <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {isId ? "TUTORIAL: METODE CAMPURAN (MIXED)" : "TUTORIAL: MIXED METHODS SAMPLING"}
+              </div>
+              <h3 style={styles.eduTitle}>{isId ? "Sampling Multitahap & Integrasi Metode" : "Multi-Stage Sampling & Integration"}</h3>
+              <p style={styles.eduIntro}>
                 {isId 
-                  ? "Margin of Error (e) mencerminkan batas toleransi kesalahan estimasi (contoh: 5%). Tingkat Kepercayaan (Confidence Level) menunjukkan derajat keyakinan bahwa karakteristik sampel mencerminkan populasi (standar akademis adalah 95%)." 
-                  : "Margin of error (e) represents allowable estimation error (e.g., 5%). Confidence level shows study certainty (academic standard is 95%)."}
+                  ? "Menyelaraskan pengambilan sampel terpisah antara Fase Kuantitatif dan Fase Kualitatif dalam satu studi terpadu." 
+                  : "Harmonizing the distinct sampling demands of both Quantitative and Qualitative strands in a unified study."}
               </p>
-            </div>
 
-            <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>
-                <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
-                {isId ? "Formulasi Matematis yang Sah" : "Validated Mathematical Formulas"}
-              </h4>
-              <p style={styles.eduCardBody}>
-                {formula === "slovin" 
-                  ? (isId 
-                    ? "Formula Slovin: Diterapkan secara praktis ketika jumlah populasi (N) terukur secara pasti, namun proporsi karakteristik populasinya belum diketahui secara spesifik." 
-                    : "Slovin Formula: Applied practically when population size (N) is finite and known, but attribute proportions are unknown.")
-                  : (isId 
-                    ? "Formula Lemeshow: Sangat ideal untuk populasi yang berukuran besar atau tidak terhingga (seperti pasien rumah sakit) dengan mengacu pada proporsi prevalensi tertentu." 
-                    : "Lemeshow Formula: Highly suited for infinite or unknown population sizes (e.g., clinical trials) with estimated prevalence.")}
-              </p>
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                  {isId ? "Desain Sampling Ganda (Dual-Strand)" : "Dual-Strand Sampling Design"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Fase Kuantitatif memerlukan ukuran responden besar (probabilitas) demi kekuatan statistik, sedangkan Fase Kualitatif berfokus pada kelompok kecil secara bertujuan." 
+                    : "The Quantitative strand requires large probability samples for statistical power, while the Qualitative strand focuses on small, information-rich cohorts."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
+                  {isId ? "Integrasi Sequential vs. Concurrent" : "Sequential vs Concurrent Integration"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Dalam sekuensial eksplanatori, subjek kualitatif sering kali dipilih secara purposif dari responden fase pertama kuantitatif untuk menerangkan hasil angka ekstrem." 
+                    : "In explanatory sequential designs, qualitative participants are often purposively selected from the initial quantitative sample to explain extreme statistical results."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
+                  {isId ? "Konsistensi Alur Sampel" : "Sample Flow Consistency"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Pastikan integrasi teknik sampling dilaporkan secara transparan untuk menjaga keabsahan (legitimacy) validitas metode campuran Anda." 
+                    : "Ensure the sampling integration steps are reported transparently to maintain the methodological legitimacy of your mixed methods study."}
+                </p>
+              </div>
             </div>
-          </div>
-        );
+          );
+        } else {
+          return (
+            <div className="animate-fade-in" style={styles.eduContainer}>
+              <div style={styles.eduBadge}>
+                <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {isId ? "TUTORIAL: PENENTUAN UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}
+              </div>
+              <h3 style={styles.eduTitle}>{isId ? "Batasan Populasi & Validitas Statistik" : "Population Bounds & Statistical Power"}</h3>
+              <p style={styles.eduIntro}>
+                {isId 
+                  ? "Menghitung batas minimum subjek sampel yang valid secara matematis agar hasil penelitian Anda memenuhi syarat kepercayaan statistik." 
+                  : "Calculating the mathematically sound minimum subject size required for your study to attain valid statistical confidence."}
+              </p>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                  {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Populasi (N) mencakup keseluruhan subjek penelitian yang menjadi target generalisasi, sedangkan Sampel (n) adalah representasi sebagian populasi yang dipilih secara metodologis." 
+                    : "Population (N) is the entire subject pool under study. Sample (n) is the scientifically chosen subgroup representing them."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#fca5a5" }} />
+                  {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Margin of Error (e) mencerminkan batas toleransi kesalahan estimasi (contoh: 5%). Tingkat Kepercayaan (Confidence Level) menunjukkan derajat keyakinan bahwa karakteristik sampel mencerminkan populasi (standar akademis adalah 95%)." 
+                    : "Margin of error (e) represents allowable estimation error (e.g., 5%). Confidence level shows study certainty (academic standard is 95%)."}
+                </p>
+              </div>
+
+              <div style={styles.eduCard}>
+                <h4 style={styles.eduCardTitle}>
+                  <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
+                  {isId ? "Formulasi & Teknik Pengambilan Sampel" : "Formulas & Sampling Techniques"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {formula === "slovin" 
+                    ? (isId 
+                      ? "Formula Slovin: Diterapkan ketika jumlah populasi (N) terukur secara pasti, disandingkan dengan teknik Probability Sampling seperti Simple Random atau Stratified." 
+                      : "Slovin Formula: Applied when population size (N) is finite and known, typically paired with probability methods like Simple or Stratified Random.")
+                    : (isId 
+                      ? "Formula Lemeshow: Ideal untuk populasi tak terhingga (seperti survei kesehatan umum), biasanya dipadukan dengan teknik penarikan sampel sistematis." 
+                      : "Lemeshow Formula: Suited for infinite/unknown populations (e.g., epidemiological survey) and often paired with systematic sampling.")}
+                </p>
+              </div>
+            </div>
+          );
+        }
       case 3:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
@@ -818,7 +1005,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
                     ].map((ap) => (
                       <div
                         key={ap.id}
-                        onClick={() => setApproach(ap.id)}
+                        onClick={() => handleApproachChange(ap.id)}
                         style={{
                           ...styles.radioCard,
                           ...(approach === ap.id ? styles.radioCardActive : {}),
@@ -866,7 +1053,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
               </div>
             )}
 
-            {/* STEP 2: Mathematical Sample Size Calculator */}
+            {/* STEP 2: Mathematical Sample Size & Sampling Technique */}
             {activeStep === 2 && (
               <div style={styles.stepForm} className="animate-fade-in">
                 <div className="form-group">
@@ -877,103 +1064,184 @@ Aligned with the scale of measurements and variable distributions, statistical h
                     onChange={(e) => setFormula(e.target.value)}
                     className="form-input"
                     style={styles.selectInput}
+                    disabled={approach === "qual"}
                   >
-                    <option value="slovin">Slovin Formula (General finite populational)</option>
-                    <option value="cochran">Cochran Formula (Infinite populations / proportion)</option>
-                    <option value="lemeshow">Lemeshow WHO Formula (Finite correction for surveys)</option>
-                    <option value="krejcie_morgan">Krejcie & Morgan Table (Scientific estimation)</option>
-                    <option value="yamane">Yamane (Precision sampling limit)</option>
-                    <option value="daniel">Daniel Formula (Bio-statistical/health attributes)</option>
+                    {approach === "qual" ? (
+                      <option value="saturation">{t("wizard.formulaSaturation")}</option>
+                    ) : (
+                      <>
+                        <option value="slovin">{t("wizard.formulaSlovin")}</option>
+                        <option value="cochran">{t("wizard.formulaCochran")}</option>
+                        <option value="lemeshow">{t("wizard.formulaLemeshow")}</option>
+                        <option value="krejcie_morgan">{t("wizard.formulaKrejcieMorgan")}</option>
+                        <option value="yamane">{t("wizard.formulaYamane")}</option>
+                        <option value="daniel">{t("wizard.formulaDaniel")}</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
-                {/* Dynamic Parameter Sliders */}
-                <div style={styles.slidersCard} className="glass-panel">
-                  {/* 1. Population Size N (for finite formulas) */}
-                  {["slovin", "lemeshow", "krejcie_morgan", "yamane"].includes(formula) && (
-                    <div style={styles.sliderGroup}>
-                      <div style={styles.sliderHeader}>
-                        <span style={styles.sliderLabel}>{t("wizard.popSizeLabel")}</span>
-                        <span style={styles.sliderVal}>{popSize.toLocaleString()}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="10"
-                        max="100000"
-                        step="50"
-                        value={popSize}
-                        onChange={(e) => setPopSize(Number(e.target.value))}
-                        style={styles.rangeInput}
-                      />
-                      <p style={styles.sliderHelp}>{t("wizard.popSizeDesc")}</p>
-                    </div>
-                  )}
-
-                  {/* 2. Confidence Level Z */}
-                  {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
-                    <div style={styles.sliderGroup}>
-                      <div style={styles.sliderHeader}>
-                        <span style={styles.sliderLabel}>{t("wizard.confLevelLabel")}</span>
-                        <span style={styles.sliderVal}>{confLevel * 100}%</span>
-                      </div>
-                      <select
-                        value={confLevel}
-                        onChange={(e) => setConfLevel(Number(e.target.value))}
-                        className="form-input"
-                        style={styles.selectInputSmall}
-                      >
-                        <option value={0.90}>90% (Z = 1.645)</option>
-                        <option value={0.95}>95% (Z = 1.96)</option>
-                        <option value={0.99}>99% (Z = 2.576)</option>
-                      </select>
-                      <p style={styles.sliderHelp}>{t("wizard.confLevelDesc")}</p>
-                    </div>
-                  )}
-
-                  {/* 3. Margin of Error e */}
-                  <div style={styles.sliderGroup}>
-                    <div style={styles.sliderHeader}>
-                      <span style={styles.sliderLabel}>{t("wizard.marginLabel")}</span>
-                      <span style={styles.sliderVal}>{(marginError * 100).toFixed(1)}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0.01"
-                      max="0.20"
-                      step="0.005"
-                      value={marginError}
-                      onChange={(e) => setMarginError(Number(e.target.value))}
-                      style={styles.rangeInput}
-                    />
-                    <p style={styles.sliderHelp}>{t("wizard.marginDesc")}</p>
-                  </div>
-
-                  {/* 4. Attribute Proportion p */}
-                  {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
-                    <div style={styles.sliderGroup}>
-                      <div style={styles.sliderHeader}>
-                        <span style={styles.sliderLabel}>{t("wizard.propLabel")}</span>
-                        <span style={styles.sliderVal}>{proportion}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="0.9"
-                        step="0.05"
-                        value={proportion}
-                        onChange={(e) => setProportion(Number(e.target.value))}
-                        style={styles.rangeInput}
-                      />
-                      <p style={styles.sliderHelp}>{t("wizard.propDesc")}</p>
-                    </div>
-                  )}
+                {/* Sampling Technique Selector */}
+                <div className="form-group" style={{ marginTop: "1.25rem" }}>
+                  <label className="form-label">{t("wizard.samplingLabel")}</label>
+                  <p style={styles.inputHelp}>{t("wizard.samplingDesc")}</p>
+                  <select
+                    value={samplingTechnique}
+                    onChange={(e) => setSamplingTechnique(e.target.value)}
+                    className="form-input"
+                    style={styles.selectInput}
+                  >
+                    {approach === "quant" && (
+                      <>
+                        <option value="Simple Random Sampling">{t("wizard.samplingSimpleRandom")}</option>
+                        <option value="Systematic Random Sampling">{t("wizard.samplingSystematicRandom")}</option>
+                        <option value="Stratified Random Sampling">{t("wizard.samplingStratifiedRandom")}</option>
+                        <option value="Cluster Random Sampling">{t("wizard.samplingClusterRandom")}</option>
+                        <option value="Convenience Sampling">{t("wizard.samplingConvenience")}</option>
+                      </>
+                    )}
+                    {approach === "qual" && (
+                      <>
+                        <option value="Purposive Sampling">{t("wizard.samplingPurposive")}</option>
+                        <option value="Snowball Sampling">{t("wizard.samplingSnowball")}</option>
+                        <option value="Criterion Sampling">{t("wizard.samplingCriterion")}</option>
+                        <option value="Theoretical Sampling">{t("wizard.samplingTheoretical")}</option>
+                      </>
+                    )}
+                    {approach === "mixed" && (
+                      <>
+                        <option value="Sequential Mixed Sampling">{t("wizard.samplingSequentialMixed")}</option>
+                        <option value="Concurrent Mixed Sampling">{t("wizard.samplingConcurrentMixed")}</option>
+                      </>
+                    )}
+                  </select>
                 </div>
+
+                {/* Dynamic Parameter Sliders or Qualitative Saturation Warning */}
+                {approach === "qual" ? (
+                  <div style={styles.slidersCard} className="glass-panel">
+                    <div style={styles.sliderGroup}>
+                      <div style={styles.sliderHeader}>
+                        <span style={styles.sliderLabel}>{t("wizard.targetParticipantsLabel")}</span>
+                        <span style={styles.sliderVal}>{sampleSize}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="5"
+                        max="100"
+                        step="1"
+                        value={sampleSize}
+                        onChange={(e) => setSampleSize(Number(e.target.value))}
+                        style={styles.rangeInput}
+                      />
+                      <p style={styles.sliderHelp}>{t("wizard.targetParticipantsDesc")}</p>
+                    </div>
+                    <div
+                      style={{
+                        background: "rgba(56, 189, 248, 0.05)",
+                        border: "1px solid rgba(56, 189, 248, 0.2)",
+                        padding: "1rem",
+                        borderRadius: "10px",
+                        marginTop: "1rem",
+                      }}
+                    >
+                      <p style={{ fontSize: "0.85rem", color: "#38bdf8", lineHeight: 1.4, margin: 0 }}>
+                        ℹ️ {t("wizard.qualitativeSaturationNotice")}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={styles.slidersCard} className="glass-panel">
+                    {/* 1. Population Size N (for finite formulas) */}
+                    {["slovin", "lemeshow", "krejcie_morgan", "yamane"].includes(formula) && (
+                      <div style={styles.sliderGroup}>
+                        <div style={styles.sliderHeader}>
+                          <span style={styles.sliderLabel}>{t("wizard.popSizeLabel")}</span>
+                          <span style={styles.sliderVal}>{popSize.toLocaleString()}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="10"
+                          max="100000"
+                          step="50"
+                          value={popSize}
+                          onChange={(e) => setPopSize(Number(e.target.value))}
+                          style={styles.rangeInput}
+                        />
+                        <p style={styles.sliderHelp}>{t("wizard.popSizeDesc")}</p>
+                      </div>
+                    )}
+
+                    {/* 2. Confidence Level Z */}
+                    {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                      <div style={styles.sliderGroup}>
+                        <div style={styles.sliderHeader}>
+                          <span style={styles.sliderLabel}>{t("wizard.confLevelLabel")}</span>
+                          <span style={styles.sliderVal}>{confLevel * 100}%</span>
+                        </div>
+                        <select
+                          value={confLevel}
+                          onChange={(e) => setConfLevel(Number(e.target.value))}
+                          className="form-input"
+                          style={styles.selectInputSmall}
+                        >
+                          <option value={0.90}>90% (Z = 1.645)</option>
+                          <option value={0.95}>95% (Z = 1.96)</option>
+                          <option value={0.99}>99% (Z = 2.576)</option>
+                        </select>
+                        <p style={styles.sliderHelp}>{t("wizard.confLevelDesc")}</p>
+                      </div>
+                    )}
+
+                    {/* 3. Margin of Error e */}
+                    <div style={styles.sliderGroup}>
+                      <div style={styles.sliderHeader}>
+                        <span style={styles.sliderLabel}>{t("wizard.marginLabel")}</span>
+                        <span style={styles.sliderVal}>{(marginError * 100).toFixed(1)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.01"
+                        max="0.20"
+                        step="0.005"
+                        value={marginError}
+                        onChange={(e) => setMarginError(Number(e.target.value))}
+                        style={styles.rangeInput}
+                      />
+                      <p style={styles.sliderHelp}>{t("wizard.marginDesc")}</p>
+                    </div>
+
+                    {/* 4. Attribute Proportion p */}
+                    {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                      <div style={styles.sliderGroup}>
+                        <div style={styles.sliderHeader}>
+                          <span style={styles.sliderLabel}>{t("wizard.propLabel")}</span>
+                          <span style={styles.sliderVal}>{proportion}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="0.9"
+                          step="0.05"
+                          value={proportion}
+                          onChange={(e) => setProportion(Number(e.target.value))}
+                          style={styles.rangeInput}
+                        />
+                        <p style={styles.sliderHelp}>{t("wizard.propDesc")}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Real-time Math Output box */}
                 <div style={styles.calculatorOutput} className="glass-panel">
-                  <span style={styles.outputLabel}>{t("wizard.sampleSizeResult")}</span>
+                  <span style={styles.outputLabel}>
+                    {approach === "qual" ? t("wizard.targetParticipantsLabel") : t("wizard.sampleSizeResult")}
+                  </span>
                   <span style={styles.outputVal}>{sampleSize}</span>
-                  <p style={styles.outputHelp}>{t("wizard.sampleSizeDesc")}</p>
+                  <p style={styles.outputHelp}>
+                    {approach === "qual" ? t("wizard.targetParticipantsDesc") : t("wizard.sampleSizeDesc")}
+                  </p>
                 </div>
               </div>
             )}
