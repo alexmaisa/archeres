@@ -1177,6 +1177,105 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? (formula === "slovin" ? "Tuliskan nilai N rujukan secara pasti di laporan Anda. Jangan membulatkan angka desimal ke bawah saat menghitung jumlah minimum sampel (selalu bulatkan ke atas, misal 222.22 menjadi 223)." : "Jika Anda tidak memiliki data awal porsi prevalensi, gunakan p = 0,5 karena nilai ini menghasilkan varians maksimal dan ukuran sampel paling aman (maksimum).")
             : (formula === "slovin" ? "Ensure you declare a specific, verifiable value for N in your chapter. Never round down fractional sample calculations; always round up to the next integer (e.g., 222.12 rounds to 223)." : "If you have no prior data on the population proportion, adopt p = 0.5 as it maximizes mathematical variance and yields the most conservative (largest) minimum sample size.")
         };
+      case "mixed_dual":
+        return {
+          title: isId ? "Desain Sampling Ganda (Dual-Strand)" : "Dual-Strand Sampling Design",
+          badge: isId ? "Desain Sampling" : "Sampling Design",
+          definition: isId
+            ? "Mengacu pada pakar metodologi metode campuran terkemuka John W. Creswell (2018) dan Abbas Tashakkori & Charles Teddlie (2010), penelitian metode campuran menuntut penyusunan Desain Sampling Ganda (Dual-Strand). Karena riset ini memadukan untaian kuantitatif dan kualitatif, peneliti harus menyelaraskan dua logika sampling yang berbeda secara fundamental: sampel probabilitas acak berukuran besar untuk untaian kuantitatif demi kekuatan uji statistik, disandingkan dengan sampel non-probabilitas bertujuan berukuran kecil untuk untaian kualitatif guna mengeksplorasi makna mendalam."
+            : "Grounded in the pioneering scholarship of John W. Creswell (2018) and Abbas Tashakkori & Charles Teddlie (2010), mixed methods research demands a Dual-Strand Sampling Design. Because this design integrates both quantitative and qualitative components, researchers must systematically align two fundamentally divergent sampling rationales: a large probability-based random sample for the quantitative strand to ensure statistical validity, and a small, non-probability purposive sample for the qualitative strand to explore deep personal lived experiences.",
+          characteristics: isId
+            ? [
+                "Logika Ganda (Dual Rationale): Kuantitatif bertujuan untuk generalisasi luas (deduktif), sedangkan Kualitatif bertujuan untuk pemahaman kontekstual mendalam (induktif).",
+                "Ukuran Sampel Asimetris: Ukuran sampel kuantitatif (n1) biasanya bernilai ratusan atau ribuan, sementara kualitatif (n2) bernilai sangat terbatas (contoh: 10–20 subjek).",
+                "Kerangka Pengambilan Sampel Terpisah: Memiliki dua daftar subjek berbeda yang dipilih berdasarkan teknik sampling masing-masing untaian.",
+                "Penyelarasan Desain: Pemilihan sampel kualitatif dapat berupa subset dari sampel kuantitatif, atau berupa sampel independen yang sepenuhnya terpisah."
+              ]
+            : [
+                "Dual Rationale: The quantitative strand targets broad statistical generalization (deductive), while the qualitative strand focuses on contextual depth (inductive).",
+                "Asymmetrical Sample Sizes: The quantitative sample size (n1) typically ranges in the hundreds, whereas the qualitative sample size (n2) remains highly focused (e.g., 10–20 participants).",
+                "Distinct Sampling Frames: Employs separate lists or databases of participants, each matching the unique criteria of its respective strand.",
+                "Design Alignment: The qualitative sample can be drawn directly as a subset of the larger quantitative pool, or as an independent, unrelated group."
+              ],
+          examples: isId
+            ? [
+                "Kuantitatif: Survei acak terstruktur ke 500 pengguna aplikasi edutech. Kualitatif: Wawancara mendalam bertujuan dengan 12 pengguna yang menunjukkan tingkat retensi paling ekstrem.",
+                "Kuantitatif: Eksperimen kuasi efektivitas suplemen baru pada 100 pasien klinis. Kualitatif: Focus Group Discussion (FGD) dengan 8 perawat pelaksana."
+              ]
+            : [
+                "Quantitative: Structured random survey distributed to 500 active users of an edutech application. Qualitative: In-depth purposive interviews with 12 users exhibiting extreme retention dropouts.",
+                "Quantitative: Quasi-experiment assessing new supplement efficacy across 100 clinical patients. Qualitative: Focus Group Discussion (FGD) with 8 primary care nurses."
+              ],
+          tips: isId
+            ? "Di Bab III, laporkan secara terpisah tabel ringkasan ukuran sampel, teknik sampling, dan tujuan pengambilan sampel untuk masing-masing untaian agar tidak membingungkan penguji."
+            : "In your methodology chapter, present separate, clear tables detailing the sample size, technique, and conceptual purpose for each strand to ensure maximum clarity for reviewers."
+        };
+      case "mixed_integration":
+        return {
+          title: isId ? "Integrasi Sequential vs. Concurrent" : "Sequential vs. Concurrent Integration",
+          badge: isId ? "Integrasi Metode" : "Methods Integration",
+          definition: isId
+            ? "Mengatur bagaimana hubungan waktu (timing) antara penarikan sampel kuantitatif dan kualitatif dilakukan sesuai desain riset yang dipilih. Dalam Desain Sekuensial, penarikan sampel fase kedua sangat dipengaruhi atau bergantung secara langsung pada data sampel fase pertama. Dalam Desain Konkuren (Satu Waktu), kedua sampel dipilih secara bersamaan dan independen guna menjawab pertanyaan penelitian yang sama dari dua sudut pandang berbeda."
+            : "Governs the temporal relationship (timing) between the quantitative and qualitative sampling procedures according to your selected research design. In Sequential Designs, selecting participants for the second phase is directly informed by or derived from the first phase's sample data. In Concurrent Designs, both samples are drawn simultaneously and independently to address the same core inquiry from complementary perspectives.",
+          characteristics: isId
+            ? [
+                "Hubungan Sekuensial Eksplanatori: Sampel kualitatif dipilih dari subjek kuantitatif yang menunjukkan pola statistik ganjil atau nilai ekstrem untuk didalami.",
+                "Hubungan Sekuensial Eksploratori: Sampel kualitatif pertama-tama diwawancarai untuk merumuskan butir instrumen baru, yang kemudian diuji pada sampel kuantitatif luas.",
+                "Hubungan Konkuren (Triangulasi): Pengambilan sampel paralel di mana kedua kelompok subjek tidak harus saling berinteraksi selama proses riset berlangsung.",
+                "Dependensi Kasus: Hubungan sekuensial menuntut alur audit yang ketat untuk menerangkan transisi pemilihan subjek antar fase."
+              ]
+            : [
+                "Explanatory Sequential Link: Qualitative participants are purposefully selected directly from the initial quantitative cohort to explain outlier statistics.",
+                "Exploratory Sequential Link: The qualitative sample is first interviewed to yield constructs and items, which are then statistically tested on a broad quantitative pool.",
+                "Concurrent Link (Triangulation): Parallel sampling where both groups of subjects are recruited simultaneously and operate independently throughout the research.",
+                "Case Dependency: Sequential designs demand a strict, documented transition trail demonstrating how one phase's sample led to the next phase."
+              ],
+          examples: isId
+            ? [
+                "Sekuensial Eksplanatori: Mengambil 10 guru berkinerja terendah dari hasil survei evaluasi 200 guru untuk diwawancarai secara mendalam.",
+                "Konkuren: Melakukan kuesioner acak kepada 300 siswa sekolah menengah, dan pada minggu yang sama mewawancarai 15 kepala sekolah."
+              ]
+            : [
+                "Explanatory Sequential: Recruiting the 10 lowest-performing teachers from an initial survey of 200 educators for subsequent in-depth interviews.",
+                "Concurrent: Distributing structured random questionnaires to 300 high school students while simultaneously interviewing 15 school principals."
+              ],
+          tips: isId
+            ? "Jika Anda menggunakan desain Sekuensial Eksplanatori, pastikan sampel kualitatif Anda merupakan bagian (nested subset) dari sampel kuantitatif agar memiliki konsistensi konteks yang valid."
+            : "If employing an Explanatory Sequential design, ensure your qualitative sample is a nested subset of the larger quantitative sample to preserve context validity."
+        };
+      case "mixed_consistency":
+        return {
+          title: isId ? "Konsistensi Alur Sampel" : "Sample Flow Consistency",
+          badge: isId ? "Keabsahan Metodologis" : "Methodological Rigor",
+          definition: isId
+            ? "Menjamin transparansi pelaporan dan keabsahan (legitimacy) metodologi campuran Anda melalui penggambaran diagram alur visual sampling yang koheren. Berdasarkan pemikiran Onwuegbuzie & Collins (2007), inkonsistensi alur sampel (seperti hilangnya relevansi partisipan kualitatif dibanding kuantitatif) adalah ancaman utama terhadap kredibilitas penggabungan interpretasi data riset."
+            : "Safeguards the transparency, replicability, and overall methodological legitimacy of your mixed methods study by depicting a coherent sampling workflow. Rooted in the framework of Onwuegbuzie & Collins (2007), sample flow inconsistency—such as a misalignment between quantitative survey topics and qualitative informant criteria—poses a significant threat to the validity of data integration.",
+          characteristics: isId
+            ? [
+                "Matriks Sampling: Menyediakan tabel visual yang memetakan keterkaitan untaian (kuantitatif & kualitatif), teknik sampling, jumlah subjek, dan jenis data.",
+                "Diagram Alir Alur: Menyertakan bagan alir visual (flowchart) dari fase satu ke fase berikutnya untuk memperlihatkan mata rantai data.",
+                "Transparansi Attrisi (Penyusutan): Menjelaskan secara jujur apabila subjek menolak atau menyusut selama transisi pengumpulan data multi-fase.",
+                "Validitas Integrasi: Kredibilitas temuan akhir sangat ditentukan oleh sejauh mana alur penarikan sampel didokumentasikan secara runtut."
+              ]
+            : [
+                "Sampling Matrix: A highly structured visual table mapping strands, specific techniques, sample sizes, and corresponding data outputs.",
+                "Procedural Flowchart: A sequential, step-by-step visual diagram illustrating how the study transitioned from one sampling phase to the next.",
+                "Attrition Transparency: Frankly reporting and explaining any participant dropouts or non-responses during multi-phase transitions.",
+                "Inference Quality: The ultimate credibility of your integrated findings depends heavily on a transparent, chronological sampling audit trail."
+              ],
+          examples: isId
+            ? [
+                "Menyajikan diagram alir prosedural di Bab III yang secara grafis memetakan transisi dari survei kuantitatif (n=300) ke wawancara kualitatif (n=12).",
+                "Penerapan matriks sampling 2x2 Collins et al. untuk menerangkan rasional hubungan sampel dalam studi kepuasan nasabah bank."
+              ]
+            : [
+                "Example: Presenting a clear procedural flowchart in Chapter III visually tracing the sampling path from a quantitative survey (n=300) to qualitative interviews (n=12).",
+                "Example: Deploying a 2x2 Collins et al. sampling matrix to defend the conceptual relationship between strands in a banking customer satisfaction study."
+              ],
+          tips: isId
+            ? "Gunakan model diagram alir prosedural standar dari Creswell di Bab III Anda. Ini adalah cara termudah dan paling elegan untuk memukau dosen penguji riset Anda."
+            : "Integrate Creswell's standardized procedural flowchart template in your Methodology chapter. It is the most elegant and academically persuasive way to demonstrate rigorous design to examiners."
+        };
       default:
         return {
           title: "Research Concept",
@@ -1395,7 +1494,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   : "Harmonizing the distinct sampling demands of both Quantitative and Qualitative strands in a unified study."}
               </p>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("mixed_dual");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
                   {isId ? "Desain Sampling Ganda (Dual-Strand)" : "Dual-Strand Sampling Design"}
@@ -1407,7 +1513,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("mixed_integration");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
                   {isId ? "Integrasi Sequential vs. Concurrent" : "Sequential vs Concurrent Integration"}
@@ -1419,7 +1532,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("mixed_consistency");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
                   {isId ? "Konsistensi Alur Sampel" : "Sample Flow Consistency"}
