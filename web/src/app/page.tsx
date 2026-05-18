@@ -185,6 +185,29 @@ export default function Home() {
     gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
     maxWidth: isMobile ? "600px" : "620px"
   };
+
+  const ctaButtonGroupStyle: React.CSSProperties = {
+    ...styles.ctaButtonGroup,
+    flexDirection: "row",
+    justifyContent: isMobile ? "center" : "flex-start",
+    flexWrap: "nowrap",
+  };
+ 
+  const primaryCtaStyle: React.CSSProperties = {
+    ...styles.primaryCta,
+    padding: isMobile ? "0.75rem 1rem" : "0.75rem 1.75rem",
+    fontSize: isMobile ? "0.85rem" : "0.95rem",
+    maxWidth: isMobile ? "220px" : "240px",
+    whiteSpace: "nowrap",
+  };
+ 
+  const secondaryCtaStyle: React.CSSProperties = {
+    ...styles.secondaryCta,
+    padding: isMobile ? "0.75rem 1rem" : "0.75rem 1.75rem",
+    fontSize: isMobile ? "0.85rem" : "0.95rem",
+    maxWidth: isMobile ? "220px" : "240px",
+    whiteSpace: "nowrap",
+  };
  
   return (
     <div style={containerStyle}>
@@ -244,22 +267,22 @@ export default function Home() {
         <section style={heroStyle}>
           <h1 style={styles.heroTitle}>{copy.title}</h1>
           <p style={styles.heroSubtitle}>{copy.subtitle}</p>
-
-          <div style={styles.ctaButtonGroup}>
+ 
+          <div style={ctaButtonGroupStyle}>
             <button 
               onClick={() => router.push("/auth/register")} 
               className="btn btn-primary" 
-              style={styles.primaryCta}
+              style={primaryCtaStyle}
             >
-              <IconRocket size={16} style={{ marginRight: "6px", verticalAlign: "middle", strokeWidth: 2.5 }} />
+              <IconRocket size={16} strokeWidth={2.5} stroke="white" />
               {copy.ctaStart}
             </button>
             <button 
               onClick={() => router.push("/auth/login")} 
               className="btn btn-outline" 
-              style={styles.secondaryCta}
+              style={secondaryCtaStyle}
             >
-              <IconKey size={16} style={{ marginRight: "6px", verticalAlign: "middle", strokeWidth: 2.5 }} />
+              <IconKey size={16} strokeWidth={2.5} stroke="white" />
               {copy.ctaLogin}
             </button>
           </div>
