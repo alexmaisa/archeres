@@ -178,7 +178,7 @@ export default function AdminPage() {
     }
     const parsed = JSON.parse(savedUser) as User;
     if (parsed.role !== "admin") {
-      router.push("/dashboard");
+      router.push("/user/dashboard");
       return;
     }
     setUser(parsed);
@@ -245,7 +245,7 @@ export default function AdminPage() {
 
         <div style={styles.navControls}>
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/user/dashboard")}
             className="btn btn-outline"
             style={styles.dashBtn}
           >

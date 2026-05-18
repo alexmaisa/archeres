@@ -607,6 +607,18 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
+.glow-ambient-cyan {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* Premium Layout & Workspace Classes */
 .main-container {
   flex: 1;
@@ -770,4 +782,102 @@ h1, h2, h3, h4, h5, h6 {
   border-top-color: #fca5a5;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+/* Dashboard User Projects Grid & Cards (Compact and Premium) */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.project-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  justify-content: space-between;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.project-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.3;
+}
+
+.project-card-date {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.project-card-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.45;
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.project-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.project-action-open {
+  flex: 1;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+.project-action-delete {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  border-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.project-action-delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* User Dashboard Empty State */
+.dashboard-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  margin: 2rem auto 0 auto;
+}
+
+.dashboard-empty-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-empty-desc {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash } from "../components/Icons";
+import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix } from "../../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { apiFetch } from "../api";
-import { User, Project } from "../types";
+import { apiFetch } from "../../api";
+import { User, Project } from "../../types";
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -102,14 +102,15 @@ export default function DashboardPage() {
   return (
     <div style={styles.container} className="animate-fade-in">
       {/* Background glowing ambient circles */}
-      <div style={styles.glowCircle1}></div>
-      <div style={styles.glowCircle2}></div>
+      <div className="glow-ambient-cyan"></div>
+      <div className="glow-ambient-purple"></div>
 
       {/* Navigation Header */}
-      <header style={styles.navbar} className="glass-panel">
-        <div style={styles.navBrand}>
-          <span style={styles.logoText}>Arche</span>
-          <span style={styles.badge} className="badge-primary">Workspace</span>
+      <header className="fixed-header">
+        <div className="nav-brand">
+          <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
+          <span className="nav-brand-name">{t("common.appName")}</span>
+          <span className="badge badge-primary">Workspace</span>
         </div>
 
         <div style={styles.navControls}>
@@ -153,13 +154,13 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Body */}
-      <main style={styles.mainContent}>
-        <div style={styles.welcomeSection}>
+      <main className="main-container">
+        <div className="welcome-section">
           <div>
-            <h1 style={styles.welcomeTitle}>
+            <h1 className="welcome-title">
               {i18n.language === "id" ? "Selamat datang," : "Welcome back,"} {user.name}!
             </h1>
-            <p style={styles.welcomeSubtitle}>{t("dashboard.subtitle")}</p>
+            <p className="welcome-subtitle">{t("dashboard.subtitle")}</p>
           </div>
           <button onClick={() => setShowModal(true)} className="btn btn-primary" style={styles.newBtn}>
             <IconPlus size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
@@ -168,10 +169,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Global metrics overview cards */}
-        <section style={styles.statsGrid}>
-          <div className="glass-panel" style={styles.statCard}>
-            <span style={styles.statLabel}>{t("dashboard.totalProjects")}</span>
-            <span style={styles.statVal}>{projects.length}</span>
+        <section className="telemetry-grid">
+          <div className="glass-panel telemetry-card">
+            <span className="telemetry-label">{t("dashboard.totalProjects")}</span>
+            <span className="telemetry-val" style={{ color: "#22d3ee" }}>{projects.length}</span>
           </div>
         </section>
 
@@ -184,27 +185,27 @@ export default function DashboardPage() {
         ) : error ? (
           <div style={styles.errorAlert} className="badge-danger">{error}</div>
         ) : projects.length === 0 ? (
-          <div style={styles.emptyState} className="glass-panel">
+          <div className="glass-panel dashboard-empty-state">
             <IconFolder size={48} style={{ color: "rgba(255, 255, 255, 0.2)", marginBottom: "1rem" }} />
-            <h2 style={styles.emptyTitle}>{t("dashboard.emptyTitle")}</h2>
-            <p style={styles.emptyDesc}>{t("dashboard.emptyDesc")}</p>
+            <h2 className="dashboard-empty-title">{t("dashboard.emptyTitle")}</h2>
+            <p className="dashboard-empty-desc">{t("dashboard.emptyDesc")}</p>
             <button onClick={() => setShowModal(true)} className="btn btn-primary" style={styles.emptyBtn}>
               <IconPlus size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
               {t("dashboard.createNew")}
             </button>
           </div>
         ) : (
-          <div style={styles.projectsGrid}>
+          <div className="projects-grid">
             {projects.map((proj) => (
-              <div key={proj.id} style={styles.projectCard} className="glass-panel">
-                <div style={styles.cardHeader}>
-                  <h3 style={styles.cardTitle}>{proj.title}</h3>
-                  <span style={styles.cardDate}>
+              <div key={proj.id} className="glass-panel project-card">
+                <div className="project-card-header">
+                  <h3 className="project-card-title">{proj.title}</h3>
+                  <span className="project-card-date">
                     {t("dashboard.created")} {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
                   </span>
                 </div>
                 
-                <p style={styles.cardDesc}>
+                <p className="project-card-desc">
                   {proj.description
                     ? proj.description.length > 140
                       ? `${proj.description.substring(0, 140)}...`
@@ -212,19 +213,17 @@ export default function DashboardPage() {
                     : "No description provided."}
                 </p>
 
-                <div style={styles.cardActions}>
+                <div className="project-card-actions">
                   <button
-                    onClick={() => router.push(`/project/${proj.id}`)}
-                    className="btn btn-primary"
-                    style={styles.actionOpen}
+                    onClick={() => router.push(`/user/project/${proj.id}`)}
+                    className="btn btn-primary project-action-open"
                   >
                     <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                     {t("dashboard.openWorkspace")}
                   </button>
                   <button
                     onClick={() => handleDeleteProject(proj.id)}
-                    className="btn btn-outline"
-                    style={styles.actionDelete}
+                    className="btn btn-outline project-action-delete"
                   >
                     <IconTrash size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                     {t("dashboard.deleteBtn")}
@@ -235,6 +234,12 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      <footer className="fixed-footer">
+        <p className="footer-text">
+          &copy; 2026 Benny Maisa. Arche: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
+        </p>
+      </footer>
 
       {/* Creation Modal */}
       {showModal && (
@@ -308,56 +313,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
   },
-  glowCircle1: {
-    position: "absolute",
-    top: "-10%",
-    left: "-10%",
-    width: "450px",
-    height: "450px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, rgba(0,0,0,0) 70%)",
-    zIndex: 1,
-    pointerEvents: "none",
-  },
-  glowCircle2: {
-    position: "absolute",
-    bottom: "10%",
-    right: "-5%",
-    width: "500px",
-    height: "500px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(6,182,212,0.12) 0%, rgba(0,0,0,0) 70%)",
-    zIndex: 1,
-    pointerEvents: "none",
-  },
-  navbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "1rem 2.5rem",
-    borderRadius: "0",
-    borderTop: "none",
-    borderLeft: "none",
-    borderRight: "none",
-    zIndex: 10,
-  },
-  navBrand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  logoText: {
-    fontSize: "1.75rem",
-    fontWeight: 800,
-    letterSpacing: "-0.04em",
-    background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  badge: {
-    fontSize: "0.7rem",
-    padding: "0.2rem 0.5rem",
-  },
   navControls: {
     display: "flex",
     alignItems: "center",
@@ -395,112 +350,10 @@ const styles: Record<string, React.CSSProperties> = {
     borderColor: "rgba(239, 68, 68, 0.2)",
     color: "#fca5a5",
   },
-  mainContent: {
-    flex: 1,
-    padding: "3rem 2.5rem",
-    maxWidth: "1400px",
-    width: "100%",
-    margin: "0 auto",
-    zIndex: 5,
-  },
-  welcomeSection: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "2.5rem",
-    gap: "1.5rem",
-    flexWrap: "wrap",
-  },
-  welcomeTitle: {
-    fontSize: "2.25rem",
-    fontWeight: 800,
-    letterSpacing: "-0.03em",
-    color: "rgba(255, 255, 255, 0.95)",
-    marginBottom: "0.25rem",
-  },
-  welcomeSubtitle: {
-    fontSize: "0.95rem",
-    color: "rgba(255, 255, 255, 0.6)",
-  },
   newBtn: {
     padding: "0.8rem 1.5rem",
     fontSize: "0.95rem",
     boxShadow: "0 4px 15px rgba(124, 58, 237, 0.25)",
-  },
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "1.5rem",
-    marginBottom: "3rem",
-  },
-  statCard: {
-    padding: "1.5rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-  },
-  statLabel: {
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-    textTransform: "uppercase",
-  },
-  statVal: {
-    fontSize: "2.5rem",
-    fontWeight: 800,
-    color: "#22d3ee",
-    lineHeight: 1.1,
-  },
-  projectsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
-    gap: "1.5rem",
-  },
-  projectCard: {
-    padding: "2rem",
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "260px",
-    justifyContent: "space-between",
-  },
-  cardHeader: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    marginBottom: "1rem",
-  },
-  cardTitle: {
-    fontSize: "1.25rem",
-    fontWeight: 700,
-    color: "rgba(255, 255, 255, 0.9)",
-    lineHeight: 1.3,
-  },
-  cardDate: {
-    fontSize: "0.75rem",
-    color: "rgba(255, 255, 255, 0.4)",
-  },
-  cardDesc: {
-    fontSize: "0.9rem",
-    color: "rgba(255, 255, 255, 0.65)",
-    lineHeight: 1.5,
-    marginBottom: "1.5rem",
-    flex: 1,
-  },
-  cardActions: {
-    display: "flex",
-    gap: "1rem",
-    marginTop: "auto",
-  },
-  actionOpen: {
-    flex: 1,
-    padding: "0.6rem 1rem",
-    fontSize: "0.85rem",
-  },
-  actionDelete: {
-    padding: "0.6rem 1rem",
-    fontSize: "0.85rem",
-    borderColor: "rgba(239, 68, 68, 0.15)",
-    color: "#fca5a5",
   },
   loadingState: {
     display: "flex",
@@ -523,28 +376,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "8px",
     textAlign: "center",
     fontWeight: 600,
-  },
-  emptyState: {
-    padding: "4rem 2rem",
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    maxWidth: "600px",
-    margin: "3rem auto 0 auto",
-  },
-  emptyTitle: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "rgba(255, 255, 255, 0.9)",
-    marginBottom: "0.5rem",
-  },
-  emptyDesc: {
-    fontSize: "0.95rem",
-    color: "rgba(255, 255, 255, 0.55)",
-    lineHeight: 1.5,
-    marginBottom: "2rem",
   },
   emptyBtn: {
     padding: "0.75rem 1.5rem",

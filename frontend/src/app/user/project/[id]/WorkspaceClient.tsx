@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { apiFetch } from "../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../components/Icons";
-import { User } from "../../types";
+import { apiFetch } from "../../../api";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../../components/Icons";
+import { User } from "../../../types";
 
 interface VariableDefinition {
   name: string;
@@ -109,7 +109,7 @@ export default function WorkspaceClient() {
       }
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
-      router.push("/dashboard");
+      router.push("/user/dashboard");
     } finally {
       setLoading(false);
     }
@@ -356,11 +356,11 @@ Aligned with the scale of measurements and variable distributions, statistical h
   }
 
   return (
-    <div style={styles.workspaceGrid}>
+    <div className="workspace-layout">
       {/* 1. LEFT PANEL: Checklist & Navigation */}
-      <aside style={styles.leftPanel} className="glass-panel">
+      <aside className="workspace-sidebar glass-panel">
         <div style={styles.leftHeader}>
-          <button onClick={() => router.push("/dashboard")} style={styles.backLink}>
+          <button onClick={() => router.push("/user/dashboard")} style={styles.backLink}>
             ← {t("common.dashboard")}
           </button>
           <h2 style={styles.projectTitleText}>{project.title}</h2>
@@ -439,7 +439,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
       </aside>
 
       {/* 2. MIDDLE PANEL: Interactive Forms & Calculators */}
-      <section style={styles.middlePanel}>
+      <section className="workspace-wizard">
         <div style={styles.middleHeader}>
           <span style={styles.middleStepIndicator}>
             {t("wizard.progress", { current: activeStep, total: 4 })}
@@ -764,7 +764,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
       </section>
 
       {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview */}
-      <section style={styles.rightPanel} className="glass-panel">
+      <section className="workspace-preview glass-panel">
         <div style={styles.rightHeader}>
           <div>
             <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
