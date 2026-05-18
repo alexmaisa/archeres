@@ -1,4 +1,4 @@
-.PHONY: install run-backend run-web dev test stop clean help
+.PHONY: install run-backend run-web dev test build stop clean help
 
 # Colors for terminal styling
 BLUE   := \033[36m
@@ -13,6 +13,7 @@ help:
 	@echo "  $(YELLOW)make run-backend$(RESET)    Start only the backend local development server on port 8080"
 	@echo "  $(YELLOW)make run-web$(RESET)        Start only the web local development server on port 3000"
 	@echo "  $(YELLOW)make test$(RESET)           Run all backend mathematical precision unit tests"
+	@echo "  $(YELLOW)make build$(RESET)          Build all Docker images locally using compose.build.yaml"
 	@echo "  $(YELLOW)make stop$(RESET)           Kill all local server processes occupying ports 3000 and 8080"
 	@echo "  $(YELLOW)make clean$(RESET)          Clean temporary local databases and Next.js build outputs"
 	@echo "  $(YELLOW)make help$(RESET)           Display this help guide with a description of all commands"
@@ -41,6 +42,10 @@ dev:
 test:
 	@echo "Running backend mathematical tests..."
 	cd backend && go test -v ./utils
+
+build:
+	@echo "Building all Docker images locally using compose.build.yaml..."
+	docker compose -f compose.build.yaml build
 
 stop:
 	@echo "Stopping local development processes occupying ports 3000 and 8080..."
