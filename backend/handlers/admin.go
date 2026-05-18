@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"os"
+	"runtime"
 	"time"
 
 	"arche/backend/config"
 	"arche/backend/models"
 	"github.com/gofiber/fiber/v2"
 )
+
+var startTime = time.Now()
 
 // UserAdminResponse models researcher profiles customized for administrative panels
 type UserAdminResponse struct {
@@ -67,10 +70,18 @@ func GetStats(c *fiber.Ctx) error {
 		dbSize = fileInfo.Size()
 	}
 
+	// Fetch system memory allocations & server uptime
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	allocatedRamMb := float64(m.Alloc) / 1024.0 / 1024.0
+	serverUptimeSecs := int64(time.Since(startTime).Seconds())
+
 	return c.JSON(fiber.Map{
-		"totalUsers":    totalUsers,
-		"totalProjects": totalProjects,
-		"dbSizeBytes":   dbSize,
+		"totalUsers":       totalUsers,
+		"totalProjects":    totalProjects,
+		"dbSizeBytes":      dbSize,
+		"allocatedRamMb":   allocatedRamMb,
+		"serverUptimeSecs": serverUptimeSecs,
 		"approachStats": fiber.Map{
 			"kuantitatif":    quantCount,
 			"kualitatif":     qualCount,
@@ -124,4 +135,29 @@ func ListAllProjects(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(projects)
+}
+
+// VacuumDatabase executes a physical database vacuuming on SQLite to reclaim unused blocks
+func VacuumDatabase(c *fiber.Ctx) error {
+	if err := config.DB.Exec("VACUUM").Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Gagal merapikan (VACUUM) alokasi basis data SQLite.",
+		})
+	}
+
+	// Fetch new db size
+	dbPath := os.Getenv("DATABASE_PATH")
+	if dbPath == "" {
+		dbPath = "arche.db"
+	}
+	var dbSize int64
+	fileInfo, err := os.Stat(dbPath)
+	if err == nil {
+		dbSize = fileInfo.Size()
+	}
+
+	return c.JSON(fiber.Map{
+		"message":     "Basis data SQLite berhasil dirapikan fisik (VACUUM) secara optimal.",
+		"dbSizeBytes": dbSize,
+	})
 }
