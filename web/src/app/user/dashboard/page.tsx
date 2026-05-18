@@ -307,18 +307,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <section className="telemetry-grid">
-          <div className="glass-panel telemetry-card">
-            <span className="telemetry-label">
-              <IconFolder size={12} style={{ marginRight: "6px" }} />
-              {t("dashboard.totalProjects")}
-            </span>
-            <span className="telemetry-val" style={{ color: "#22d3ee" }}>{activeProjects.length}</span>
-            <span className="telemetry-sub">
-              {i18n.language === "id" ? "Proyek penelitian aktif Anda" : "Your active research projects"}
-            </span>
-          </div>
-        </section>
+
 
         {/* Projects Listing */}
         {loading ? (
@@ -368,7 +357,6 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {/* Dynamic Search, Filter, and Sorting Controls */}
             <div style={{
               display: "flex",
               flexWrap: "wrap",
@@ -376,10 +364,7 @@ export default function DashboardPage() {
               justifyContent: "space-between",
               gap: "1rem",
               marginBottom: "1.25rem",
-              background: "rgba(255, 255, 255, 0.01)",
-              border: "1px solid rgba(255, 255, 255, 0.04)",
-              padding: "0.85rem 1.25rem",
-              borderRadius: "12px"
+              padding: "0.25rem 0"
             }}>
               {/* Search Box */}
               <div style={{ position: "relative", flex: "1 1 280px" }}>
@@ -476,7 +461,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
-              <table className="arche-table">
+              <table className="arche-table table-compact">
                 <thead>
                   <tr>
                     <th style={{ width: "25%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("title")}>
