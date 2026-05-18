@@ -4,6 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import "./i18n"; // register translation bundles
+import { 
+  IconHelix, 
+  IconChart, 
+  IconFileDown, 
+  IconShield, 
+  IconRocket, 
+  IconKey 
+} from "./components/Icons";
 
 export default function Home() {
   const { t, i18n } = useTranslation();
@@ -37,22 +45,22 @@ export default function Home() {
       ctaLogin: "Access Workspace",
       features: [
         {
-          icon: "🧬",
+          icon: "helix",
           name: "Validated Math Estimators",
           desc: "Execute Cochran, Lemeshow, Daniel, Yamane, and Slovin calculations with strict float precision and ceiling rounding assertions."
         },
         {
-          icon: "📊",
+          icon: "chart",
           name: "Variables Scale Planner",
           desc: "Map concepts into Nominal, Ordinal, Interval, or Ratio parameters, unlocking real-time Recommended Statistical Analysis Advice."
         },
         {
-          icon: "📥",
+          icon: "fileDown",
           name: "Academic Draft Compiler",
           desc: "Generate complete, structured Chapter 3 methodology markdown files in both Indonesian and English concurrently."
         },
         {
-          icon: "🛡️",
+          icon: "shield",
           name: "Role-Based Governance Shield",
           desc: "Strict administrative guards (RBAC) protecting backend telemetries, database sizes, and active studies counts."
         }
@@ -65,22 +73,22 @@ export default function Home() {
       ctaLogin: "Akses Workspace",
       features: [
         {
-          icon: "🧬",
+          icon: "helix",
           name: "Kalkulator Sampel Valid",
           desc: "Jalankan perhitungan Cochran, Lemeshow WHO finite, Daniel, Yamane, dan Slovin dengan presisi batas atas yang akurat."
         },
         {
-          icon: "📊",
+          icon: "chart",
           name: "Rencana Skala Variabel",
           desc: "Petakan variabel penelitian ke dalam skala Nominal, Ordinal, Interval, atau Rasio beserta saran uji hipotesis (ANOVA, Regresi)."
         },
         {
-          icon: "📥",
+          icon: "fileDown",
           name: "Penyusun Bab Metodologi",
           desc: "Susun draf Bab 3 metodologi riset secara instan dalam bahasa Indonesia dan Inggris secara simultan."
         },
         {
-          icon: "🛡️",
+          icon: "shield",
           name: "Proteksi Kontrol Admin",
           desc: "Hak akses administrator otomatis bagi pendaftar pertama (first signup), lengkap dengan audit ukuran database SQLite."
         }
@@ -89,6 +97,22 @@ export default function Home() {
   };
 
   const copy = content[currentLang] || content["en"];
+
+  // Render SVG based on designated type key
+  const getIcon = (type) => {
+    switch (type) {
+      case "helix":
+        return <IconHelix size={32} style={{ color: "#c084fc", strokeWidth: 2 }} />;
+      case "chart":
+        return <IconChart size={32} style={{ color: "#38bdf8", strokeWidth: 2 }} />;
+      case "fileDown":
+        return <IconFileDown size={32} style={{ color: "#22d3ee", strokeWidth: 2 }} />;
+      case "shield":
+        return <IconShield size={32} style={{ color: "#a78bfa", strokeWidth: 2 }} />;
+      default:
+        return null;
+    }
+  };
 
   // Layout calculations dynamically adapting based on screen layout type
   const containerStyle = {
@@ -130,7 +154,7 @@ export default function Home() {
       {/* 1. COMPACT FIXED HEADER */}
       <header style={styles.header}>
         <div style={styles.brand}>
-          <span style={styles.brandLogo}>🧬</span>
+          <IconHelix size={22} style={{ color: "#c084fc", strokeWidth: 2.5 }} />
           <span style={styles.brandName}>{t("common.appName")}</span>
         </div>
 
@@ -167,7 +191,10 @@ export default function Home() {
       <main style={mainContainerStyle}>
         {/* Left Side: Hero Information */}
         <section style={heroStyle}>
-          <span style={styles.badge}>🔬 PLATFORM v1.0 DELIVERED</span>
+          <span style={styles.badge}>
+            <IconHelix size={11} style={{ marginRight: "5px", verticalAlign: "middle", strokeWidth: 2.5 }} />
+            PLATFORM v1.0 DELIVERED
+          </span>
           <h1 style={styles.heroTitle}>{copy.title}</h1>
           <p style={styles.heroSubtitle}>{copy.subtitle}</p>
 
@@ -177,14 +204,16 @@ export default function Home() {
               className="btn btn-primary" 
               style={styles.primaryCta}
             >
-              🚀 {copy.ctaStart}
+              <IconRocket size={16} style={{ marginRight: "6px", verticalAlign: "middle", strokeWidth: 2.5 }} />
+              {copy.ctaStart}
             </button>
             <button 
               onClick={() => router.push("/auth/login")} 
               className="btn btn-outline" 
               style={styles.secondaryCta}
             >
-              🔑 {copy.ctaLogin}
+              <IconKey size={16} style={{ marginRight: "6px", verticalAlign: "middle", strokeWidth: 2.5 }} />
+              {copy.ctaLogin}
             </button>
           </div>
         </section>
@@ -194,7 +223,7 @@ export default function Home() {
           {copy.features.map((f, i) => (
             <div key={i} style={styles.featureCard} className="glass-panel">
               <div style={styles.cardHeader}>
-                <span style={styles.featureIcon}>{f.icon}</span>
+                {getIcon(f.icon)}
                 <h3 style={styles.featureName}>{f.name}</h3>
               </div>
               <p style={styles.featureDesc}>{f.desc}</p>
@@ -284,9 +313,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "0.5rem",
-  },
-  brandLogo: {
-    fontSize: "1.3rem",
   },
   brandName: {
     fontSize: "1.3rem",
@@ -413,10 +439,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "0.6rem"
-  },
-  featureIcon: {
-    fontSize: "1.5rem",
-    display: "block",
   },
   featureName: {
     fontSize: "1rem",
