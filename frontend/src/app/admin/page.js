@@ -84,6 +84,41 @@ export default function AdminPage() {
     return stats.approachStats[type] || 0;
   };
 
+  const getApproachPillStyle = (type, isActive) => {
+    let borderColor = "rgba(255, 255, 255, 0.08)";
+    let color = "rgba(255, 255, 255, 0.5)";
+    let background = "rgba(255, 255, 255, 0.02)";
+    let fontWeight = "normal";
+
+    if (isActive) {
+      borderColor = "#38bdf8";
+      color = "#38bdf8";
+      background = "rgba(56, 189, 248, 0.15)";
+      fontWeight = "bold";
+    } else {
+      if (type === "kuantitatif") borderColor = "rgba(56, 189, 248, 0.3)";
+      if (type === "kualitatif") borderColor = "rgba(167, 139, 250, 0.3)";
+      if (type === "metodeCampuran") borderColor = "rgba(244, 114, 182, 0.3)";
+    }
+
+    return {
+      ...styles.approachPill,
+      borderColor,
+      color,
+      background,
+      fontWeight
+    };
+  };
+
+  const getVacuumButtonStyle = (success) => {
+    return {
+      ...styles.vacuumBtn,
+      borderColor: success ? "#10b981" : "rgba(239, 68, 68, 0.25)",
+      background: success ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.1)",
+      color: success ? "#a7f3d0" : "#fca5a5"
+    };
+  };
+
   // Filter projects dynamically client-side!
   const filteredProjects = stats && stats.projects ? stats.projects.filter((p) => {
     if (approachFilter === "all") return true;
@@ -242,40 +277,25 @@ export default function AdminPage() {
                 <div style={styles.approachPillsGroup}>
                   <button
                     onClick={() => handleApproachFilterClick("all")}
-                    style={{
-                      ...styles.approachPill,
-                      ...(approachFilter === "all" ? styles.approachPillActive : {})
-                    }}
+                    style={getApproachPillStyle("all", approachFilter === "all")}
                   >
                     Semua
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("kuantitatif")}
-                    style={{
-                      ...styles.approachPill,
-                      ...(approachFilter === "kuantitatif" ? styles.approachPillActive : {}),
-                      borderColor: "rgba(56, 189, 248, 0.3)"
-                    }}
+                    style={getApproachPillStyle("kuantitatif", approachFilter === "kuantitatif")}
                   >
                     Quant ({getApproachCount("kuantitatif")})
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("kualitatif")}
-                    style={{
-                      ...styles.approachPill,
-                      ...(approachFilter === "kualitatif" ? styles.approachPillActive : {}),
-                      borderColor: "rgba(167, 139, 250, 0.3)"
-                    }}
+                    style={getApproachPillStyle("kualitatif", approachFilter === "kualitatif")}
                   >
                     Qual ({getApproachCount("kualitatif")})
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("metodeCampuran")}
-                    style={{
-                      ...styles.approachPill,
-                      ...(approachFilter === "metodeCampuran" ? styles.approachPillActive : {}),
-                      borderColor: "rgba(244, 114, 182, 0.3)"
-                    }}
+                    style={getApproachPillStyle("metodeCampuran", approachFilter === "metodeCampuran")}
                   >
                     Campuran ({getApproachCount("metodeCampuran")})
                   </button>
@@ -292,10 +312,7 @@ export default function AdminPage() {
                   <button
                     onClick={handleVacuum}
                     disabled={vacuuming}
-                    style={{
-                      ...styles.vacuumBtn,
-                      ...(vacuumSuccess ? styles.vacuumBtnSuccess : {})
-                    }}
+                    style={getVacuumButtonStyle(vacuumSuccess)}
                   >
                     {vacuuming ? (
                       <>
