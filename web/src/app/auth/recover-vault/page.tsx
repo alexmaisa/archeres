@@ -47,12 +47,23 @@ function RecoverVaultContent() {
     setSuccess("");
 
     try {
-      // 1. Fetch the user's recovery vault from backend
-      const userData = await apiFetch<RecoveryVaultResponse>("/api/auth/me", {
-        method: "GET",
-      });
+      // 1. Fetch the user's recovery vault from sessionStorage or backend
+      let recoveryVault = sessionStorage.getItem("temp_recovery_vault");
+      let vaultSalt = sessionStorage.getItem("temp_vault_salt");
 
-      const { recoveryVault, vaultSalt } = userData;
+      if (!recoveryVault || !vaultSalt) {
+        const userData = await apiFetch<RecoveryVaultResponse>("/api/auth/me", {
+          method: "GET",
+        });
+        recoveryVault = userData.recoveryVault;
+        vaultSalt = userData.vaultSalt;
+      }
+
+      if (!recoveryVault || !vaultSalt) {
+        setError("Vault data missing. Please try the password reset process again.");
+        setLoading(false);
+        return;
+      }
 
       // 2. Derive wrapping key from recovery key + existing salt
       const recoveryWrappingKey = await deriveWrappingKey(recoveryKey.trim(), vaultSalt);
@@ -82,7 +93,11 @@ function RecoverVaultContent() {
         }),
       });
 
-      // 6. Store MEK in session and redirect
+      // 6. Clean up temporary sessionStorage vault data
+      sessionStorage.removeItem("temp_recovery_vault");
+      sessionStorage.removeItem("temp_vault_salt");
+
+      // 7. Store MEK in session and redirect
       await storeMEK(mek);
       setSuccess(t("auth.recoverVaultSuccess"));
       setTimeout(() => {

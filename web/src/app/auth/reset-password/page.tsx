@@ -7,6 +7,8 @@ import { apiFetch } from "../../api";
 
 interface ResetPasswordResponse {
   message: string;
+  recoveryVault?: string;
+  vaultSalt?: string;
 }
 
 export default function ResetPasswordPage() {
@@ -46,14 +48,19 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      await apiFetch<ResetPasswordResponse>("/api/auth/reset-password", {
+      const data = await apiFetch<ResetPasswordResponse>("/api/auth/reset-password", {
         method: "POST",
         body: JSON.stringify({ email, token, newPassword: password }),
       });
 
+      if (data.recoveryVault && data.vaultSalt) {
+        sessionStorage.setItem("temp_recovery_vault", data.recoveryVault);
+        sessionStorage.setItem("temp_vault_salt", data.vaultSalt);
+      }
+
       setSuccess(t("auth.resetSuccess"));
       setTimeout(() => {
-        router.push("/auth/login");
+        router.push(`/auth/recover-vault?email=${encodeURIComponent(email)}&newPassword=${encodeURIComponent(password)}`);
       }, 2000);
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
