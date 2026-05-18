@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IconFolder, IconRefresh, IconUsers, IconHelix } from "../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
@@ -80,7 +81,8 @@ export default function AdminPage() {
             className="btn btn-outline"
             style={styles.dashBtn}
           >
-            📂 {t("common.dashboard")}
+            <IconFolder size={13} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+            {t("common.dashboard")}
           </button>
 
           {/* Language Switcher Bar */}
@@ -119,7 +121,8 @@ export default function AdminPage() {
             <p style={styles.welcomeSubtitle}>{t("admin.subtitle")}</p>
           </div>
           <button onClick={fetchAdminStats} className="btn btn-outline" style={styles.refreshBtn}>
-            🔄 {i18n.language === "id" ? "Segarkan Data" : "Refresh Telemetry"}
+            <IconRefresh size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+            {i18n.language === "id" ? "Segarkan Data" : "Refresh Telemetry"}
           </button>
         </div>
 
@@ -160,7 +163,8 @@ export default function AdminPage() {
                   ...(activeTab === 0 ? styles.tabBtnActive : {}),
                 }}
               >
-                👥 {t("admin.userTitle")}
+                <IconUsers size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {t("admin.userTitle")}
               </button>
               <button
                 onClick={() => setActiveTab(1)}
@@ -169,7 +173,8 @@ export default function AdminPage() {
                   ...(activeTab === 1 ? styles.tabBtnActive : {}),
                 }}
               >
-                🔬 {t("admin.projTitle")}
+                <IconHelix size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {t("admin.projTitle")}
               </button>
             </div>
 
