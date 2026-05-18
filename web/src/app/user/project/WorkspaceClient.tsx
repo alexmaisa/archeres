@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook } from "../../components/Icons";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook, IconFileText, IconMerge, IconLightbulb, IconTrendingDown, IconLink, IconRuler, IconUsers, IconRefresh, IconFolder } from "../../components/Icons";
 import { User } from "../../types";
 import { encryptText, decryptText } from "../../lib/crypto";
 import { getMEK, clearMEK } from "../../lib/session";
@@ -413,7 +413,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
       case 1:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: PARADIGMA PENELITIAN" : "TUTORIAL: RESEARCH PARADIGMS"}</div>
+            <div style={styles.eduBadge}>
+              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {isId ? "TUTORIAL: PARADIGMA PENELITIAN" : "TUTORIAL: RESEARCH PARADIGMS"}
+            </div>
             <h3 style={styles.eduTitle}>{isId ? "Menentukan Pendekatan & Desain" : "Understanding Approach & Design"}</h3>
             <p style={styles.eduIntro}>
               {isId 
@@ -422,7 +425,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📊 {isId ? "Pendekatan Kuantitatif" : "Quantitative Approach"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconChart size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                {isId ? "Pendekatan Kuantitatif" : "Quantitative Approach"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Menitikberatkan pada pengujian teori secara deduktif melalui pengukuran numerik, analisis statistik, dan pembuktian empiris yang objektif." 
@@ -431,7 +437,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📝 {isId ? "Pendekatan Kualitatif" : "Qualitative Approach"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconFileText size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
+                {isId ? "Pendekatan Kualitatif" : "Qualitative Approach"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Mengeksplorasi makna deskriptif, pola naratif, serta pengalaman hidup manusia secara mendalam menggunakan logika induktif." 
@@ -440,7 +449,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>🔀 {isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconMerge size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                {isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Mengintegrasikan presisi data kuantitatif dan kedalaman narasi kualitatif secara sinergis untuk memecahkan masalah penelitian yang kompleks." 
@@ -449,7 +461,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
             
             <div style={styles.eduTip}>
-              <strong>💡 {isId ? "Wawasan Akademis:" : "Academic Insight:"}</strong>
+              <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <IconLightbulb size={16} style={{ color: "#fbbf24" }} />
+                {isId ? "Wawasan Akademis:" : "Academic Insight:"}
+              </strong>
               <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
                 {isId 
                   ? "Gunakan pendekatan Kuantitatif untuk menggeneralisasi temuan pada populasi yang luas. Sebaliknya, pilih pendekatan Kualitatif untuk mendalami dinamika fenomena sosial secara kontekstual." 
@@ -461,7 +476,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
       case 2:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: PENENTUAN UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}</div>
+            <div style={styles.eduBadge}>
+              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {isId ? "TUTORIAL: PENENTUAN UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}
+            </div>
             <h3 style={styles.eduTitle}>{isId ? "Batasan Populasi & Validitas Statistik" : "Population Bounds & Statistical Power"}</h3>
             <p style={styles.eduIntro}>
               {isId 
@@ -470,7 +488,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>👥 {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Populasi (N) mencakup keseluruhan subjek penelitian yang menjadi target generalisasi, sedangkan Sampel (n) adalah representasi sebagian populasi yang dipilih secara metodologis." 
@@ -479,7 +500,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📉 {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#fca5a5" }} />
+                {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Margin of Error (e) mencerminkan batas toleransi kesalahan estimasi (contoh: 5%). Tingkat Kepercayaan (Confidence Level) menunjukkan derajat keyakinan bahwa karakteristik sampel mencerminkan populasi (standar akademis adalah 95%)." 
@@ -488,7 +512,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📐 {isId ? "Formulasi Matematis yang Sah" : "Validated Mathematical Formulas"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
+                {isId ? "Formulasi Matematis yang Sah" : "Validated Mathematical Formulas"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {formula === "slovin" 
                   ? (isId 
@@ -504,16 +531,22 @@ Aligned with the scale of measurements and variable distributions, statistical h
       case 3:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}</div>
+            <div style={styles.eduBadge}>
+              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}
+            </div>
             <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Konstruk Variabel" : "Measurement Scales & Structural Roles"}</h3>
             <p style={styles.eduIntro}>
               {isId 
                 ? "Merumuskan bagaimana indikator penelitian diidentifikasi, diukur, dan dihubungkan secara struktural untuk kebutuhan analisis data." 
-                : "Defining how your research indicators are classified, measured, and structurally structured for data analysis."}
+                : "Defining how your research indicators are classified, measured, and structured for data analysis."}
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>⛓️ {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconLink size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Variabel Independen (stimulus) mempengaruhi variabel Dependen (respons). Mediator menjembatani mata rantai kausalitas, sementara Moderator memodifikasi kekuatan pengaruh hubungan tersebut." 
@@ -522,7 +555,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📏 {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconRuler size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
+                {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Nominal (klasifikasi kategori tanpa tingkatan), Ordinal (memiliki peringkat/urutan), Interval (jarak antar nilai setara namun tanpa nilai nol mutlak), dan Rasio (skala pengukuran paling presisi karena memiliki nilai nol mutlak)." 
@@ -531,7 +567,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduTip}>
-              <strong>📊 {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}</strong>
+              <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <IconChart size={16} style={{ color: "#34d399" }} />
+                {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}
+              </strong>
               <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
                 {isId 
                   ? `Berdasarkan karakteristik variabel Anda, metode analisis '${analysisMethod}' merupakan pilihan statistik yang paling valid untuk menguji hipotesis penelitian.` 
@@ -543,7 +582,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
       case 4:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: SISTEMATIKA METODOLOGI" : "TUTORIAL: METHODOLOGY SYSTEMATICS"}</div>
+            <div style={styles.eduBadge}>
+              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {isId ? "TUTORIAL: SISTEMATIKA METODOLOGI" : "TUTORIAL: METHODOLOGY SYSTEMATICS"}
+            </div>
             <h3 style={styles.eduTitle}>{isId ? "Finalisasi Desain & Replikabilitas Riset" : "Finalizing Design & Replicability"}</h3>
             <p style={styles.eduIntro}>
               {isId 
@@ -552,7 +594,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </p>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>🔁 {isId ? "Prinsip Replikabilitas Riset" : "Replicability Principle"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconRefresh size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
+                {isId ? "Prinsip Replikabilitas Riset" : "Replicability Principle"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Tujuan utama penulisan BAB III secara presisi dan ilmiah adalah memastikan langkah-langkah metodologi Anda diuraikan secara transparan agar peneliti masa depan dapat mereplikasi riset ini dengan hasil yang konsisten." 
@@ -561,7 +606,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </div>
 
             <div style={styles.eduCard}>
-              <h4 style={styles.eduCardTitle}>📁 {isId ? "Pilihan Ekspor Naskah" : "Export Options"}</h4>
+              <h4 style={styles.eduCardTitle}>
+                <IconFolder size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                {isId ? "Pilihan Ekspor Naskah" : "Export Options"}
+              </h4>
               <p style={styles.eduCardBody}>
                 {isId 
                   ? "Anda dapat mengunduh draf dalam format Markdown (.md) yang dapat dibuka secara instan menggunakan Microsoft Word, Notion, Obsidian, atau aplikasi pengolah dokumen lainnya." 
