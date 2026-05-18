@@ -644,7 +644,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
             </button>
           </div>
 
-          <button onClick={handleLogout} className="btn-outline" style={styles.logoutBtn}>
+          <button onClick={handleLogout} className="btn btn-outline" style={styles.logoutBtn}>
             {t("common.logout")}
           </button>
         </div>
@@ -1042,7 +1042,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
           <footer style={styles.middleFooter}>
             <button
               onClick={() => setActiveStep(activeStep - 1)}
-              className="btn-outline"
+              className="btn btn-outline"
               style={{
                 ...styles.navBtn,
                 visibility: activeStep > 1 ? "visible" : "hidden",
@@ -1164,7 +1164,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
               </div>
 
               <div style={styles.rightFooter}>
-                <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
+                <button onClick={handleCopyMarkdown} className="btn btn-outline" style={styles.copyBtnRight}>
                   <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                   {t("preview.copy")}
                 </button>

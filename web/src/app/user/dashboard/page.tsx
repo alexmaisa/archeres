@@ -130,7 +130,7 @@ export default function DashboardPage() {
 
       {/* Navigation Header */}
       <header className="fixed-header">
-        <div className="nav-brand">
+        <div className="nav-brand" style={{ cursor: "pointer" }} onClick={() => router.push("/user/dashboard")}>
           <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
           <span className="badge badge-primary">Workspace</span>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <button onClick={handleLogout} className="btn-outline" style={styles.logoutBtn}>
+          <button onClick={handleLogout} className="btn btn-outline" style={styles.logoutBtn}>
             {t("common.logout")}
           </button>
         </div>
@@ -191,11 +191,16 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Global metrics overview cards */}
         <section className="telemetry-grid">
           <div className="glass-panel telemetry-card">
-            <span className="telemetry-label">{t("dashboard.totalProjects")}</span>
+            <span className="telemetry-label">
+              <IconFolder size={12} style={{ marginRight: "6px" }} />
+              {t("dashboard.totalProjects")}
+            </span>
             <span className="telemetry-val" style={{ color: "#22d3ee" }}>{projects.length}</span>
+            <span className="telemetry-sub">
+              {i18n.language === "id" ? "Proyek penelitian aktif Anda" : "Your active research projects"}
+            </span>
           </div>
         </section>
 

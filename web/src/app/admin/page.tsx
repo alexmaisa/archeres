@@ -688,7 +688,7 @@ export default function AdminPage() {
             </button>
           </div>
 
-          <button onClick={handleLogout} className="btn-outline" style={styles.logoutBtn}>
+          <button onClick={handleLogout} className="btn btn-outline" style={styles.logoutBtn}>
             {t("common.logout")}
           </button>
         </div>
@@ -945,7 +945,7 @@ export default function AdminPage() {
                       type="button"
                       disabled={actionLoading}
                       onClick={() => handleDeleteUser(searchResult.email)}
-                      className="btn-outline"
+                      className="btn btn-outline"
                       style={{
                         fontSize: "0.8rem",
                         padding: "0.5rem 1rem",

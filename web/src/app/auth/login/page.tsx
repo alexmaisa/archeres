@@ -193,7 +193,7 @@ export default function LoginPage() {
         <div style={styles.footer}>
           <button
             onClick={() => router.push("/auth/register")}
-            className="btn-outline"
+            className="btn btn-outline"
             style={styles.toggleBtn}
             disabled={loading}
           >

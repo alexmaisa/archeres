@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
         <div style={styles.footer}>
           <button
             onClick={() => router.push("/auth/login")}
-            className="btn-outline"
+            className="btn btn-outline"
             style={styles.toggleBtn}
             disabled={loading}
           >
