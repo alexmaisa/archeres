@@ -892,8 +892,12 @@ Aligned with the scale of measurements and variable distributions, statistical h
           style={{
             ...styles.rightPanel,
             width: showPreview ? "500px" : "0px",
+            minWidth: "0px",
+            maxWidth: showPreview ? "500px" : "0px",
             opacity: showPreview ? 1 : 0,
             overflow: "hidden",
+            overflowY: showPreview ? "auto" : "hidden",
+            overflowX: "hidden",
             visibility: showPreview ? "visible" : "hidden",
             padding: showPreview ? "1.5rem" : "0px",
             borderLeft: showPreview ? "1px solid hsl(var(--card-border))" : "none",
