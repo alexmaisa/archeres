@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../../components/Icons";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench } from "../../../components/Icons";
 import { User } from "../../../types";
 import { getActiveSessionKey, encryptData, decryptData } from "../../../utils/crypto";
 
@@ -137,6 +137,20 @@ export default function WorkspaceClient() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      // Continue cleanup anyway
+    }
+    localStorage.removeItem("user");
+    router.push("/auth/login");
+  };
+
+  const handleLanguageToggle = (lang: string) => {
+    i18n.changeLanguage(lang);
   };
 
   // 6 Scientifically Validated Formulas client-side (matches Golang backend precision tests)
@@ -405,467 +419,546 @@ Aligned with the scale of measurements and variable distributions, statistical h
   }
 
   return (
-    <div className="workspace-layout">
-      {/* 1. LEFT PANEL: Checklist & Navigation */}
-      <aside className="workspace-sidebar glass-panel">
-        <div style={styles.leftHeader}>
-          <button onClick={() => router.push("/user/dashboard")} style={styles.backLink}>
-            ← {t("common.dashboard")}
-          </button>
-          <h2 style={styles.projectTitleText}>{project.title}</h2>
-          <p style={styles.projectSubtitleText}>{t("wizard.title")}</p>
+    <div style={styles.container}>
+      {/* Ambient decorative background glow circles */}
+      <div className="glow-ambient-cyan"></div>
+      <div className="glow-ambient-purple"></div>
+
+      {/* Navigation Header */}
+      <header className="fixed-header">
+        <div className="nav-brand">
+          <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
+          <span className="nav-brand-name">{t("common.appName")}</span>
+          <span className="badge badge-primary">Workspace</span>
         </div>
 
-        <nav style={styles.stepsNav}>
-          {[
-            { step: 1, label: t("wizard.step1"), icon: <IconHelix size={16} /> },
-            { step: 2, label: t("wizard.step2"), icon: <IconMath size={16} /> },
-            { step: 3, label: t("wizard.step3"), icon: <IconChart size={16} /> },
-            { step: 4, label: t("wizard.step4"), icon: <IconFileDown size={16} /> }
-          ].map((s) => (
+        <div style={styles.navControls}>
+          {user && user.role === "admin" && (
             <button
-              key={s.step}
-              onClick={() => setActiveStep(s.step)}
-              style={{
-                ...styles.stepBtn,
-                ...(activeStep === s.step ? styles.stepBtnActive : {}),
-              }}
+              onClick={() => router.push("/admin")}
+              className="btn btn-outline"
+              style={styles.adminBtn}
             >
-              <span style={styles.stepIcon}>{s.icon}</span>
-              <div style={styles.stepMeta}>
-                <span style={styles.stepNum}>Step {s.step}</span>
-                <span style={styles.stepLabel}>{s.label}</span>
-              </div>
-              {activeStep > s.step && <span style={styles.stepCheck}>✓</span>}
+              <IconWrench size={13} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {t("common.admin")}
             </button>
-          ))}
-        </nav>
-
-        <div style={styles.leftFooter}>
-          {/* Centralized dynamic language switcher toggles entire UI */}
-          <div style={styles.langSwitchWrap}>
-            <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>
-              {t("common.language")}
-            </span>
-            <div style={styles.langBar}>
-              <button
-                onClick={() => i18n.changeLanguage("en")}
-                style={{
-                  ...styles.langBtn,
-                  ...(i18n.language === "en" ? styles.langBtnActive : {}),
-                }}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => i18n.changeLanguage("id")}
-                style={{
-                  ...styles.langBtn,
-                  ...(i18n.language === "id" ? styles.langBtnActive : {}),
-                }}
-              >
-                ID
-              </button>
-            </div>
-          </div>
+          )}
 
           <button
-            onClick={handleSaveProgress}
-            className="btn btn-primary"
-            style={{ width: "100%", padding: "0.75rem" }}
-            disabled={saveLoading}
+            onClick={() => router.push("/user/dashboard")}
+            className="btn btn-outline"
+            style={styles.dashBtn}
           >
-            {saveLoading ? (
-              t("common.loading")
-            ) : (
-              <>
-                <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                {t("common.save")}
-              </>
-            )}
+            {t("common.dashboard")}
+          </button>
+
+          {/* Language Switcher Bar */}
+          <div style={styles.langBar}>
+            <button
+              onClick={() => handleLanguageToggle("en")}
+              style={{
+                ...styles.langBtn,
+                ...(i18n.language === "en" ? styles.langBtnActive : {}),
+              }}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => handleLanguageToggle("id")}
+              style={{
+                ...styles.langBtn,
+                ...(i18n.language === "id" ? styles.langBtnActive : {}),
+              }}
+            >
+              ID
+            </button>
+          </div>
+
+          <button onClick={handleLogout} className="btn-outline" style={styles.logoutBtn}>
+            {t("common.logout")}
           </button>
         </div>
-      </aside>
+      </header>
 
-      {/* 2. MIDDLE PANEL: Interactive Forms & Calculators */}
-      <section className="workspace-wizard">
-        <div style={styles.middleHeader}>
-          <span style={styles.middleStepIndicator}>
-            {t("wizard.progress", { current: activeStep, total: 4 })}
-          </span>
-          <h1 style={styles.middleStepTitle}>
-            {activeStep === 1 && t("wizard.step1")}
-            {activeStep === 2 && t("wizard.step2")}
-            {activeStep === 3 && t("wizard.step3")}
-            {activeStep === 4 && t("wizard.step4")}
-          </h1>
-        </div>
+      {/* 3-Panel Workspace between Header & Footer */}
+      <div className="workspace-layout" style={styles.workspaceWrapper}>
+        {/* 1. LEFT PANEL: Checklist & Navigation */}
+        <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
+          <div style={styles.leftHeader}>
+            <button onClick={() => router.push("/user/dashboard")} style={styles.backLink}>
+              ← {t("common.dashboard")}
+            </button>
+            <h2 style={styles.projectTitleText}>{project.title}</h2>
+            <p style={styles.projectSubtitleText}>{t("wizard.title")}</p>
+          </div>
 
-        <div style={styles.formContainer}>
-          {/* STEP 1: Research Paradigm & Design Selector */}
-          {activeStep === 1 && (
-            <div style={styles.stepForm} className="animate-fade-in">
-              <div className="form-group">
-                <label className="form-label">{t("wizard.approachLabel")}</label>
-                <p style={styles.inputHelp}>{t("wizard.approachDesc")}</p>
-                <div style={styles.radioGrid}>
-                  {[
-                    { id: "quant", label: t("wizard.quant"), desc: "Numerical data, tests, calculations" },
-                    { id: "qual", label: t("wizard.qual"), desc: "Interviews, meanings, categories" },
-                    { id: "mixed", label: t("wizard.mixed"), desc: "Quantitative and qualitative combined" }
-                  ].map((ap) => (
-                    <div
-                      key={ap.id}
-                      onClick={() => setApproach(ap.id)}
-                      style={{
-                        ...styles.radioCard,
-                        ...(approach === ap.id ? styles.radioCardActive : {}),
-                      }}
-                    >
-                      <span style={styles.radioTitle}>{ap.label}</span>
-                      <span style={styles.radioDesc}>{ap.desc}</span>
+          <nav style={styles.stepsNav}>
+            {[
+              { step: 1, label: t("wizard.step1"), icon: <IconHelix size={16} /> },
+              { step: 2, label: t("wizard.step2"), icon: <IconMath size={16} /> },
+              { step: 3, label: t("wizard.step3"), icon: <IconChart size={16} /> },
+              { step: 4, label: t("wizard.step4"), icon: <IconFileDown size={16} /> }
+            ].map((s) => (
+              <button
+                key={s.step}
+                onClick={() => setActiveStep(s.step)}
+                style={{
+                  ...styles.stepBtn,
+                  ...(activeStep === s.step ? styles.stepBtnActive : {}),
+                }}
+              >
+                <span style={styles.stepIcon}>{s.icon}</span>
+                <div style={styles.stepMeta}>
+                  <span style={styles.stepNum}>Step {s.step}</span>
+                  <span style={styles.stepLabel}>{s.label}</span>
+                </div>
+                {activeStep > s.step && <span style={styles.stepCheck}>✓</span>}
+              </button>
+            ))}
+          </nav>
+
+          <div style={styles.leftFooter}>
+            <button
+              onClick={handleSaveProgress}
+              className="btn btn-primary"
+              style={{ width: "100%", padding: "0.75rem" }}
+              disabled={saveLoading}
+            >
+              {saveLoading ? (
+                t("common.loading")
+              ) : (
+                <>
+                  <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                  {t("common.save")}
+                </>
+              )}
+            </button>
+          </div>
+        </aside>
+
+        {/* 2. MIDDLE PANEL: Interactive Forms & Calculators */}
+        <section className="workspace-wizard" style={styles.middlePanel}>
+          <div style={styles.middleHeader}>
+            <span style={styles.middleStepIndicator}>
+              {t("wizard.progress", { current: activeStep, total: 4 })}
+            </span>
+            <h1 style={styles.middleStepTitle}>
+              {activeStep === 1 && t("wizard.step1")}
+              {activeStep === 2 && t("wizard.step2")}
+              {activeStep === 3 && t("wizard.step3")}
+              {activeStep === 4 && t("wizard.step4")}
+            </h1>
+          </div>
+
+          <div style={styles.formContainer}>
+            {/* STEP 1: Research Paradigm & Design Selector */}
+            {activeStep === 1 && (
+              <div style={styles.stepForm} className="animate-fade-in">
+                <div className="form-group">
+                  <label className="form-label">{t("wizard.approachLabel")}</label>
+                  <p style={styles.inputHelp}>{t("wizard.approachDesc")}</p>
+                  <div style={styles.radioGrid}>
+                    {[
+                      { id: "quant", label: t("wizard.quant"), desc: "Numerical data, tests, calculations" },
+                      { id: "qual", label: t("wizard.qual"), desc: "Interviews, meanings, categories" },
+                      { id: "mixed", label: t("wizard.mixed"), desc: "Quantitative and qualitative combined" }
+                    ].map((ap) => (
+                      <div
+                        key={ap.id}
+                        onClick={() => setApproach(ap.id)}
+                        style={{
+                          ...styles.radioCard,
+                          ...(approach === ap.id ? styles.radioCardActive : {}),
+                        }}
+                      >
+                        <span style={styles.radioTitle}>{ap.label}</span>
+                        <span style={styles.radioDesc}>{ap.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginTop: "1.5rem" }}>
+                  <label className="form-label">{t("wizard.designLabel")}</label>
+                  <p style={styles.inputHelp}>{t("wizard.designDesc")}</p>
+                  <select
+                    value={design}
+                    onChange={(e) => setDesign(e.target.value)}
+                    className="form-input"
+                    style={styles.selectInput}
+                  >
+                    {approach === "quant" && (
+                      <>
+                        <option value="Experimental">Experimental (Pre, True, Quasi)</option>
+                        <option value="Correlational">Correlational (Relationship Analysis)</option>
+                        <option value="Survey / Descriptive">Descriptive Survey</option>
+                      </>
+                    )}
+                    {approach === "qual" && (
+                      <>
+                        <option value="Case Study">Grounded Case Study</option>
+                        <option value="Phenomenology">Phenomenology (Lived Experiences)</option>
+                        <option value="Grounded Theory">Grounded Theory Framework</option>
+                      </>
+                    )}
+                    {approach === "mixed" && (
+                      <>
+                        <option value="Convergent Parallel">Convergent Parallel Design</option>
+                        <option value="Explanatory Sequential">Explanatory Sequential Design</option>
+                        <option value="Exploratory Sequential">Exploratory Sequential Design</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: Mathematical Sample Size Calculator */}
+            {activeStep === 2 && (
+              <div style={styles.stepForm} className="animate-fade-in">
+                <div className="form-group">
+                  <label className="form-label">{t("wizard.formulaLabel")}</label>
+                  <p style={styles.inputHelp}>{t("wizard.formulaDesc")}</p>
+                  <select
+                    value={formula}
+                    onChange={(e) => setFormula(e.target.value)}
+                    className="form-input"
+                    style={styles.selectInput}
+                  >
+                    <option value="slovin">Slovin Formula (General finite populational)</option>
+                    <option value="cochran">Cochran Formula (Infinite populations / proportion)</option>
+                    <option value="lemeshow">Lemeshow WHO Formula (Finite correction for surveys)</option>
+                    <option value="krejcie_morgan">Krejcie & Morgan Table (Scientific estimation)</option>
+                    <option value="yamane">Yamane (Precision sampling limit)</option>
+                    <option value="daniel">Daniel Formula (Bio-statistical/health attributes)</option>
+                  </select>
+                </div>
+
+                {/* Dynamic Parameter Sliders */}
+                <div style={styles.slidersCard} className="glass-panel">
+                  {/* 1. Population Size N (for finite formulas) */}
+                  {["slovin", "lemeshow", "krejcie_morgan", "yamane"].includes(formula) && (
+                    <div style={styles.sliderGroup}>
+                      <div style={styles.sliderHeader}>
+                        <span style={styles.sliderLabel}>{t("wizard.popSizeLabel")}</span>
+                        <span style={styles.sliderVal}>{popSize.toLocaleString()}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="10"
+                        max="100000"
+                        step="50"
+                        value={popSize}
+                        onChange={(e) => setPopSize(Number(e.target.value))}
+                        style={styles.rangeInput}
+                      />
+                      <p style={styles.sliderHelp}>{t("wizard.popSizeDesc")}</p>
+                    </div>
+                  )}
+
+                  {/* 2. Confidence Level Z */}
+                  {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                    <div style={styles.sliderGroup}>
+                      <div style={styles.sliderHeader}>
+                        <span style={styles.sliderLabel}>{t("wizard.confLevelLabel")}</span>
+                        <span style={styles.sliderVal}>{confLevel * 100}%</span>
+                      </div>
+                      <select
+                        value={confLevel}
+                        onChange={(e) => setConfLevel(Number(e.target.value))}
+                        className="form-input"
+                        style={styles.selectInputSmall}
+                      >
+                        <option value={0.90}>90% (Z = 1.645)</option>
+                        <option value={0.95}>95% (Z = 1.96)</option>
+                        <option value={0.99}>99% (Z = 2.576)</option>
+                      </select>
+                      <p style={styles.sliderHelp}>{t("wizard.confLevelDesc")}</p>
+                    </div>
+                  )}
+
+                  {/* 3. Margin of Error e */}
+                  <div style={styles.sliderGroup}>
+                    <div style={styles.sliderHeader}>
+                      <span style={styles.sliderLabel}>{t("wizard.marginLabel")}</span>
+                      <span style={styles.sliderVal}>{(marginError * 100).toFixed(1)}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0.01"
+                      max="0.20"
+                      step="0.005"
+                      value={marginError}
+                      onChange={(e) => setMarginError(Number(e.target.value))}
+                      style={styles.rangeInput}
+                    />
+                    <p style={styles.sliderHelp}>{t("wizard.marginDesc")}</p>
+                  </div>
+
+                  {/* 4. Attribute Proportion p */}
+                  {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                    <div style={styles.sliderGroup}>
+                      <div style={styles.sliderHeader}>
+                        <span style={styles.sliderLabel}>{t("wizard.propLabel")}</span>
+                        <span style={styles.sliderVal}>{proportion}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="0.9"
+                        step="0.05"
+                        value={proportion}
+                        onChange={(e) => setProportion(Number(e.target.value))}
+                        style={styles.rangeInput}
+                      />
+                      <p style={styles.sliderHelp}>{t("wizard.propDesc")}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Real-time Math Output box */}
+                <div style={styles.calculatorOutput} className="glass-panel">
+                  <span style={styles.outputLabel}>{t("wizard.sampleSizeResult")}</span>
+                  <span style={styles.outputVal}>{sampleSize}</span>
+                  <p style={styles.outputHelp}>{t("wizard.sampleSizeDesc")}</p>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: Variable & Measurement Scale Planner */}
+            {activeStep === 3 && (
+              <div style={styles.stepForm} className="animate-fade-in">
+                <div style={styles.varsHeaderRow}>
+                  <label className="form-label">{t("wizard.varLabel")}</label>
+                  <button onClick={handleAddVariable} className="btn btn-outline" style={styles.addVarBtn}>
+                    <IconPlus size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                    {t("wizard.addVarBtn")}
+                  </button>
+                </div>
+                <p style={{ ...styles.inputHelp, marginBottom: "1.5rem" }}>
+                  {t("wizard.varDesc")}
+                </p>
+
+                <div style={styles.varsTable}>
+                  {variables.map((v, index) => (
+                    <div key={index} style={styles.varRow} className="glass-panel">
+                      <input
+                        type="text"
+                        value={v.name}
+                        onChange={(e) => handleVariableChange(index, "name", e.target.value)}
+                        placeholder={t("wizard.varNameCol")}
+                        className="form-input"
+                        style={styles.varInput}
+                      />
+
+                      <select
+                        value={v.role}
+                        onChange={(e) => handleVariableChange(index, "role", e.target.value)}
+                        className="form-input"
+                        style={styles.varSelect}
+                      >
+                        <option value="Independent (Cause)">{t("wizard.roleInd")}</option>
+                        <option value="Dependent (Effect)">{t("wizard.roleDep")}</option>
+                        <option value="Moderator (Context)">{t("wizard.roleMod")}</option>
+                        <option value="Mediator (Mechanism)">{t("wizard.roleMed")}</option>
+                      </select>
+
+                      <select
+                        value={v.scale}
+                        onChange={(e) => handleVariableChange(index, "scale", e.target.value)}
+                        className="form-input"
+                        style={styles.varSelect}
+                      >
+                        <option value="Nominal (Categories)">{t("wizard.scaleNom")}</option>
+                        <option value="Ordinal (Ranked Categories)">{t("wizard.scaleOrd")}</option>
+                        <option value="Interval (Ordered, Equal Distances)">{t("wizard.scaleInt")}</option>
+                        <option value="Ratio (Ordered, True Zero Point)">{t("wizard.scaleRat")}</option>
+                      </select>
+
+                      <button onClick={() => handleRemoveVariable(index)} style={styles.varDelete}>
+                        ✕
+                      </button>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              <div className="form-group" style={{ marginTop: "1.5rem" }}>
-                <label className="form-label">{t("wizard.designLabel")}</label>
-                <p style={styles.inputHelp}>{t("wizard.designDesc")}</p>
-                <select
-                  value={design}
-                  onChange={(e) => setDesign(e.target.value)}
-                  className="form-input"
-                  style={styles.selectInput}
-                >
-                  {approach === "quant" && (
-                    <>
-                      <option value="Experimental">Experimental (Pre, True, Quasi)</option>
-                      <option value="Correlational">Correlational (Relationship Analysis)</option>
-                      <option value="Survey / Descriptive">Descriptive Survey</option>
-                    </>
-                  )}
-                  {approach === "qual" && (
-                    <>
-                      <option value="Case Study">Grounded Case Study</option>
-                      <option value="Phenomenology">Phenomenology (Lived Experiences)</option>
-                      <option value="Grounded Theory">Grounded Theory Framework</option>
-                    </>
-                  )}
-                  {approach === "mixed" && (
-                    <>
-                      <option value="Convergent Parallel">Convergent Parallel Design</option>
-                      <option value="Explanatory Sequential">Explanatory Sequential Design</option>
-                      <option value="Exploratory Sequential">Exploratory Sequential Design</option>
-                    </>
-                  )}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: Mathematical Sample Size Calculator */}
-          {activeStep === 2 && (
-            <div style={styles.stepForm} className="animate-fade-in">
-              <div className="form-group">
-                <label className="form-label">{t("wizard.formulaLabel")}</label>
-                <p style={styles.inputHelp}>{t("wizard.formulaDesc")}</p>
-                <select
-                  value={formula}
-                  onChange={(e) => setFormula(e.target.value)}
-                  className="form-input"
-                  style={styles.selectInput}
-                >
-                  <option value="slovin">Slovin Formula (General finite populational)</option>
-                  <option value="cochran">Cochran Formula (Infinite populations / proportion)</option>
-                  <option value="lemeshow">Lemeshow WHO Formula (Finite correction for surveys)</option>
-                  <option value="krejcie_morgan">Krejcie & Morgan Table (Scientific estimation)</option>
-                  <option value="yamane">Yamane (Precision sampling limit)</option>
-                  <option value="daniel">Daniel Formula (Bio-statistical/health attributes)</option>
-                </select>
-              </div>
-
-              {/* Dynamic Parameter Sliders */}
-              <div style={styles.slidersCard} className="glass-panel">
-                {/* 1. Population Size N (for finite formulas) */}
-                {["slovin", "lemeshow", "krejcie_morgan", "yamane"].includes(formula) && (
-                  <div style={styles.sliderGroup}>
-                    <div style={styles.sliderHeader}>
-                      <span style={styles.sliderLabel}>{t("wizard.popSizeLabel")}</span>
-                      <span style={styles.sliderVal}>{popSize.toLocaleString()}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="10"
-                      max="100000"
-                      step="50"
-                      value={popSize}
-                      onChange={(e) => setPopSize(Number(e.target.value))}
-                      style={styles.rangeInput}
-                    />
-                    <p style={styles.sliderHelp}>{t("wizard.popSizeDesc")}</p>
-                  </div>
-                )}
-
-                {/* 2. Confidence Level Z */}
-                {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
-                  <div style={styles.sliderGroup}>
-                    <div style={styles.sliderHeader}>
-                      <span style={styles.sliderLabel}>{t("wizard.confLevelLabel")}</span>
-                      <span style={styles.sliderVal}>{confLevel * 100}%</span>
-                    </div>
-                    <select
-                      value={confLevel}
-                      onChange={(e) => setConfLevel(Number(e.target.value))}
-                      className="form-input"
-                      style={styles.selectInputSmall}
-                    >
-                      <option value={0.90}>90% (Z = 1.645)</option>
-                      <option value={0.95}>95% (Z = 1.96)</option>
-                      <option value={0.99}>99% (Z = 2.576)</option>
-                    </select>
-                    <p style={styles.sliderHelp}>{t("wizard.confLevelDesc")}</p>
-                  </div>
-                )}
-
-                {/* 3. Margin of Error e */}
-                <div style={styles.sliderGroup}>
-                  <div style={styles.sliderHeader}>
-                    <span style={styles.sliderLabel}>{t("wizard.marginLabel")}</span>
-                    <span style={styles.sliderVal}>{(marginError * 100).toFixed(1)}%</span>
-                  </div>
+                {/* Analytical Advice Panel */}
+                <div style={styles.adviceCard} className="glass-panel">
+                  <span style={styles.adviceLabel}>💡 {t("wizard.analysisLabel")}</span>
+                  <p style={styles.inputHelp}>{t("wizard.analysisDesc")}</p>
                   <input
-                    type="range"
-                    min="0.01"
-                    max="0.20"
-                    step="0.005"
-                    value={marginError}
-                    onChange={(e) => setMarginError(Number(e.target.value))}
-                    style={styles.rangeInput}
+                    type="text"
+                    value={analysisMethod}
+                    onChange={(e) => setAnalysisMethod(e.target.value)}
+                    className="form-input"
+                    style={{ marginTop: "1rem" }}
+                    placeholder={t("wizard.analysisPlaceholder")}
                   />
-                  <p style={styles.sliderHelp}>{t("wizard.marginDesc")}</p>
                 </div>
-
-                {/* 4. Attribute Proportion p */}
-                {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
-                  <div style={styles.sliderGroup}>
-                    <div style={styles.sliderHeader}>
-                      <span style={styles.sliderLabel}>{t("wizard.propLabel")}</span>
-                      <span style={styles.sliderVal}>{proportion}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="0.9"
-                      step="0.05"
-                      value={proportion}
-                      onChange={(e) => setProportion(Number(e.target.value))}
-                      style={styles.rangeInput}
-                    />
-                    <p style={styles.sliderHelp}>{t("wizard.propDesc")}</p>
-                  </div>
-                )}
               </div>
-
-              {/* Real-time Math Output box */}
-              <div style={styles.calculatorOutput} className="glass-panel">
-                <span style={styles.outputLabel}>{t("wizard.sampleSizeResult")}</span>
-                <span style={styles.outputVal}>{sampleSize}</span>
-                <p style={styles.outputHelp}>{t("wizard.sampleSizeDesc")}</p>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: Variable & Measurement Scale Planner */}
-          {activeStep === 3 && (
-            <div style={styles.stepForm} className="animate-fade-in">
-              <div style={styles.varsHeaderRow}>
-                <label className="form-label">{t("wizard.varLabel")}</label>
-                <button onClick={handleAddVariable} className="btn btn-outline" style={styles.addVarBtn}>
-                  <IconPlus size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
-                  {t("wizard.addVarBtn")}
-                </button>
-              </div>
-              <p style={{ ...styles.inputHelp, marginBottom: "1.5rem" }}>
-                {t("wizard.varDesc")}
-              </p>
-
-              <div style={styles.varsTable}>
-                {variables.map((v, index) => (
-                  <div key={index} style={styles.varRow} className="glass-panel">
-                    <input
-                      type="text"
-                      value={v.name}
-                      onChange={(e) => handleVariableChange(index, "name", e.target.value)}
-                      placeholder={t("wizard.varNameCol")}
-                      className="form-input"
-                      style={styles.varInput}
-                    />
-
-                    <select
-                      value={v.role}
-                      onChange={(e) => handleVariableChange(index, "role", e.target.value)}
-                      className="form-input"
-                      style={styles.varSelect}
-                    >
-                      <option value="Independent (Cause)">{t("wizard.roleInd")}</option>
-                      <option value="Dependent (Effect)">{t("wizard.roleDep")}</option>
-                      <option value="Moderator (Context)">{t("wizard.roleMod")}</option>
-                      <option value="Mediator (Mechanism)">{t("wizard.roleMed")}</option>
-                    </select>
-
-                    <select
-                      value={v.scale}
-                      onChange={(e) => handleVariableChange(index, "scale", e.target.value)}
-                      className="form-input"
-                      style={styles.varSelect}
-                    >
-                      <option value="Nominal (Categories)">{t("wizard.scaleNom")}</option>
-                      <option value="Ordinal (Ranked Categories)">{t("wizard.scaleOrd")}</option>
-                      <option value="Interval (Ordered, Equal Distances)">{t("wizard.scaleInt")}</option>
-                      <option value="Ratio (Ordered, True Zero Point)">{t("wizard.scaleRat")}</option>
-                    </select>
-
-                    <button onClick={() => handleRemoveVariable(index)} style={styles.varDelete}>
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Analytical Advice Panel */}
-              <div style={styles.adviceCard} className="glass-panel">
-                <span style={styles.adviceLabel}>💡 {t("wizard.analysisLabel")}</span>
-                <p style={styles.inputHelp}>{t("wizard.analysisDesc")}</p>
-                <input
-                  type="text"
-                  value={analysisMethod}
-                  onChange={(e) => setAnalysisMethod(e.target.value)}
-                  className="form-input"
-                  style={{ marginTop: "1rem" }}
-                  placeholder={t("wizard.analysisPlaceholder")}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: Exporter & Completion controls */}
-          {activeStep === 4 && (
-            <div className="animate-fade-in" style={{ ...styles.stepForm, textAlign: "center", padding: "2rem" }}>
-              <span style={{ fontSize: "4rem" }}>🎉</span>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "1.5rem 0 0.5rem 0", color: "white" }}>
-                {i18n.language === "id" ? "Konfigurasi Metodologi Lengkap!" : "Methodology Structured!"}
-              </h2>
-              <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.6)", maxWidth: "480px", margin: "0 auto 2.5rem auto" }}>
-                {i18n.language === "id" 
-                  ? "Seluruh parameter ilmiah, ukuran sampel minimal, dan indikabel variabel Anda telah diintegrasikan secara akademis ke Bab III draf metodologi Anda." 
-                  : "All scientific variables, calculations, and paradigms have been successfully integrated into your Chapter 3 academic thesis draft."}
-              </p>
-
-              <div style={styles.exportControlsRow}>
-                <button onClick={handleDownloadMd} className="btn btn-primary" style={styles.exportBtn}>
-                  <IconFileDown size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                  {t("preview.download")}
-                </button>
-                <button onClick={handleCopyMarkdown} className="btn btn-outline" style={styles.exportBtn}>
-                  <IconCopy size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                  {t("preview.copy")}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Wizard Footer step actions */}
-        <footer style={styles.middleFooter}>
-          <button
-            onClick={() => setActiveStep(activeStep - 1)}
-            className="btn-outline"
-            style={{
-              ...styles.navBtn,
-              visibility: activeStep > 1 ? "visible" : "hidden",
-            }}
-          >
-            ← {t("common.back")}
-          </button>
-          
-          <button
-            onClick={() => {
-              if (activeStep < 4) {
-                setActiveStep(activeStep + 1);
-              } else {
-                handleSaveProgress();
-              }
-            }}
-            className="btn btn-primary"
-            style={styles.navBtn}
-          >
-            {activeStep < 4 ? (
-              `${t("common.next")} →`
-            ) : (
-              <>
-                <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                {t("common.save")}
-              </>
             )}
-          </button>
-        </footer>
-      </section>
 
-      {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview */}
-      <section className="workspace-preview glass-panel">
-        <div style={styles.rightHeader}>
-          <div>
-            <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
-            <p style={styles.rightSubtitleText}>{t("preview.subtitle")}</p>
+            {/* STEP 4: Exporter & Completion controls */}
+            {activeStep === 4 && (
+              <div className="animate-fade-in" style={{ ...styles.stepForm, textAlign: "center", padding: "2rem" }}>
+                <span style={{ fontSize: "4rem" }}>🎉</span>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "1.5rem 0 0.5rem 0", color: "white" }}>
+                  {i18n.language === "id" ? "Konfigurasi Metodologi Lengkap!" : "Methodology Structured!"}
+                </h2>
+                <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.6)", maxWidth: "480px", margin: "0 auto 2.5rem auto" }}>
+                  {i18n.language === "id" 
+                    ? "Seluruh parameter ilmiah, ukuran sampel minimal, dan indikabel variabel Anda telah diintegrasikan secara akademis ke Bab III draf metodologi Anda." 
+                    : "All scientific variables, calculations, and paradigms have been successfully integrated into your Chapter 3 academic thesis draft."}
+                </p>
+
+                <div style={styles.exportControlsRow}>
+                  <button onClick={handleDownloadMd} className="btn btn-primary" style={styles.exportBtn}>
+                    <IconFileDown size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                    {t("preview.download")}
+                  </button>
+                  <button onClick={handleCopyMarkdown} className="btn btn-outline" style={styles.exportBtn}>
+                    <IconCopy size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                    {t("preview.copy")}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Localized draft switcher: toggle translation of the academic draft itself! */}
-          <div style={styles.draftLangBar}>
+          {/* Wizard Footer step actions */}
+          <footer style={styles.middleFooter}>
             <button
-              onClick={() => setPreviewLang("en")}
+              onClick={() => setActiveStep(activeStep - 1)}
+              className="btn-outline"
               style={{
-                ...styles.draftLangBtn,
-                ...(previewLang === "en" ? styles.draftLangBtnActive : {}),
+                ...styles.navBtn,
+                visibility: activeStep > 1 ? "visible" : "hidden",
               }}
             >
-              🇺🇸 EN
+              ← {t("common.back")}
             </button>
+            
             <button
-              onClick={() => setPreviewLang("id")}
-              style={{
-                ...styles.draftLangBtn,
-                ...(previewLang === "id" ? styles.draftLangBtnActive : {}),
+              onClick={() => {
+                if (activeStep < 4) {
+                  setActiveStep(activeStep + 1);
+                } else {
+                  handleSaveProgress();
+                }
               }}
+              className="btn btn-primary"
+              style={styles.navBtn}
             >
-              🇮🇩 ID
+              {activeStep < 4 ? (
+                `${t("common.next")} →`
+              ) : (
+                <>
+                  <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                  {t("common.save")}
+                </>
+              )}
+            </button>
+          </footer>
+        </section>
+
+        {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview */}
+        <section className="workspace-preview glass-panel" style={styles.rightPanel}>
+          <div style={styles.rightHeader}>
+            <div>
+              <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
+              <p style={styles.rightSubtitleText}>{t("preview.subtitle")}</p>
+            </div>
+
+            {/* Localized draft switcher: toggle translation of the academic draft itself! */}
+            <div style={styles.draftLangBar}>
+              <button
+                onClick={() => setPreviewLang("en")}
+                style={{
+                  ...styles.draftLangBtn,
+                  ...(previewLang === "en" ? styles.draftLangBtnActive : {}),
+                }}
+              >
+                🇺🇸 EN
+              </button>
+              <button
+                onClick={() => setPreviewLang("id")}
+                style={{
+                  ...styles.draftLangBtn,
+                  ...(previewLang === "id" ? styles.draftLangBtnActive : {}),
+                }}
+              >
+                🇮🇩 ID
+              </button>
+            </div>
+          </div>
+
+          {/* Academic document display frame */}
+          <div style={styles.documentContainer}>
+            <div style={styles.academicPaper} className="academic-sheet">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdownToHtml(generateMarkdownDraft(previewLang)),
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={styles.rightFooter}>
+            <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
+              <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {t("preview.copy")}
             </button>
           </div>
-        </div>
+        </section>
+      </div>
 
-        {/* Academic document display frame */}
-        <div style={styles.documentContainer}>
-          <div style={styles.academicPaper} className="academic-sheet">
-            <div
-              dangerouslySetInnerHTML={{
-                __html: renderMarkdownToHtml(generateMarkdownDraft(previewLang)),
-              }}
-            />
-          </div>
-        </div>
-
-        <div style={styles.rightFooter}>
-          <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
-            <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-            {t("preview.copy")}
-          </button>
-        </div>
-      </section>
+      <footer className="fixed-footer">
+        <p className="footer-text">
+          &copy; 2026 Benny Maisa. Archeres: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
+        </p>
+      </footer>
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  container: {
+    minHeight: "100vh",
+    width: "100vw",
+    backgroundColor: "hsl(var(--bg-color))",
+    position: "relative",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+  workspaceWrapper: {
+    marginTop: "60px",
+    marginBottom: "45px",
+    height: "calc(100vh - 105px)",
+    gridTemplateColumns: "300px 1fr 500px",
+    width: "100vw",
+    overflow: "hidden",
+  },
+  navControls: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+  },
+  adminBtn: {
+    padding: "0.5rem 1rem",
+    fontSize: "0.85rem",
+  },
+  dashBtn: {
+    padding: "0.5rem 1rem",
+    fontSize: "0.85rem",
+  },
+  logoutBtn: {
+    padding: "0.5rem 1rem",
+    fontSize: "0.85rem",
+    borderColor: "rgba(239, 68, 68, 0.2)",
+    color: "#fca5a5",
+    cursor: "pointer",
+  },
   workspaceGrid: {
     display: "grid",
     gridTemplateColumns: "300px 1fr 500px",
