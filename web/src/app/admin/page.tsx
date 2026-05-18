@@ -377,34 +377,21 @@ export default function AdminPage() {
     };
 
     return (
-      <div style={{ marginTop: "1rem" }} className="animate-fade-in">
+      <div style={{ marginTop: "1rem", position: "relative" }} className="animate-fade-in">
         <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
           {/* Horizontal grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
             const y = paddingTop + chartHeight * (1 - ratio);
-            const gridLabel = Math.round(maxVal * ratio);
             return (
-              <g key={idx}>
-                <line
-                  x1={paddingLeft}
-                  y1={y}
-                  x2={width - paddingRight}
-                  y2={y}
-                  stroke="rgba(255,255,255,0.03)"
-                  strokeWidth="1"
-                />
-                <text
-                  x={paddingLeft - 8}
-                  y={y + 3}
-                  fill="rgba(255,255,255,0.4)"
-                  fontSize="9.5"
-                  fontWeight="600"
-                  textAnchor="end"
-                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision" }}
-                >
-                  {gridLabel}
-                </text>
-              </g>
+              <line
+                key={idx}
+                x1={paddingLeft}
+                y1={y}
+                x2={width - paddingRight}
+                y2={y}
+                stroke="rgba(255,255,255,0.03)"
+                strokeWidth="1"
+              />
             );
           })}
 
@@ -429,7 +416,7 @@ export default function AdminPage() {
                   style={{ transition: "all 0.5s ease" }}
                 />
 
-                {/* Number tooltip */}
+                {/* Number tooltip inside SVG is fine since it's absolutely positioned over the bar */}
                 {val > 0 && (
                   <text
                     x={x + barW / 2}
@@ -443,19 +430,6 @@ export default function AdminPage() {
                     {val}
                   </text>
                 )}
-
-                {/* X Axis Labels */}
-                <text
-                  x={x + barW / 2}
-                  y={height - 7}
-                  fill="rgba(255,255,255,0.6)"
-                  fontSize="9.5"
-                  fontWeight="600"
-                  textAnchor="middle"
-                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "0.01em" }}
-                >
-                  {getMonthLabel(mStr)}
-                </text>
               </g>
             );
           })}
@@ -467,6 +441,66 @@ export default function AdminPage() {
             </linearGradient>
           </defs>
         </svg>
+
+        {/* Y Axis Grid Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          height: `${height}px`,
+          width: `${paddingLeft - 4}px`,
+          pointerEvents: "none"
+        }}>
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const gridLabel = Math.round(maxVal * ratio);
+            const topPct = ((paddingTop + chartHeight * (1 - ratio)) / height) * 100;
+            return (
+              <span key={idx} style={{
+                position: "absolute",
+                top: `${topPct}%`,
+                right: "0",
+                transform: "translateY(-50%)",
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.45)",
+                fontFamily: "var(--font-outfit), sans-serif",
+                fontWeight: 600,
+                lineHeight: 1
+              }}>
+                {gridLabel}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* X Axis Month Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          bottom: "3px",
+          width: "100%",
+          height: `${paddingBottom}px`,
+          pointerEvents: "none"
+        }}>
+          {months.map((mStr, idx) => {
+            const xVal = paddingLeft + idx * colWidth + colWidth * 0.15;
+            const barW = colWidth * 0.7;
+            const leftPct = ((xVal + barW / 2) / width) * 100;
+            return (
+              <span key={mStr} style={{
+                position: "absolute",
+                left: `${leftPct}%`,
+                transform: "translateX(-50%)",
+                fontSize: "0.72rem",
+                color: "rgba(255,255,255,0.5)",
+                fontFamily: "var(--font-outfit), sans-serif",
+                fontWeight: 600,
+                whiteSpace: "nowrap"
+              }}>
+                {getMonthLabel(mStr)}
+              </span>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -539,29 +573,16 @@ export default function AdminPage() {
           {/* Horizontal grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
             const y = paddingTop + chartHeight * (1 - ratio);
-            const gridLabel = Math.round(maxVal * ratio);
             return (
-              <g key={idx}>
-                <line
-                  x1={paddingLeft}
-                  y1={y}
-                  x2={width - paddingRight}
-                  y2={y}
-                  stroke="rgba(255,255,255,0.03)"
-                  strokeWidth="1"
-                />
-                <text
-                  x={paddingLeft - 8}
-                  y={y + 3}
-                  fill="rgba(255,255,255,0.4)"
-                  fontSize="9.5"
-                  fontWeight="600"
-                  textAnchor="end"
-                  style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision" }}
-                >
-                  {gridLabel}
-                </text>
-              </g>
+              <line
+                key={idx}
+                x1={paddingLeft}
+                y1={y}
+                x2={width - paddingRight}
+                y2={y}
+                stroke="rgba(255,255,255,0.03)"
+                strokeWidth="1"
+              />
             );
           })}
 
@@ -615,25 +636,6 @@ export default function AdminPage() {
             </g>
           ))}
 
-          {/* X Axis Labels */}
-          {months.map((mStr, idx) => {
-            const x = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
-            return (
-              <text
-                key={`lbl-${idx}`}
-                x={x}
-                y={height - 6}
-                fill="rgba(255,255,255,0.6)"
-                fontSize="9.5"
-                fontWeight="600"
-                textAnchor="middle"
-                style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "0.01em" }}
-              >
-                {getMonthLabel(mStr)}
-              </text>
-            );
-          })}
-
           <defs>
             <linearGradient id="userAreaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.12" />
@@ -645,6 +647,65 @@ export default function AdminPage() {
             </linearGradient>
           </defs>
         </svg>
+
+        {/* Y Axis Grid Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          height: `${height}px`,
+          width: `${paddingLeft - 4}px`,
+          pointerEvents: "none"
+        }}>
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const gridLabel = Math.round(maxVal * ratio);
+            const topPct = ((paddingTop + chartHeight * (1 - ratio)) / height) * 100;
+            return (
+              <span key={idx} style={{
+                position: "absolute",
+                top: `${topPct}%`,
+                right: "0",
+                transform: "translateY(-50%)",
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.45)",
+                fontFamily: "var(--font-outfit), sans-serif",
+                fontWeight: 600,
+                lineHeight: 1
+              }}>
+                {gridLabel}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* X Axis Month Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          bottom: "3px",
+          width: "100%",
+          height: `${paddingBottom}px`,
+          pointerEvents: "none"
+        }}>
+          {months.map((mStr, idx) => {
+            const xVal = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
+            const leftPct = (xVal / width) * 100;
+            return (
+              <span key={mStr} style={{
+                position: "absolute",
+                left: `${leftPct}%`,
+                transform: "translateX(-50%)",
+                fontSize: "0.72rem",
+                color: "rgba(255,255,255,0.5)",
+                fontFamily: "var(--font-outfit), sans-serif",
+                fontWeight: 600,
+                whiteSpace: "nowrap"
+              }}>
+                {getMonthLabel(mStr)}
+              </span>
+            );
+          })}
+        </div>
       </div>
     );
   };
