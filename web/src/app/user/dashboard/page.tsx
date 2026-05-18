@@ -118,17 +118,45 @@ export default function DashboardPage() {
       const data = await apiFetch<Project[]>("/api/projects", { method: "GET" });
       const mek = await getMEK();
 
-      if (mek && data && data.length > 0) {
-        const decryptedProjects = await Promise.all(
-          data.map(async (p) => ({
-            ...p,
-            title: await decryptText(p.title, mek).catch(() => p.title),
-            description: p.description ? await decryptText(p.description, mek).catch(() => p.description) : p.description,
-          }))
+      if (data && data.length > 0) {
+        const processed = await Promise.all(
+          data.map(async (p: any) => {
+            const rd = p.researchDesign || {};
+            const rawApproach = p.approach || rd.approach || "";
+            const designVal = p.designType || rd.designType || "";
+
+            let approachVal = rawApproach;
+            const lowerApp = rawApproach.toLowerCase();
+            if (lowerApp === "quant" || lowerApp === "quantitative" || lowerApp === "kuantitatif") {
+              approachVal = "Kuantitatif";
+            } else if (lowerApp === "qual" || lowerApp === "qualitative" || lowerApp === "kualitatif") {
+              approachVal = "Kualitatif";
+            } else if (lowerApp === "mixed" || lowerApp === "mixed methods" || lowerApp === "metode campuran" || lowerApp === "campuran") {
+              approachVal = "Metode Campuran";
+            }
+
+            let titleDec = p.title;
+            let descDec = p.description;
+
+            if (mek) {
+              titleDec = await decryptText(p.title, mek).catch(() => p.title);
+              if (p.description) {
+                descDec = await decryptText(p.description, mek).catch(() => p.description);
+              }
+            }
+
+            return {
+              ...p,
+              title: titleDec,
+              description: descDec,
+              approach: approachVal,
+              designType: designVal,
+            };
+          })
         );
-        setProjects(decryptedProjects);
+        setProjects(processed);
       } else {
-        setProjects(data || []);
+        setProjects([]);
       }
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
@@ -548,7 +576,13 @@ export default function DashboardPage() {
                                     ? "badge-cyan"
                                     : "badge-success"
                               }`}>
-                                {proj.approach}
+                                {proj.approach === "Kuantitatif"
+                                  ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                                  : proj.approach === "Kualitatif"
+                                    ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                    : proj.approach === "Metode Campuran"
+                                      ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                      : proj.approach}
                               </span>
                             ) : (
                               <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
@@ -619,10 +653,16 @@ export default function DashboardPage() {
                           <td style={{ verticalAlign: "middle" }}>
                             {proj.approach ? (
                               <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
-                                {proj.approach}
+                                {proj.approach === "Kuantitatif"
+                                  ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                                  : proj.approach === "Kualitatif"
+                                    ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                    : proj.approach === "Metode Campuran"
+                                      ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                      : proj.approach}
                               </span>
                             ) : (
-                              <span style={{ color: "rgba(255, 255, 255, 0.2)", fontSize: "0.85rem" }}>—</span>
+                              <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
                             )}
                           </td>
                           <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
