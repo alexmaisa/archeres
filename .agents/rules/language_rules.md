@@ -21,6 +21,6 @@ The core codebase must be written **strictly in English**. This applies to:
 ### 2. Multi-language Web Interface (react-i18next)
 To accommodate Indonesian and international researchers, the UI/UX must be fully dynamic:
 * **No Hardcoded Strings:** You must **NEVER** write hardcoded Indonesian or English text strings directly inside Next.js page files, navigation headers, sidebar controls, or wizard components.
-* **Centralized i18n Map:** All copy (labels, buttons, headings, tooltips, validation errors, slider labels) must be defined in the bilingual `frontend/src/app/i18n.js` resource dictionary.
+* **Centralized i18n Map:** All copy (labels, buttons, headings, tooltips, validation errors, slider labels) must be defined in the bilingual `frontend/src/app/i18n.ts` resource dictionary.
 * **Hook Ingestion:** Frontend components must import the `useTranslation()` hook from `react-i18next` and fetch copy via the `t('key.subKey')` function (e.g., `<button>{t('common.save')}</button>`).
 * **Dynamic Language Swap:** Ensure that switching standard i18n locales via `i18n.changeLanguage()` works instantly across all layouts and workspace panels without forcing page refreshes.

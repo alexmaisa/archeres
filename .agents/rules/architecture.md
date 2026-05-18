@@ -37,19 +37,21 @@ Located under the [backend/](file:///Volumes/staDiff/GitHub/arche/backend/) dire
 
 ---
 
-## 🎨 2. Frontend Infrastructure (Next.js & Nginx)
+## 🎨 2. Frontend Infrastructure (Next.js, TypeScript & Nginx)
 
-Located under the [frontend/](file:///Volumes/staDiff/GitHub/arche/frontend/) directory, the user interface uses Next.js static rendering served on a lightweight web server:
+Located under the [frontend/](file:///Volumes/staDiff/GitHub/arche/frontend/) directory, the user interface is fully typed with TypeScript and uses Next.js static rendering served on a lightweight web server:
 
-* **Programming Framework:** **Next.js 16.2.6 (App Router)**.
+* **Programming Framework:** **Next.js 16.2.6 (App Router)** fully written in **TypeScript** (`tsconfig.json`).
+  * Enforces strict compile-time checks, type-safe API requests, and robust interfaces for user authentication and research project state mappings.
+  * Centralized type schemas are defined inside [types.ts](file:///Volumes/staDiff/GitHub/arche/frontend/src/app/types.ts) (e.g. `User`, `Project`).
 * **Build Paradigm:** **Static HTML Export (`output: 'export'`)**.
   * Eliminates Node.js execution runtime in production.
   * Compiled output generated inside `frontend/out/`.
-  * Dynamic dynamic-routing pages (like `/project/[id]`) implement `generateStaticParams()` exporting static parameter shell placeholders (e.g. `[{ id: "1" }]`) to pass compilation requirements successfully.
+  * Dynamic routing pages (like `/project/[id]`) implement `generateStaticParams()` exporting static parameter shell placeholders (e.g. `[{ id: "1" }]`) to pass compilation requirements successfully.
 * **Production Serving Engine:** **Nginx 1.25 Alpine**.
   * Dynamic static assets are served directly from `/usr/share/nginx/html`.
   * Reverse-proxy routing configured inside [nginx.conf](file:///Volumes/staDiff/GitHub/arche/frontend/nginx.conf) to transparently redirect all API traffic (requests to `/api/*`) straight to the backend Go Docker service.
-* **Translation Core:** **i18next & react-i18next** (installed client-side to prevent SSR environment conflicts, allowing users to toggle entire UI contexts dynamically).
+* **Translation Core:** **i18next & react-i18next** initialized client-side inside [i18n.ts](file:///Volumes/staDiff/GitHub/arche/frontend/src/app/i18n.ts) to prevent SSR environment conflicts, allowing users to toggle entire UI contexts dynamically.
 
 ---
 
