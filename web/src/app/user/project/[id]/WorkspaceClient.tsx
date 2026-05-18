@@ -411,6 +411,175 @@ Aligned with the scale of measurements and variable distributions, statistical h
     return html;
   };
 
+  const renderEducationalPanel = () => {
+    const isId = i18n.language === "id";
+    
+    switch (activeStep) {
+      case 1:
+        return (
+          <div className="animate-fade-in" style={styles.eduContainer}>
+            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: PARADIGMA PENELITIAN" : "TUTORIAL: RESEARCH PARADIGMS"}</div>
+            <h3 style={styles.eduTitle}>{isId ? "Menentukan Pendekatan & Desain" : "Understanding Approach & Design"}</h3>
+            <p style={styles.eduIntro}>
+              {isId 
+                ? "Langkah pertama dalam menyusun metodologi adalah menentukan paradigma penelitian yang sesuai dengan tujuan dan rumusan masalah Anda." 
+                : "The first step in methodology design is establishing the paradigm that aligns with your research questions and scientific objectives."}
+            </p>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📊 {isId ? "Pendekatan Kuantitatif" : "Quantitative Approach"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Berfokus pada pengujian hipotesis menggunakan data numerik, analisis statistik, logika deduktif, dan pembuktian objektif." 
+                  : "Focuses on testing theories deductively using numerical measurements, statistical analysis, and objective evidence."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📝 {isId ? "Pendekatan Kualitatif" : "Qualitative Approach"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Mengeksplorasi makna, pola narasi, pemahaman mendalam tentang perilaku manusia, wawancara mendalam, dan logika induktif." 
+                  : "Explores descriptive meanings, narrative patterns, human experiences, semi-structured interviews, and inductive analysis."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>🔀 {isId ? "Metode Campuran (Mixed Methods)" : "Mixed Methods Approach"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Menggabungkan keunggulan data angka (kuantitatif) dan penjelasan mendalam (kualitatif) untuk menjawab masalah penelitian yang kompleks." 
+                  : "Synergistically combines numerical precision and narrative depth to address multi-layered research problems."}
+              </p>
+            </div>
+            
+            <div style={styles.eduTip}>
+              <strong>💡 {isId ? "Rekomendasi Akademis:" : "Academic Insight:"}</strong>
+              <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
+                {isId 
+                  ? "Pilihlah Kuantitatif jika ingin menggeneralisasi populasi besar. Pilihlah Kualitatif jika ingin memahami konteks sosial secara mendalam." 
+                  : "Choose Quantitative to generalize findings across large cohorts. Choose Qualitative to explore social contexts deeply."}
+              </p>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="animate-fade-in" style={styles.eduContainer}>
+            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: KALKULASI UKURAN SAMPEL" : "TUTORIAL: SAMPLE SIZE CALCULATION"}</div>
+            <h3 style={styles.eduTitle}>{isId ? "Batas Populasi & Kekuatan Statistik" : "Population Bounds & Statistical Power"}</h3>
+            <p style={styles.eduIntro}>
+              {isId 
+                ? "Menentukan jumlah subjek minimal yang valid secara matematis agar hasil penelitian Anda diakui secara ilmiah." 
+                : "Calculating the mathematically sound minimum subject size required for your study to attain valid statistical confidence."}
+            </p>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>👥 {isId ? "Populasi Sasaran (N) vs Sampel (n)" : "Target Population (N) vs Sample (n)"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Populasi (N) adalah seluruh kelompok subjek yang diteliti. Sampel (n) adalah perwakilan kecil yang dipilih secara ilmiah untuk diambil datanya." 
+                  : "Population (N) is the entire subject pool under study. Sample (n) is the scientifically chosen subgroup representing them."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📉 {isId ? "Margin of Error (e) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Margin of error (e) menunjukkan toleransi kesalahan (misal 5%). Tingkat kepercayaan menunjukkan seberapa yakin sampel mencerminkan populasi (standar 95%)." 
+                  : "Margin of error (e) represents allowable estimation error (e.g., 5%). Confidence level shows study certainty (academic standard is 95%)."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📐 {isId ? "Rumus Ilmiah yang Digunakan" : "Validated Mathematical Formulas"}</h4>
+              <p style={styles.eduCardBody}>
+                {formula === "slovin" 
+                  ? (isId 
+                    ? "Rumus Slovin: Digunakan secara praktis ketika ukuran populasi (N) diketahui, namun prevalensi atribut populasi tidak terprediksi." 
+                    : "Slovin Formula: Applied practically when population size (N) is finite and known, but attribute proportions are unknown.")
+                  : (isId 
+                    ? "Rumus Lemeshow: Sangat ideal untuk populasi besar atau tidak terhingga (misalnya pasien klinik medis) dengan estimasi prevalensi." 
+                    : "Lemeshow Formula: Highly suited for infinite or unknown population sizes (e.g., clinical trials) with estimated prevalence.")}
+              </p>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="animate-fade-in" style={styles.eduContainer}>
+            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}</div>
+            <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Peran Variabel" : "Measurement Scales & Structural Roles"}</h3>
+            <p style={styles.eduIntro}>
+              {isId 
+                ? "Menentukan bagaimana variabel penelitian Anda diklasifikasikan dan diukur secara matematis." 
+                : "Defining how your research indicators are classified, measured, and structurally structured for data analysis."}
+            </p>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>⛓️ {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Independen (sebab) mempengaruhi dependen (akibat). Mediator menjembatani hubungan keduanya, sedangkan Moderator memodifikasi kekuatan hubungan tersebut." 
+                  : "Independent (cause) influences Dependent (effect). Mediator bridges the causal chain, whereas Moderator alters relationship strength."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📏 {isId ? "4 Skala Pengukuran (Stevens' Taxonomy)" : "Four Measurement Scales"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Nominal (Kategori murni), Ordinal (Kategori berperingkat), Interval (Jarak teratur tanpa nol mutlak), dan Rasio (Pengukuran presisi dengan nilai nol mutlak)." 
+                  : "Nominal (Categorical), Ordinal (Ranked), Interval (Equal distances, no true zero), and Ratio (Absolute zero point)."}
+              </p>
+            </div>
+
+            <div style={styles.eduTip}>
+              <strong>📊 {isId ? "Uji Statistik yang Disarankan:" : "Recommended Statistical Test:"}</strong>
+              <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
+                {isId 
+                  ? `Berdasarkan konfigurasi Anda, metode analisis '${analysisMethod}' adalah pilihan tepat untuk memproses hipotesis penelitian.` 
+                  : `Aligned with your variables, the '${analysisMethod}' method is the ideal statistical choice to test your hypotheses.`}
+              </p>
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="animate-fade-in" style={styles.eduContainer}>
+            <div style={styles.eduBadge}>📖 {isId ? "TUTORIAL: SISTEMATIKA METODOLOGI" : "TUTORIAL: METHODOLOGY SYSTEMATICS"}</div>
+            <h3 style={styles.eduTitle}>{isId ? "Rancangan Akhir & Replikabilitas" : "Finalizing Design & Replicability"}</h3>
+            <p style={styles.eduIntro}>
+              {isId 
+                ? "Selamat! Draf Bab III Anda kini telah siap untuk diintegrasikan ke dalam naskah skripsi atau penelitian Anda." 
+                : "Congratulations! Your Chapter 3 academic draft is now structured and ready for inclusion in your thesis."}
+            </p>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>🔁 {isId ? "Prinsip Replikabilitas" : "Replicability Principle"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Tujuan utama menulis Bab III dengan bahasa yang baku dan ilmiah adalah agar peneliti lain dapat mengulangi eksperimen Anda dengan hasil yang konsisten." 
+                  : "The central goal of Chapter 3 is to state your procedures so clearly that any future researcher can duplicate your study easily."}
+              </p>
+            </div>
+
+            <div style={styles.eduCard}>
+              <h4 style={styles.eduCardTitle}>📁 {isId ? "Ekspor & Format File" : "Export Options"}</h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Anda dapat mengekspor draf dalam format Markdown (.md) untuk dibuka di aplikasi pengolah kata seperti Microsoft Word, Obsidian, atau Notion." 
+                  : "Export your draft in Markdown format (.md) which can be directly opened in Microsoft Word, Notion, Obsidian, or text editors."}
+              </p>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   if (loading || !project) {
     return (
       <div style={styles.loadingContainer}>
@@ -486,19 +655,19 @@ Aligned with the scale of measurements and variable distributions, statistical h
         className="workspace-layout"
         style={{
           ...styles.workspaceWrapper,
-          gridTemplateColumns: showPreview ? "300px 1fr 500px" : "300px 1fr 0px",
+          gridTemplateColumns: "300px 1fr 500px",
           position: "relative",
         }}
       >
         {/* Floating Collapsible Drawer Tab Button on the edge */}
         <button
           onClick={() => setShowPreview(!showPreview)}
-          title={showPreview ? "Collapse Preview" : "Expand Preview"}
+          title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf Bab III" : "Show Chapter 3 Draft")}
           style={{
             position: "absolute",
             top: "50%",
             transform: "translateY(-50%)",
-            right: showPreview ? "487px" : "-1px",
+            right: "487px",
             width: "26px",
             height: "50px",
             borderRadius: "8px 0 0 8px",
@@ -511,8 +680,8 @@ Aligned with the scale of measurements and variable distributions, statistical h
             alignItems: "center",
             justifyContent: "center",
             zIndex: 100,
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
+            transition: "all 0.2s ease",
           }}
           className="drawer-toggle-tab"
         >
@@ -905,69 +1074,70 @@ Aligned with the scale of measurements and variable distributions, statistical h
           </footer>
         </section>
 
-        {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview */}
+        {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview & Educational Content */}
         <section
           className="workspace-preview glass-panel"
           style={{
             ...styles.rightPanel,
-            width: showPreview ? "500px" : "0px",
-            minWidth: "0px",
-            maxWidth: showPreview ? "500px" : "0px",
-            opacity: showPreview ? 1 : 0,
-            overflow: "hidden",
-            overflowY: showPreview ? "auto" : "hidden",
-            overflowX: "hidden",
-            visibility: showPreview ? "visible" : "hidden",
-            padding: showPreview ? "1.5rem" : "0px",
-            borderLeft: showPreview ? "1px solid hsl(var(--card-border))" : "none",
+            width: "500px",
+            minWidth: "500px",
+            maxWidth: "500px",
+            opacity: 1,
+            visibility: "visible",
+            padding: "1.5rem",
+            borderLeft: "1px solid hsl(var(--card-border))",
           }}
         >
-          <div style={styles.rightHeader}>
-            <div>
-              <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
-              <p style={styles.rightSubtitleText}>{t("preview.subtitle")}</p>
-            </div>
+          {showPreview ? (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+              <div style={styles.rightHeader}>
+                <div>
+                  <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
+                  <p style={styles.rightSubtitleText}>{t("preview.subtitle")}</p>
+                </div>
 
-            {/* Localized draft switcher: toggle translation of the academic draft itself! */}
-            <div style={styles.draftLangBar}>
-              <button
-                onClick={() => setPreviewLang("en")}
-                style={{
-                  ...styles.draftLangBtn,
-                  ...(previewLang === "en" ? styles.draftLangBtnActive : {}),
-                }}
-              >
-                🇺🇸 EN
-              </button>
-              <button
-                onClick={() => setPreviewLang("id")}
-                style={{
-                  ...styles.draftLangBtn,
-                  ...(previewLang === "id" ? styles.draftLangBtnActive : {}),
-                }}
-              >
-                🇮🇩 ID
-              </button>
-            </div>
-          </div>
+                <div style={styles.draftLangBar}>
+                  <button
+                    onClick={() => setPreviewLang("en")}
+                    style={{
+                      ...styles.draftLangBtn,
+                      ...(previewLang === "en" ? styles.draftLangBtnActive : {}),
+                    }}
+                  >
+                    🇺🇸 EN
+                  </button>
+                  <button
+                    onClick={() => setPreviewLang("id")}
+                    style={{
+                      ...styles.draftLangBtn,
+                      ...(previewLang === "id" ? styles.draftLangBtnActive : {}),
+                    }}
+                  >
+                    🇮🇩 ID
+                  </button>
+                </div>
+              </div>
 
-          {/* Academic document display frame */}
-          <div style={styles.documentContainer}>
-            <div style={styles.academicPaper} className="academic-sheet">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdownToHtml(generateMarkdownDraft(previewLang)),
-                }}
-              />
-            </div>
-          </div>
+              <div style={styles.documentContainer}>
+                <div style={styles.academicPaper} className="academic-sheet">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: renderMarkdownToHtml(generateMarkdownDraft(previewLang)),
+                    }}
+                  />
+                </div>
+              </div>
 
-          <div style={styles.rightFooter}>
-            <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
-              <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-              {t("preview.copy")}
-            </button>
-          </div>
+              <div style={styles.rightFooter}>
+                <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
+                  <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                  {t("preview.copy")}
+                </button>
+              </div>
+            </div>
+          ) : (
+            renderEducationalPanel()
+          )}
         </section>
       </div>
 
@@ -981,6 +1151,63 @@ Aligned with the scale of measurements and variable distributions, statistical h
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  eduContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.25rem",
+    height: "100%",
+    overflowY: "auto",
+    paddingRight: "0.25rem",
+  },
+  eduBadge: {
+    alignSelf: "flex-start",
+    fontSize: "0.65rem",
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    padding: "0.35rem 0.65rem",
+    borderRadius: "6px",
+    background: "rgba(56, 189, 248, 0.12)",
+    border: "1px solid rgba(56, 189, 248, 0.3)",
+    color: "#38bdf8",
+  },
+  eduTitle: {
+    fontSize: "1.25rem",
+    fontWeight: 800,
+    color: "white",
+    lineHeight: 1.3,
+  },
+  eduIntro: {
+    fontSize: "0.85rem",
+    color: "rgba(255, 255, 255, 0.6)",
+    lineHeight: 1.5,
+  },
+  eduCard: {
+    background: "rgba(255, 255, 255, 0.02)",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+    padding: "1rem",
+    borderRadius: "10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.35rem",
+  },
+  eduCardTitle: {
+    fontSize: "0.9rem",
+    fontWeight: 700,
+    color: "white",
+  },
+  eduCardBody: {
+    fontSize: "0.8rem",
+    color: "rgba(255, 255, 255, 0.5)",
+    lineHeight: 1.4,
+  },
+  eduTip: {
+    background: "rgba(168, 85, 247, 0.05)",
+    border: "1px dashed rgba(168, 85, 247, 0.35)",
+    padding: "1rem",
+    borderRadius: "10px",
+    color: "#c084fc",
+  },
   container: {
     minHeight: "100vh",
     width: "100vw",
