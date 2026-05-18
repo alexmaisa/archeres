@@ -667,7 +667,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
             position: "absolute",
             top: "50%",
             transform: "translateY(-50%)",
-            right: "487px",
+            right: showPreview ? "487px" : "-1px",
             width: "26px",
             height: "50px",
             borderRadius: "8px 0 0 8px",
@@ -681,7 +681,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
             justifyContent: "center",
             zIndex: 100,
             boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
-            transition: "all 0.2s ease",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
           className="drawer-toggle-tab"
         >
