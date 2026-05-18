@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -10,15 +10,16 @@ import {
   IconFileDown, 
   IconShield, 
   IconRocket, 
-  IconKey 
+  IconKey,
+  IconBook
 } from "./components/Icons";
-
+ 
 interface Feature {
   icon: string;
   name: string;
   desc: string;
 }
-
+ 
 interface LanguageContent {
   title: string;
   subtitle: string;
@@ -26,30 +27,30 @@ interface LanguageContent {
   ctaLogin: string;
   features: Feature[];
 }
-
+ 
 export default function Home() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [mounted, setMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
+ 
   // Monitor screen resize for bulletproof responsive viewports
   useEffect(() => {
     setMounted(true);
     setIsMobile(window.innerWidth <= 768);
-
+ 
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
+ 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+ 
   if (!mounted) return null;
-
+ 
   const currentLang = i18n.language || "en";
-
+ 
   // Academic Localizations Dictionary
   const content: Record<string, LanguageContent> = {
     en: {
@@ -77,6 +78,16 @@ export default function Home() {
           icon: "shield",
           name: "Role-Based Governance Shield",
           desc: "Strict administrative guards (RBAC) protecting backend telemetries, database sizes, and active studies counts."
+        },
+        {
+          icon: "key",
+          name: "Zero-Knowledge Cryptography",
+          desc: "Your intellectual property is secured via client-side encryption, safeguarding your thesis drafts from unauthorized leaks."
+        },
+        {
+          icon: "book",
+          name: "Scholarly Pedagogy Engine",
+          desc: "Learn as you build with real-time academic methodology tutorials, Stevens' taxonomy guides, and formula context insights."
         }
       ]
     },
@@ -105,13 +116,23 @@ export default function Home() {
           icon: "shield",
           name: "Proteksi Kontrol Admin",
           desc: "Hak akses administrator otomatis bagi pendaftar pertama (first signup), lengkap dengan audit ukuran database SQLite."
+        },
+        {
+          icon: "key",
+          name: "Privasi Klien Zero-Knowledge",
+          desc: "Gagasan penelitian Anda sepenuhnya aman berkat enkripsi kriptografi sisi klien, melindungi draf skripsi Anda dari kebocoran."
+        },
+        {
+          icon: "book",
+          name: "Bimbingan Edukasi Interaktif",
+          desc: "Pahami metodologi sembari menyusun draf melalui modul tutorial teoretis, panduan skala Stevens, dan konteks penggunaan rumus secara langsung."
         }
       ]
     }
   };
-
+ 
   const copy = content[currentLang] || content["en"];
-
+ 
   // Render SVG based on designated type key
   const getIcon = (type: string): React.JSX.Element | null => {
     switch (type) {
@@ -123,28 +144,34 @@ export default function Home() {
         return <IconFileDown size={32} style={{ color: "#22d3ee", strokeWidth: 2 }} />;
       case "shield":
         return <IconShield size={32} style={{ color: "#a78bfa", strokeWidth: 2 }} />;
+      case "key":
+        return <IconKey size={32} style={{ color: "#34d399", strokeWidth: 2 }} />;
+      case "book":
+        return <IconBook size={32} style={{ color: "#fb7185", strokeWidth: 2 }} />;
       default:
         return null;
     }
   };
-
+ 
   // Layout calculations dynamically adapting based on screen layout type
   const containerStyle: React.CSSProperties = {
     ...styles.landingContainer,
-    height: isMobile ? "auto" : "100vh",
-    overflowY: isMobile ? "auto" : "hidden"
+    minHeight: "100vh",
+    height: "auto",
+    overflowY: "auto"
   };
-
+ 
   const mainContainerStyle: React.CSSProperties = {
     ...styles.mainContainer,
     flexDirection: isMobile ? "column" : "row",
-    height: isMobile ? "auto" : "calc(100vh - 105px)",
-    marginTop: "60px",
-    marginBottom: "45px",
-    padding: isMobile ? "3rem 1rem" : "1.5rem 0",
+    minHeight: isMobile ? "auto" : "calc(100vh - 105px)",
+    height: "auto",
+    marginTop: "80px",
+    marginBottom: "60px",
+    padding: "2rem 1rem",
     gap: isMobile ? "2.5rem" : "3.5rem"
   };
-
+ 
   const heroStyle: React.CSSProperties = {
     ...styles.heroSection,
     alignItems: isMobile ? "center" : "flex-start",
@@ -152,26 +179,26 @@ export default function Home() {
     maxWidth: isMobile ? "600px" : "500px",
     padding: isMobile ? "1rem 0" : "0"
   };
-
+ 
   const gridStyle: React.CSSProperties = {
     ...styles.featuresGrid,
     gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
     maxWidth: isMobile ? "600px" : "620px"
   };
-
+ 
   return (
     <div style={containerStyle}>
       {/* Background Decorative Neon Orbs */}
       <div style={styles.orbPurple}></div>
       <div style={styles.orbCyan}></div>
-
+ 
       {/* 1. COMPACT FIXED HEADER */}
       <header className="fixed-header">
         <div className="nav-brand">
           <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
         </div>
-
+ 
         <div style={styles.headerActions}>
           {/* Dynamic Language Switcher */}
           <div style={styles.langBar}>
@@ -194,13 +221,13 @@ export default function Home() {
               ID
             </button>
           </div>
-
+ 
           <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
             {t("auth.submitLogin")}
           </button>
         </div>
       </header>
-
+ 
       {/* 2. DYNAMIC SPLIT-SCREEN WORKSPACE CONTAINER */}
       <main style={mainContainerStyle}>
         {/* Left Side: Hero Information */}
