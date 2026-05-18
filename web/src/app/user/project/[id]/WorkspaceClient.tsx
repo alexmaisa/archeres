@@ -1082,9 +1082,8 @@ Aligned with the scale of measurements and variable distributions, statistical h
               flexDirection: "column",
               overflow: "hidden",
               zIndex: 10,
-              transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               transform: showPreview ? "translateX(0)" : "translateX(100%)",
-              opacity: showPreview ? 1 : 0,
               pointerEvents: showPreview ? "auto" : "none",
             }}
           >
