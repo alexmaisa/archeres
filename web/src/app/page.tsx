@@ -92,40 +92,40 @@ export default function Home() {
       ]
     },
     id: {
-      title: "Perencana Paradigma Ilmiah untuk Penelitian Akademik",
-      subtitle: "Rumuskan ukuran sampel minimal secara matematis, petakan skala indikator variabel konsep Anda, dan susun draf Bab III metodologi secara instan.",
-      ctaStart: "Mulai Sekarang Gratis",
-      ctaLogin: "Akses Workspace",
+      title: "Rancang Metodologi & Bab III Penelitian Anda Secara Ilmiah",
+      subtitle: "Archeres membantu Anda menentukan ukuran sampel yang valid, memetakan skala variabel, dan menghasilkan draf Bab III (Metodologi Penelitian) yang siap pakai secara instan.",
+      ctaStart: "Mulai Sekarang, Gratis",
+      ctaLogin: "Masuk ke Workspace",
       features: [
         {
           icon: "helix",
-          name: "Kalkulator Sampel Valid",
-          desc: "Jalankan perhitungan Cochran, Lemeshow WHO finite, Daniel, Yamane, dan Slovin dengan presisi batas atas yang akurat."
+          name: "Penghitung Ukuran Sampel",
+          desc: "Hitung sampel minimal riset Anda secara akurat menggunakan rumus ilmiah populer seperti Slovin, Lemeshow, Cochran, dan Yamane."
         },
         {
           icon: "chart",
-          name: "Rencana Skala Variabel",
-          desc: "Petakan variabel penelitian ke dalam skala Nominal, Ordinal, Interval, atau Rasio beserta saran uji hipotesis (ANOVA, Regresi)."
+          name: "Pemetaan Variabel & Skala",
+          desc: "Tentukan variabel Anda ke dalam skala Nominal, Ordinal, Interval, atau Rasio secara mudah, lengkap dengan rekomendasi uji statistik yang tepat."
         },
         {
           icon: "fileDown",
-          name: "Penyusun Bab Metodologi",
-          desc: "Susun draf Bab 3 metodologi riset secara instan dalam bahasa Indonesia dan Inggris secara simultan."
+          name: "Penyusun Draf Bab III",
+          desc: "Unduh hasil rancangan metodologi Anda menjadi draf Bab III berformat Markdown yang rapi dalam Bahasa Indonesia maupun Inggris sekaligus."
         },
         {
           icon: "shield",
-          name: "Proteksi Kontrol Admin",
-          desc: "Hak akses administrator otomatis bagi pendaftar pertama (first signup), lengkap dengan audit ukuran database SQLite."
+          name: "Keamanan & Kendali Platform",
+          desc: "Dilengkapi sistem hak akses terintegrasi untuk mengamankan data serta dashboard pemantauan metrik riset yang transparan."
         },
         {
           icon: "key",
-          name: "Privasi Klien Zero-Knowledge",
-          desc: "Gagasan penelitian Anda sepenuhnya aman berkat enkripsi kriptografi sisi klien, melindungi draf skripsi Anda dari kebocoran."
+          name: "Jaminan Privasi Mutlak",
+          desc: "Ide penelitian Anda sepenuhnya aman. Enkripsi data dilakukan langsung pada perangkat Anda untuk mencegah kebocoran gagasan ilmiah sebelum dipublikasikan."
         },
         {
           icon: "book",
-          name: "Bimbingan Edukasi Interaktif",
-          desc: "Pahami metodologi sembari menyusun draf melalui modul tutorial teoretis, panduan skala Stevens, dan konteks penggunaan rumus secara langsung."
+          name: "Panduan Teoretis Interaktif",
+          desc: "Belajar sambil menyusun draf. Pahami konsep metodologi, taksonomi variabel, dan logika pemilihan rumus secara langsung lewat modul tutorial interaktif."
         }
       ]
     }
