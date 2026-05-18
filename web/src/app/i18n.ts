@@ -77,7 +77,20 @@ const resources = {
         projectApproachColumn: "Approach",
         createdAtColumn: "Created Date",
         updatedAtColumn: "Last Edited",
-        actionsColumn: "Actions"
+        actionsColumn: "Actions",
+        searchPlaceholder: "Search projects by title or description...",
+        filterLabel: "Filter",
+        filterAll: "All Approaches",
+        sortLabel: "Sort",
+        sortTitleAsc: "Project Title (A-Z)",
+        sortTitleDesc: "Project Title (Z-A)",
+        sortApproachAsc: "Approach (A-Z)",
+        sortApproachDesc: "Approach (Z-A)",
+        sortCreatedAsc: "Created Date (Oldest)",
+        sortCreatedDesc: "Created Date (Newest)",
+        sortUpdatedAsc: "Last Edited (Oldest)",
+        sortUpdatedDesc: "Last Edited (Newest)",
+        noMatchFound: "No research projects match your search query or filter criteria."
       },
       wizard: {
         title: "Methodology Planner",
@@ -236,7 +249,20 @@ const resources = {
         projectApproachColumn: "Pendekatan",
         createdAtColumn: "Tanggal Dibuat",
         updatedAtColumn: "Terakhir Diedit",
-        actionsColumn: "Aksi"
+        actionsColumn: "Aksi",
+        searchPlaceholder: "Cari proyek berdasarkan judul atau deskripsi...",
+        filterLabel: "Filter",
+        filterAll: "Semua Pendekatan",
+        sortLabel: "Urutkan",
+        sortTitleAsc: "Judul Proyek (A-Z)",
+        sortTitleDesc: "Judul Proyek (Z-A)",
+        sortApproachAsc: "Pendekatan (A-Z)",
+        sortApproachDesc: "Pendekatan (Z-A)",
+        sortCreatedAsc: "Tanggal Dibuat (Terlama)",
+        sortCreatedDesc: "Tanggal Dibuat (Terbaru)",
+        sortUpdatedAsc: "Terakhir Diedit (Terlama)",
+        sortUpdatedDesc: "Terakhir Diedit (Terbaru)",
+        noMatchFound: "Tidak ada draf proyek penelitian yang cocok dengan kriteria pencarian atau filter Anda."
       },
       wizard: {
         title: "Perencana Metodologi",
