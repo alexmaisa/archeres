@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { apiFetch } from "../../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook } from "../../../components/Icons";
-import { User } from "../../../types";
-import { getActiveSessionKey, encryptData, decryptData } from "../../../utils/crypto";
+import { apiFetch } from "../../api";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook } from "../../components/Icons";
+import { User } from "../../types";
+import { getActiveSessionKey, encryptData, decryptData } from "../../utils/crypto";
 
 interface VariableDefinition {
   name: string;
@@ -37,8 +37,8 @@ interface WorkspaceProject {
 export default function WorkspaceClient() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const params = useParams();
-  const projectId = params.id as string;
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get("id") as string;
 
   const [user, setUser] = useState<User | null>(null);
   const [project, setProject] = useState<WorkspaceProject | null>(null);

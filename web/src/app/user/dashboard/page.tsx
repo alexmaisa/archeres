@@ -91,7 +91,7 @@ export default function DashboardPage() {
       setShowModal(false);
       
       // Dynamic routing direct into user workspace
-      router.push(`/user/project/${newProj.id}`);
+      router.push(`/user/project?id=${newProj.id}`);
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
     } finally {
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                     <td style={{ verticalAlign: "middle", textAlign: "right" }}>
                       <div style={{ display: "inline-flex", gap: "0.5rem" }}>
                         <button
-                          onClick={() => router.push(`/user/project/${proj.id}`)}
+                          onClick={() => router.push(`/user/project?id=${proj.id}`)}
                           className="btn btn-primary"
                           style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
                         >
