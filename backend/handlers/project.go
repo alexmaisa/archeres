@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"archeres/backend/config"
 	"archeres/backend/models"
 	"github.com/gofiber/fiber/v2"
 )
+
 
 // ProjectInput represents parameters to create or update a project
 type ProjectInput struct {
@@ -224,82 +222,3 @@ func UpdateResearchDesign(c *fiber.Ctx) error {
 }
 
 // VariableStruct defines internal layout to parse frontend mapped variables
-type VariableStruct struct {
-	Name       string `json:"name"`
-	Role       string `json:"role"`
-	Scale      string `json:"scale"`
-	Indicators string `json:"indicators"`
-}
-
-// ExportChapter3 generates a styled, academic-grade Indonesian "Bab III: Metodologi Penelitian" draft
-func ExportChapter3(c *fiber.Ctx) error {
-	userID := c.Locals("userID").(uint)
-	projectID := c.Params("id")
-
-	var project models.Project
-	if err := config.DB.Where("id = ? AND user_id = ?", projectID, userID).Preload("ResearchDesign").First(&project).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Proyek tidak ditemukan.",
-		})
-	}
-
-	d := project.ResearchDesign
-
-	// Standard header
-	markdown := fmt.Sprintf("# BAB III: METODOLOGI PENELITIAN\n\n")
-	markdown += fmt.Sprintf("Draf BAB III metodologi penelitian ini dibuat secara otomatis melalui platform **Archeres** untuk mempermudah perumusan struktur metodologi pada proposal penelitian yang berjudul **\"%s\"**.\n\n", project.Title)
-
-	// 3.1 Research Design
-	markdown += "## 3.1 Pendekatan dan Desain Penelitian\n\n"
-	markdown += fmt.Sprintf("Penelitian ini menggunakan pendekatan **%s**. ", d.Approach)
-	if d.Approach == "Kuantitatif" {
-		markdown += "Pendekatan kuantitatif dipilih karena penelitian ini berfokus pada pengujian teori atau hipotesis, melakukan pengukuran variabel secara numerik, serta melakukan analisis statistik untuk menguji hubungan atau perbedaan antar variabel. "
-	} else if d.Approach == "Kualitatif" {
-		markdown += "Pendekatan kualitatif digunakan untuk mengeksplorasi dan memahami makna, fenomena, atau interpretasi subjektif dari individu atau kelompok secara mendalam dalam latar alamiah. "
-	} else {
-		markdown += "Pendekatan metode campuran (Mixed Methods) menggabungkan kekuatan metode kuantitatif dan kualitatif secara berurutan atau bersamaan guna memperoleh pemahaman komprehensif terhadap masalah penelitian. "
-	}
-	markdown += fmt.Sprintf("Adapun desain penelitian spesifik yang diterapkan adalah **%s**. Desain ini disesuaikan untuk mencapai tujuan penelitian serta menjawab pertanyaan penelitian secara logis dan terstruktur.\n\n", d.DesignType)
-
-	// 3.2 Population and Sample
-	markdown += "## 3.2 Populasi dan Sampel Penelitian\n\n"
-	if d.Approach == "Kualitatif" {
-		markdown += "Dalam penelitian kualitatif, konsep sampel tidak merujuk pada representasi statistik, melainkan pada pemilihan informan kunci (*key informants*) yang kaya akan informasi. Pemilihan subjek penelitian dilakukan secara *purposive* berdasarkan kriteria inklusi tertentu untuk memperoleh pemahaman teoretis yang mendalam.\n\n"
-	} else {
-		markdown += fmt.Sprintf("Populasi sasaran dalam penelitian ini berjumlah **%d** subjek. ", d.PopulationSize)
-		markdown += fmt.Sprintf("Penentuan jumlah sampel dilakukan secara ilmiah menggunakan **Formula %s** dengan tingkat kepercayaan (*Confidence Level*) sebesar **%.1f%%** serta tingkat toleransi kesalahan (*Margin of Error*) sebesar **%.1f%%**.\n\n", d.FormulaType, d.ConfidenceLevel, d.MarginOfError*100.0)
-		markdown += fmt.Sprintf("Berdasarkan perhitungan formula tersebut, diperoleh jumlah sampel minimum sebanyak **%d** subjek. ", d.CalculatedSample)
-		markdown += "Teknik pengambilan sampel (*sampling technique*) direncanakan menggunakan metode acak (*probability sampling*) atau non-acak (*non-probability sampling*) sesuai dengan karakteristik populasi untuk menjaga representativitas data.\n\n"
-	}
-
-	// 3.3 Variable Mapping
-	markdown += "## 3.3 Identifikasi dan Operasionalisasi Variabel\n\n"
-	var vars []VariableStruct
-	if err := json.Unmarshal([]byte(d.Variables), &vars); err == nil && len(vars) > 0 {
-		markdown += "Identifikasi variabel penelitian beserta skala pengukurannya dirinci pada tabel berikut:\n\n"
-		markdown += "| Nama Variabel | Peran/Jenis | Skala Pengukuran | Indikator Utama |\n"
-		markdown += "| :--- | :--- | :--- | :--- |\n"
-		for _, v := range vars {
-			markdown += fmt.Sprintf("| %s | %s | %s | %s |\n", v.Name, v.Role, v.Scale, v.Indicators)
-		}
-		markdown += "\n"
-	} else {
-		markdown += "Variabel penelitian belum diidentifikasi atau dipetakan di lembar kerja perencana variabel.\n\n"
-	}
-
-	// 3.4 Data Analysis
-	markdown += "## 3.4 Metode Analisis Data\n\n"
-	markdown += fmt.Sprintf("Untuk menjawab rumusan masalah serta menguji hipotesis penelitian yang telah diajukan, teknik analisis data yang direncanakan adalah **%s**.\n\n", d.AnalysisMethod)
-	if d.Approach == "Kuantitatif" {
-		markdown += "Sebelum melakukan uji analisis data utama (seperti uji korelasi atau regresi), data terlebih dahulu akan melewati serangkaian uji prasyarat analisis (asumsi klasik) meliputi uji normalitas, uji linearitas, serta uji homogenitas/heteroskedastisitas untuk memastikan bahwa estimator data bersifat linier dan tidak bias (*Best Linear Unbiased Estimator*)."
-	} else {
-		markdown += "Prosedur analisis data kualitatif akan dilakukan secara sirkular menggunakan model interaktif (reduksi data, penyajian data, serta penarikan kesimpulan) atau analisis tematik terstruktur untuk menghasilkan abstraksi konsep teoretis yang kuat dari data lapangan."
-	}
-	markdown += "\n"
-
-	return c.JSON(fiber.Map{
-		"title":    project.Title,
-		"design":   d,
-		"markdown": markdown,
-	})
-}
