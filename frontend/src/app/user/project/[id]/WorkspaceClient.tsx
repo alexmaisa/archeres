@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../../api";
 import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../../components/Icons";
 import { User } from "../../../types";
+import { getActiveSessionKey, encryptData, decryptData } from "../../../utils/crypto";
 
 interface VariableDefinition {
   name: string;
@@ -86,6 +87,29 @@ export default function WorkspaceClient() {
     setLoading(true);
     try {
       const data = await apiFetch<WorkspaceProject>(`/api/projects/${projectId}`, { method: "GET" });
+      const vaultKey = await getActiveSessionKey();
+      
+      if (vaultKey) {
+        data.title = await decryptData(data.title, vaultKey);
+        data.description = await decryptData(data.description, vaultKey);
+        
+        if (data.researchDesign) {
+          const rd = data.researchDesign;
+          if (rd.variablesJson) {
+            rd.variablesJson = await decryptData(rd.variablesJson, vaultKey);
+          }
+          if (rd.analysisMethod) {
+            rd.analysisMethod = await decryptData(rd.analysisMethod, vaultKey);
+          }
+          if (rd.approach) {
+            rd.approach = await decryptData(rd.approach, vaultKey);
+          }
+          if (rd.designType) {
+            rd.designType = await decryptData(rd.designType, vaultKey);
+          }
+        }
+      }
+
       setProject(data);
       
       // Load saved research design wizard state if present
@@ -216,21 +240,38 @@ export default function WorkspaceClient() {
     if (!project) return;
     setSaveLoading(true);
     try {
+      const vaultKey = await getActiveSessionKey();
+      let payloadTitle = project.title;
+      let payloadDesc = project.description;
+      let payloadApproach = approach;
+      let payloadDesign = design;
+      let payloadAnalysis = analysisMethod;
+      let payloadVariables = JSON.stringify(variables);
+
+      if (vaultKey) {
+        payloadTitle = await encryptData(payloadTitle, vaultKey);
+        payloadDesc = await encryptData(payloadDesc, vaultKey);
+        payloadApproach = await encryptData(payloadApproach, vaultKey);
+        payloadDesign = await encryptData(payloadDesign, vaultKey);
+        payloadAnalysis = await encryptData(payloadAnalysis, vaultKey);
+        payloadVariables = await encryptData(payloadVariables, vaultKey);
+      }
+
       await apiFetch(`/api/projects/${projectId}`, {
         method: "PUT",
         body: JSON.stringify({
-          title: project.title,
-          description: project.description,
+          title: payloadTitle,
+          description: payloadDesc,
           researchDesign: {
-            approach,
-            designType: design,
+            approach: payloadApproach,
+            designType: payloadDesign,
             formula,
             populationSize: Number(popSize),
             confidenceLevel: Number(confLevel),
             marginOfError: Number(marginError),
             estimatedProportion: Number(proportion),
-            analysisMethod,
-            variablesJson: JSON.stringify(variables),
+            analysisMethod: payloadAnalysis,
+            variablesJson: payloadVariables,
             sampleSize: Number(sampleSize)
           }
         }),

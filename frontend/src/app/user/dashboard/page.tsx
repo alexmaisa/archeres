@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
 import { User, Project } from "../../types";
+import { getActiveSessionKey, encryptData, decryptData } from "../../utils/crypto";
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -37,7 +38,20 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const data = await apiFetch<Project[]>("/api/projects", { method: "GET" });
-      setProjects(data || []);
+      const vaultKey = await getActiveSessionKey();
+      
+      if (vaultKey && data && data.length > 0) {
+        const decryptedProjects = await Promise.all(
+          data.map(async (p) => ({
+            ...p,
+            title: await decryptData(p.title, vaultKey),
+            description: await decryptData(p.description, vaultKey),
+          }))
+        );
+        setProjects(decryptedProjects);
+      } else {
+        setProjects(data || []);
+      }
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
@@ -55,11 +69,20 @@ export default function DashboardPage() {
 
     setModalLoading(true);
     try {
+      const vaultKey = await getActiveSessionKey();
+      let payloadTitle = newTitle.trim();
+      let payloadDesc = newDesc.trim();
+
+      if (vaultKey) {
+        payloadTitle = await encryptData(payloadTitle, vaultKey);
+        payloadDesc = await encryptData(payloadDesc, vaultKey);
+      }
+
       const newProj = await apiFetch<Project>("/api/projects", {
         method: "POST",
         body: JSON.stringify({
-          title: newTitle,
-          description: newDesc,
+          title: payloadTitle,
+          description: payloadDesc,
         }),
       });
 
@@ -67,8 +90,8 @@ export default function DashboardPage() {
       setNewDesc("");
       setShowModal(false);
       
-      // Dynamic routing direct into workspace or reload
-      router.push(`/project/${newProj.id}`);
+      // Dynamic routing direct into user workspace
+      router.push(`/user/project/${newProj.id}`);
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
     } finally {

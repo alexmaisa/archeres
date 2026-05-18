@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
+import { deriveKey, exportKeyToBase64 } from "../../utils/crypto";
 
 interface LoginResponse {
   user: {
@@ -44,6 +45,15 @@ export default function LoginPage() {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
+
+      // Derive the Zero-Knowledge E2EE cryptographic key locally
+      try {
+        const vaultKey = await deriveKey(password, email);
+        const base64Key = await exportKeyToBase64(vaultKey);
+        sessionStorage.setItem("user_vault_key", base64Key);
+      } catch (cryptoErr) {
+        console.error("Cryptography derivation failed", cryptoErr);
+      }
 
       // Save user session details locally
       localStorage.setItem("user", JSON.stringify(data.user));

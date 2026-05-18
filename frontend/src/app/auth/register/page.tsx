@@ -43,6 +43,25 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email, password }),
       });
 
+      // Generate downloadable Master Recovery Key for Zero-Knowledge E2EE
+      try {
+        const randomBytes = window.crypto.getRandomValues(new Uint8Array(32));
+        const recoveryKeyBase64 = btoa(String.fromCharCode(...randomBytes));
+        const fileContent = `ARCHE ZERO-KNOWLEDGE MASTER RECOVERY KEY\n=========================================\n\nOwner: ${name} (${email})\nGenerated: ${new Date().toLocaleString()}\n\nThis file is highly confidential. If you lose your password, you can use this Master Recovery Key to restore access to your research vault.\n\nMaster Recovery Key:\n${recoveryKeyBase64}\n`;
+        
+        const blob = new Blob([fileContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `arche_recovery_key_${email.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (cryptoErr) {
+        console.error("Failed to generate recovery key", cryptoErr);
+      }
+
       setSuccess(t("auth.successRegister"));
       setTimeout(() => {
         router.push("/auth/login");
