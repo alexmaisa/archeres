@@ -1,29 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { deriveKey, exportKeyToBase64 } from "../../utils/crypto";
 
-interface LoginResponse {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    createdAt: string;
-  };
+interface ResetPasswordResponse {
+  message: string;
 }
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
+  const [token, setToken] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setToken(params.get("token") || "");
+      setEmail(params.get("email") || "");
+    }
+  }, []);
 
   const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -31,41 +34,28 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!password || !email || !token) {
       setError(t("auth.invalidInput"));
       return;
     }
 
     setLoading(false);
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      const data = await apiFetch<LoginResponse>("/api/auth/login", {
+      await apiFetch<ResetPasswordResponse>("/api/auth/reset-password", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, token, newPassword: password }),
       });
 
-      // Derive the Zero-Knowledge E2EE cryptographic key locally
-      try {
-        const vaultKey = await deriveKey(password, email);
-        const base64Key = await exportKeyToBase64(vaultKey);
-        sessionStorage.setItem("user_vault_key", base64Key);
-      } catch (cryptoErr) {
-        console.error("Cryptography derivation failed", cryptoErr);
-      }
-
-      // Save user session details locally
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirect based on role or standard dashboard
-      if (data.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/user/dashboard");
-      }
+      setSuccess(t("auth.resetSuccess"));
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 2000);
     } catch (err: any) {
-      setError(err.message || t("auth.invalidCreds"));
+      setError(err.message || t("common.errorOccurred"));
     } finally {
       setLoading(false);
     }
@@ -106,63 +96,47 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          <h2 style={styles.formTitle}>{t("auth.loginTitle")}</h2>
+          <h2 style={styles.formTitle}>{t("auth.resetTitle")}</h2>
+          <p style={styles.formDesc}>{t("auth.resetDesc")}</p>
 
           {error && <div style={styles.errorAlert} className="badge-danger">{error}</div>}
+          {success && <div style={styles.successAlert} className="badge-success">{success}</div>}
 
-          <div className="form-group">
-            <label className="form-label">{t("auth.emailLabel")}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
-              placeholder="e.g., researcher@arche.com"
-              required
-              disabled={loading}
-            />
-          </div>
+          {!success && (
+            <>
+              <div className="form-group">
+                <label className="form-label">{t("auth.newPasswordLabel")}</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="••••••••"
+                  required
+                  disabled={loading || !token}
+                />
+              </div>
 
-          <div className="form-group">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-              <label className="form-label" style={{ marginBottom: 0 }}>{t("auth.passwordLabel")}</label>
-              <span
-                onClick={() => router.push("/auth/forgot-password")}
-                style={{ fontSize: "0.8rem", color: "#38bdf8", cursor: "pointer", transition: "color 0.2s ease" }}
-                className="hover-underline"
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={styles.submitBtn}
+                disabled={loading || !token}
               >
-                {t("auth.forgotPasswordLink")}
-              </span>
-            </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
-              placeholder="••••••••"
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={styles.submitBtn}
-            disabled={loading}
-          >
-            {loading ? t("common.loading") : t("auth.submitLogin")}
-          </button>
+                {loading ? t("common.loading") : t("auth.resetSubmit")}
+              </button>
+            </>
+          )}
         </form>
 
         <div style={styles.footer}>
           <button
-            onClick={() => router.push("/auth/register")}
+            onClick={() => router.push("/auth/login")}
             className="btn-outline"
             style={styles.toggleBtn}
             disabled={loading}
           >
-            {t("auth.noAccount")}
+            {t("auth.hasAccount")}
           </button>
         </div>
       </div>
@@ -261,8 +235,14 @@ const styles: Record<string, React.CSSProperties> = {
   formTitle: {
     fontSize: "1.15rem",
     fontWeight: 700,
-    marginBottom: "0.25rem",
+    marginBottom: "0.1rem",
     color: "rgba(255, 255, 255, 0.9)",
+  },
+  formDesc: {
+    fontSize: "0.85rem",
+    color: "rgba(255, 255, 255, 0.5)",
+    lineHeight: 1.4,
+    marginBottom: "0.5rem",
   },
   errorAlert: {
     padding: "0.6rem 0.85rem",
@@ -270,6 +250,14 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "0.8rem",
     fontWeight: 600,
     marginBottom: "0.25rem",
+  },
+  successAlert: {
+    padding: "0.85rem 1rem",
+    borderRadius: "10px",
+    fontSize: "0.85rem",
+    fontWeight: 600,
+    lineHeight: 1.5,
+    textAlign: "center",
   },
   submitBtn: {
     marginTop: "0.25rem",

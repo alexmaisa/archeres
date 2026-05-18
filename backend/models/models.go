@@ -6,14 +6,16 @@ import (
 
 // User represents a registered researcher or administrator in the system
 type User struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	Name      string    `gorm:"not null" json:"name"`
-	Email     string    `gorm:"unique;not null" json:"email"`
-	Password  string    `gorm:"not null" json:"-"`
-	Role      string    `gorm:"default:user;not null" json:"role"` // 'user' or 'admin'
-	Projects  []Project `gorm:"foreignKey:UserID" json:"projects,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID               uint       `gorm:"primaryKey" json:"id"`
+	Name             string     `gorm:"not null" json:"name"`
+	Email            string     `gorm:"unique;not null" json:"email"`
+	Password         string     `gorm:"not null" json:"-"`
+	Role             string     `gorm:"default:user;not null" json:"role"` // 'user' or 'admin'
+	ResetToken       *string    `json:"-"`
+	ResetTokenExpiry *time.Time `json:"-"`
+	Projects         []Project  `gorm:"foreignKey:UserID" json:"projects,omitempty"`
+	CreatedAt        time.Time  `json:"createdAt"`
+	UpdatedAt        time.Time  `json:"updatedAt"`
 }
 
 // Project represents a research draft created by a User

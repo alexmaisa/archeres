@@ -33,7 +33,17 @@ const resources = {
         hasAccount: "Already have an account? Sign In",
         invalidCreds: "Incorrect email address or password.",
         invalidInput: "Please fill in all fields correctly.",
-        successRegister: "Account created successfully! Redirecting..."
+        successRegister: "Account created successfully! Redirecting...",
+        forgotPasswordLink: "Forgot Password?",
+        forgotTitle: "Recover Account",
+        forgotDesc: "Enter your email address and we'll send you a secure link to reset your password.",
+        forgotSubmit: "Send Reset Link",
+        forgotSuccess: "If the email is registered, password reset instructions have been sent.",
+        resetTitle: "Reset Password",
+        resetDesc: "Please enter your new password to regain access to your research vault.",
+        newPasswordLabel: "New Password",
+        resetSubmit: "Update Password",
+        resetSuccess: "Password reset successful! Redirecting to login..."
       },
       dashboard: {
         title: "Research Dashboard",
@@ -155,7 +165,17 @@ const resources = {
         hasAccount: "Sudah memiliki akun? Masuk di sini",
         invalidCreds: "Alamat email atau kata sandi salah. Silakan periksa kembali.",
         invalidInput: "Harap isi seluruh formulir secara lengkap dan benar.",
-        successRegister: "Pendaftaran akun berhasil! Mengalihkan..."
+        successRegister: "Pendaftaran akun berhasil! Mengalihkan...",
+        forgotPasswordLink: "Lupa Kata Sandi?",
+        forgotTitle: "Pulihkan Akun",
+        forgotDesc: "Masukkan alamat email Anda dan kami akan mengirimkan tautan aman untuk mereset kata sandi Anda.",
+        forgotSubmit: "Kirim Tautan Reset",
+        forgotSuccess: "Jika email terdaftar di sistem kami, instruksi pemulihan telah dikirim.",
+        resetTitle: "Reset Kata Sandi",
+        resetDesc: "Silakan masukkan kata sandi baru Anda untuk memulihkan akses ke lembar kerja penelitian.",
+        newPasswordLabel: "Kata Sandi Baru",
+        resetSubmit: "Perbarui Kata Sandi",
+        resetSuccess: "Reset kata sandi berhasil! Mengalihkan ke halaman masuk..."
       },
       dashboard: {
         title: "Dashboard Penelitian",

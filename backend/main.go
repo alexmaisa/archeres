@@ -39,6 +39,8 @@ func main() {
 	auth.Post("/login", handlers.Login)
 	auth.Post("/logout", handlers.Logout)
 	auth.Get("/me", middleware.JWTMiddleware, handlers.Me)
+	auth.Post("/forgot-password", handlers.ForgotPassword)
+	auth.Post("/reset-password", handlers.ResetPassword)
 
 	// Rute Manajemen Proyek Penelitian (Protected / Wajib Login)
 	projects := api.Group("/projects", middleware.JWTMiddleware)
