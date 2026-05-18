@@ -30,6 +30,10 @@ func GetStats(c *fiber.Ctx) error {
 	var totalProjects int64
 	config.DB.Model(&models.Project{}).Count(&totalProjects)
 
+	var newUsers24h int64
+	yesterday := time.Now().Add(-24 * time.Hour)
+	config.DB.Model(&models.User{}).Where("role = ? AND created_at >= ?", "user", yesterday).Count(&newUsers24h)
+
 	// Count by approach type
 	var quantCount int64
 	config.DB.Model(&models.ResearchDesign{}).Where("approach = ?", "Kuantitatif").Count(&quantCount)
@@ -79,6 +83,7 @@ func GetStats(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"totalUsers":       totalUsers,
 		"totalProjects":    totalProjects,
+		"newUsers24h":      newUsers24h,
 		"dbSizeBytes":      dbSize,
 		"allocatedRamMb":   allocatedRamMb,
 		"serverUptimeSecs": serverUptimeSecs,
@@ -98,43 +103,157 @@ func GetStats(c *fiber.Ctx) error {
 	})
 }
 
-// ListUsers retrieves all registered accounts paired with active study counts
+// ListUsers is deactivated to guarantee user privacy. Returns 403 Forbidden.
 func ListUsers(c *fiber.Ctx) error {
-	var users []models.User
-	if err := config.DB.Find(&users).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal mengambil daftar seluruh pengguna platform.",
-		})
-	}
-
-	var response []UserAdminResponse
-	for _, u := range users {
-		var projectCount int64
-		config.DB.Model(&models.Project{}).Where("user_id = ?", u.ID).Count(&projectCount)
-
-		response = append(response, UserAdminResponse{
-			ID:           u.ID,
-			Name:         u.Name,
-			Email:        u.Email,
-			Role:         u.Role,
-			ProjectCount: projectCount,
-			CreatedAt:    u.CreatedAt,
-		})
-	}
-
-	return c.JSON(response)
+	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		"error": "Pemberitahuan: Akses daftar detail seluruh akun pengguna dinonaktifkan secara permanen demi menjaga privasi dan keamanan platform.",
+	})
 }
 
-// ListAllProjects loads a master overview of all study projects registered on the system
+// ListAllProjects is deactivated to guarantee user privacy. Returns 403 Forbidden.
 func ListAllProjects(c *fiber.Ctx) error {
-	var projects []models.Project
-	if err := config.DB.Preload("ResearchDesign").Preload("User").Order("updated_at desc").Find(&projects).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal memproses prapemuatan draf penelitian di server.",
+	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		"error": "Pemberitahuan: Akses daftar detail draf penelitian pengguna dinonaktifkan secara permanen demi menjaga privasi dan keamanan platform.",
+	})
+}
+
+// SecureLookupUser searches for a single user by exact email match
+func SecureLookupUser(c *fiber.Ctx) error {
+	email := c.Query("email")
+	if email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Email pencarian wajib diisi.",
 		})
 	}
 
-	return c.JSON(projects)
+	var user models.User
+	if err := config.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Peneliti dengan alamat email tersebut tidak ditemukan.",
+		})
+	}
+
+	var projectCount int64
+	config.DB.Model(&models.Project{}).Where("user_id = ?", user.ID).Count(&projectCount)
+
+	return c.JSON(fiber.Map{
+		"id":           user.ID,
+		"name":         user.Name,
+		"email":        user.Email,
+		"role":         user.Role,
+		"projectCount": projectCount,
+		"createdAt":    user.CreatedAt,
+	})
+}
+
+// DeleteUserByAdmin deletes a user account and all their projects in a transaction
+func DeleteUserByAdmin(c *fiber.Ctx) error {
+	var body struct {
+		Email string `json:"email"`
+	}
+	if err := c.BodyParser(&body); err != nil || body.Email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Email pengguna wajib diisi.",
+		})
+	}
+
+	var user models.User
+	if err := config.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Akun pengguna tidak ditemukan.",
+		})
+	}
+
+	// Prevent admin from deleting themselves
+	currentUser := c.Locals("user").(models.User)
+	if currentUser.ID == user.ID {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Anda tidak dapat menghapus akun admin Anda sendiri.",
+		})
+	}
+
+	// Start a transaction to ensure complete cascade deletion
+	tx := config.DB.Begin()
+
+	// 1. Delete all research designs belonging to user's projects
+	var projectIds []uint
+	tx.Model(&models.Project{}).Where("user_id = ?", user.ID).Pluck("id", &projectIds)
+	if len(projectIds) > 0 {
+		if err := tx.Where("project_id IN ?", projectIds).Delete(&models.ResearchDesign{}).Error; err != nil {
+			tx.Rollback()
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Gagal menghapus detail desain penelitian proyek.",
+			})
+		}
+	}
+
+	// 2. Delete all projects
+	if err := tx.Where("user_id = ?", user.ID).Delete(&models.Project{}).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Gagal menghapus proyek penelitian milik pengguna.",
+		})
+	}
+
+	// 3. Delete the user
+	if err := tx.Delete(&user).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Gagal menghapus akun pengguna dari database.",
+		})
+	}
+
+	tx.Commit()
+
+	return c.JSON(fiber.Map{
+		"message": "Akun pengguna dan seluruh draf penelitian terkait berhasil dihapus secara bersih.",
+	})
+}
+
+// UpdateUserRoleByAdmin alters a researcher system role
+func UpdateUserRoleByAdmin(c *fiber.Ctx) error {
+	var body struct {
+		Email string `json:"email"`
+		Role  string `json:"role"`
+	}
+	if err := c.BodyParser(&body); err != nil || body.Email == "" || body.Role == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Email dan peran baru wajib diisi.",
+		})
+	}
+
+	if body.Role != "admin" && body.Role != "user" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Peran baru tidak valid. Gunakan 'admin' or 'user'.",
+		})
+	}
+
+	var user models.User
+	if err := config.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Akun pengguna tidak ditemukan.",
+		})
+	}
+
+	// Prevent admin from changing their own role
+	currentUser := c.Locals("user").(models.User)
+	if currentUser.ID == user.ID {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Anda tidak dapat mengubah peran administratif Anda sendiri.",
+		})
+	}
+
+	user.Role = body.Role
+	if err := config.DB.Save(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Gagal memperbarui peran pengguna di basis data.",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Peran sistem pengguna berhasil diperbarui.",
+		"role":    user.Role,
+	})
 }
 
 // VacuumDatabase executes a physical database vacuuming on SQLite to reclaim unused blocks

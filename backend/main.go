@@ -58,6 +58,9 @@ func main() {
 	admin.Get("/users", handlers.ListUsers)
 	admin.Get("/projects", handlers.ListAllProjects)
 	admin.Post("/db/vacuum", handlers.VacuumDatabase)
+	admin.Get("/user/lookup", handlers.SecureLookupUser)
+	admin.Post("/user/delete", handlers.DeleteUserByAdmin)
+	admin.Post("/user/role", handlers.UpdateUserRoleByAdmin)
 
 	// 5. Jalankan server pada port yang ditentukan
 	port := os.Getenv("PORT")

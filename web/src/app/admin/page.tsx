@@ -7,17 +7,6 @@ import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
 import { User } from "../types";
 
-interface AdminProject {
-  id: number;
-  userName: string;
-  title: string;
-  approach: string;
-  designType: string;
-  formula: string;
-  sampleSize: number;
-  createdAt: string;
-}
-
 interface AdminUser {
   id: number;
   name: string;
@@ -28,7 +17,9 @@ interface AdminUser {
 }
 
 interface AdminStatsState {
+  totalUsers: number;
   totalProjects: number;
+  newUsers24h: number;
   dbSizeBytes: number;
   serverUptimeSecs: number;
   allocatedRamMb: number;
@@ -39,7 +30,7 @@ interface AdminStatsState {
     [key: string]: number;
   };
   users: AdminUser[];
-  projects: AdminProject[];
+  projects: any[];
 }
 
 export default function AdminPage() {
@@ -50,17 +41,21 @@ export default function AdminPage() {
   const [stats, setStats] = useState<AdminStatsState | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  
-  // Tab controller (0: User Directory, 1: Projects Monitor)
-  const [activeTab, setActiveTab] = useState<number>(0);
 
-  // Interactive Maintenance & Filter states
+  // Interactive Maintenance states
   const [vacuuming, setVacuuming] = useState<boolean>(false);
   const [vacuumSuccess, setVacuumSuccess] = useState<boolean>(false);
-  const [approachFilter, setApproachFilter] = useState<string>("all");
   
   // Real-time server Uptime increments locally
   const [uptimeSecs, setUptimeSecs] = useState<number>(0);
+
+  // Secure On-Demand Lookup states
+  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchResult, setSearchResult] = useState<any | null>(null);
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+  const [searchError, setSearchError] = useState<string>("");
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [actionSuccess, setActionSuccess] = useState<string>("");
 
   useEffect(() => {
     if (stats && stats.serverUptimeSecs) {
@@ -96,11 +91,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleApproachFilterClick = (filterType: string) => {
-    setApproachFilter(filterType);
-    setActiveTab(1); // Auto-focus master projects data grid
-  };
-
   const formatBytes = (bytes: number) => {
     if (!bytes) return "0 Bytes";
     const k = 1024;
@@ -122,32 +112,6 @@ export default function AdminPage() {
     return stats.approachStats[type] || 0;
   };
 
-  const getApproachPillStyle = (type: string, isActive: boolean): React.CSSProperties => {
-    let borderColor = "rgba(255, 255, 255, 0.08)";
-    let color = "rgba(255, 255, 255, 0.5)";
-    let background = "rgba(255, 255, 255, 0.02)";
-    let fontWeight: "normal" | "bold" = "normal";
-
-    if (isActive) {
-      borderColor = "#38bdf8";
-      color = "#38bdf8";
-      background = "rgba(56, 189, 248, 0.15)";
-      fontWeight = "bold";
-    } else {
-      if (type === "kuantitatif") borderColor = "rgba(56, 189, 248, 0.3)";
-      if (type === "kualitatif") borderColor = "rgba(167, 139, 250, 0.3)";
-      if (type === "metodeCampuran") borderColor = "rgba(244, 114, 182, 0.3)";
-    }
-
-    return {
-      ...styles.approachPill,
-      borderColor,
-      color,
-      background,
-      fontWeight
-    };
-  };
-
   const getVacuumButtonStyle = (success: boolean): React.CSSProperties => {
     return {
       ...styles.vacuumBtn,
@@ -156,18 +120,6 @@ export default function AdminPage() {
       color: success ? "#a7f3d0" : "#fca5a5"
     };
   };
-
-  // Filter projects dynamically client-side
-  const filteredProjects = stats && stats.projects ? stats.projects.filter((p) => {
-    if (approachFilter === "all") return true;
-    if (!p.approach) return false;
-    
-    const approachLower = p.approach.toLowerCase();
-    if (approachFilter === "kuantitatif") return approachLower === "kuantitatif";
-    if (approachFilter === "kualitatif") return approachLower === "kualitatif";
-    if (approachFilter === "metodeCampuran") return approachLower === "metode campuran" || approachLower === "metodecampuran";
-    return true;
-  }) : [];
 
   useEffect(() => {
     // Authenticate session & enforce admin role-based route guard
@@ -189,22 +141,11 @@ export default function AdminPage() {
     setLoading(true);
     try {
       const statsData = await apiFetch<any>("/api/admin/stats", { method: "GET" });
-      const usersData = await apiFetch<AdminUser[]>("/api/admin/users", { method: "GET" });
-      const projectsData = await apiFetch<any[]>("/api/admin/projects", { method: "GET" });
       
       setStats({
         ...statsData,
-        users: usersData || [],
-        projects: (projectsData || []).map((p) => ({
-          id: p.id,
-          userName: p.user ? p.user.name : "N/A",
-          title: p.title,
-          approach: p.researchDesign ? p.researchDesign.approach : "",
-          designType: p.researchDesign ? p.researchDesign.designType : "",
-          formula: p.researchDesign ? p.researchDesign.formulaType : "",
-          sampleSize: p.researchDesign ? p.researchDesign.calculatedSample : 0,
-          createdAt: p.createdAt,
-        })),
+        users: [],
+        projects: [],
       });
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
@@ -221,10 +162,72 @@ export default function AdminPage() {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
     } catch (err) {
-      // Continue cleanup anyway
+      // Continue cleanup
     }
     localStorage.removeItem("user");
     router.push("/auth/login");
+  };
+
+  const handleSecureLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchEmail) return;
+    setSearchLoading(true);
+    setSearchError("");
+    setSearchResult(null);
+    setActionSuccess("");
+    try {
+      const data = await apiFetch<any>(`/api/admin/user/lookup?email=${encodeURIComponent(searchEmail.trim())}`, { method: "GET" });
+      setSearchResult(data);
+    } catch (err: any) {
+      setSearchError(err.message || t("admin.lookupNotFound"));
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleUpdateRole = async (targetEmail: string, currentRole: string) => {
+    const newRole = currentRole === "admin" ? "user" : "admin";
+    if (!window.confirm(t("admin.actionChangeRoleConfirm"))) return;
+    
+    setActionLoading(true);
+    setActionSuccess("");
+    try {
+      const res = await apiFetch<any>("/api/admin/user/role", {
+        method: "POST",
+        body: JSON.stringify({ email: targetEmail, role: newRole })
+      });
+      if (searchResult && searchResult.email === targetEmail) {
+        setSearchResult({ ...searchResult, role: newRole });
+      }
+      setActionSuccess(res.message || "Peran berhasil diperbarui.");
+    } catch (err: any) {
+      alert(err.message || "Gagal memperbarui peran.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (targetEmail: string) => {
+    if (!window.confirm(t("admin.actionDeleteConfirm"))) return;
+    
+    setActionLoading(true);
+    setActionSuccess("");
+    try {
+      const res = await apiFetch<any>("/api/admin/user/delete", {
+        method: "POST",
+        body: JSON.stringify({ email: targetEmail })
+      });
+      if (searchResult && searchResult.email === targetEmail) {
+        setSearchResult(null);
+      }
+      // Refresh global statistics
+      fetchAdminStats();
+      setActionSuccess(res.message || "Akun berhasil dihapus.");
+    } catch (err: any) {
+      alert(err.message || "Gagal menghapus akun.");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (!user || user.role !== "admin") return null;
@@ -305,48 +308,34 @@ export default function AdminPage() {
           <>
             {/* Global Admin Telemetry summary cards */}
             <section className="telemetry-grid">
-              {/* Card 1: Active Projects / Instant Filter */}
+              {/* Card 1: Registered Researchers */}
+              <div className="glass-panel telemetry-card">
+                <span className="telemetry-label">{t("admin.totalUsers")}</span>
+                <span className="telemetry-val" style={{ color: "#e11d48" }}>
+                  {stats.totalUsers}
+                </span>
+                <span className="telemetry-sub">
+                  <strong style={{ color: stats.newUsers24h > 0 ? "#10b981" : "rgba(255, 255, 255, 0.4)" }}>
+                    +{stats.newUsers24h || 0}
+                  </strong>{" "}
+                  {t("admin.newUsers24h")}
+                </span>
+              </div>
+
+              {/* Card 2: Active Projects */}
               <div className="glass-panel telemetry-card">
                 <span className="telemetry-label">{t("admin.activeProjects")}</span>
                 <span className="telemetry-val" style={{ color: "#38bdf8" }}>
                   {stats.totalProjects}
                 </span>
-                
-                <div className="approach-pills-group">
-                  <button
-                    onClick={() => handleApproachFilterClick("all")}
-                    className="approach-pill"
-                    style={getApproachPillStyle("all", approachFilter === "all")}
-                  >
-                    Semua
-                  </button>
-                  <button
-                    onClick={() => handleApproachFilterClick("kuantitatif")}
-                    className="approach-pill"
-                    style={getApproachPillStyle("kuantitatif", approachFilter === "kuantitatif")}
-                  >
-                    Quant ({getApproachCount("kuantitatif")})
-                  </button>
-                  <button
-                    onClick={() => handleApproachFilterClick("kualitatif")}
-                    className="approach-pill"
-                    style={getApproachPillStyle("kualitatif", approachFilter === "kualitatif")}
-                  >
-                    Qual ({getApproachCount("kualitatif")})
-                  </button>
-                  <button
-                    onClick={() => handleApproachFilterClick("metodeCampuran")}
-                    className="approach-pill"
-                    style={getApproachPillStyle("metodeCampuran", approachFilter === "metodeCampuran")}
-                  >
-                    Campuran ({getApproachCount("metodeCampuran")})
-                  </button>
-                </div>
+                <span className="telemetry-sub">
+                  {i18n.language === "id" ? "Draf metodologi aktif" : "Active methodology drafts"}
+                </span>
               </div>
 
-              {/* Card 2: SQLite Storage / Optimizer defragmenter */}
+              {/* Card 3: SQLite Storage / Optimizer defragmenter */}
               <div className="glass-panel telemetry-card">
-                <span className="telemetry-label">SQLite Storage</span>
+                <span className="telemetry-label">{t("admin.dbSize")}</span>
                 <span className={`telemetry-val ${vacuumSuccess ? "animate-pulse" : ""}`} style={{ color: vacuumSuccess ? "#10b981" : "#22d3ee" }}>
                   {formatBytes(stats.dbSizeBytes)}
                 </span>
@@ -371,7 +360,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Card 3: Go Server Telemetry with Uptime and Heartbeat */}
+              {/* Card 4: Go Server Telemetry with Uptime and Heartbeat */}
               <div className="glass-panel telemetry-card">
                 <span className="telemetry-label">
                   Go Server Telemetry
@@ -384,115 +373,182 @@ export default function AdminPage() {
                   Uptime: <strong style={{ color: "white" }}>{formatUptime(uptimeSecs)}</strong>
                 </span>
               </div>
+
+              {/* Card 5: Research Methodology Approach Distribution */}
+              <div className="glass-panel telemetry-card" style={{ gridColumn: "span 2" }}>
+                <span className="telemetry-label" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
+                  {i18n.language === "id" ? "Distribusi Pendekatan Riset" : "Research Approach Distribution"}
+                </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                      <span>Kuantitatif</span>
+                      <strong style={{ color: "#38bdf8" }}>{getApproachCount("kuantitatif")}</strong>
+                    </div>
+                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%",
+                        width: stats.totalProjects > 0 ? `${(getApproachCount("kuantitatif") / stats.totalProjects) * 100}%` : "0%",
+                        background: "linear-gradient(90deg, #0284c7, #38bdf8)",
+                        borderRadius: "3px",
+                        transition: "width 1s ease"
+                      }}></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                      <span>Kualitatif</span>
+                      <strong style={{ color: "#a78bfa" }}>{getApproachCount("kualitatif")}</strong>
+                    </div>
+                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%",
+                        width: stats.totalProjects > 0 ? `${(getApproachCount("kualitatif") / stats.totalProjects) * 100}%` : "0%",
+                        background: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+                        borderRadius: "3px",
+                        transition: "width 1s ease"
+                      }}></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                      <span>Metode Campuran</span>
+                      <strong style={{ color: "#f472b6" }}>{getApproachCount("metodeCampuran")}</strong>
+                    </div>
+                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%",
+                        width: stats.totalProjects > 0 ? `${(getApproachCount("metodeCampuran") / stats.totalProjects) * 100}%` : "0%",
+                        background: "linear-gradient(90deg, #db2777, #f472b6)",
+                        borderRadius: "3px",
+                        transition: "width 1s ease"
+                      }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
 
-            {/* Admin Hub Tab Controller */}
-            <div className="tabs-bar">
-              <button
-                onClick={() => setActiveTab(0)}
-                className={`tab-btn ${activeTab === 0 ? "active" : ""}`}
-              >
-                <IconUsers size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                {t("admin.userTitle")}
-              </button>
-              <button
-                onClick={() => setActiveTab(1)}
-                className={`tab-btn ${activeTab === 1 ? "active" : ""}`}
-              >
-                <IconHelix size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                {t("admin.projTitle")}
-              </button>
+            {/* Secure On-Demand Lookup Section */}
+            <div className="glass-panel" style={{ padding: "1.75rem 2rem", marginTop: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: 700, color: "white" }}>{t("admin.secureLookupTitle")}</h2>
+                <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", marginTop: "0.25rem" }}>{t("admin.secureLookupDesc")}</p>
+              </div>
+
+              <form onSubmit={handleSecureLookup} style={{ display: "flex", gap: "0.75rem" }}>
+                <input
+                  type="email"
+                  value={searchEmail}
+                  onChange={(e) => setSearchEmail(e.target.value)}
+                  placeholder={t("admin.lookupPlaceholder")}
+                  style={{
+                    flex: 1,
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "10px",
+                    padding: "0.6rem 1rem",
+                    color: "white",
+                    fontSize: "0.9rem",
+                    outline: "none"
+                  }}
+                  className="focus-ring"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={searchLoading}
+                  className="btn btn-primary"
+                  style={{ padding: "0.6rem 1.5rem" }}
+                >
+                  {searchLoading ? "..." : t("admin.lookupBtn")}
+                </button>
+              </form>
+
+              {searchError && (
+                <div style={{ color: "#f87171", fontSize: "0.85rem", fontWeight: 600 }}>{searchError}</div>
+              )}
+
+              {actionSuccess && (
+                <div style={{ color: "#34d399", fontSize: "0.85rem", fontWeight: 600 }}>{actionSuccess}</div>
+              )}
+
+              {searchResult && (
+                <div style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                  borderRadius: "12px",
+                  padding: "1.25rem",
+                  marginTop: "0.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem"
+                }} className="animate-fade-in">
+                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thName")}</div>
+                      <div style={{ color: "white", fontWeight: 700, fontSize: "1.1rem", marginTop: "0.15rem" }}>{searchResult.name}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thEmail")}</div>
+                      <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "1rem", marginTop: "0.15rem" }}>{searchResult.email}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thRole")}</div>
+                      <div style={{ marginTop: "0.25rem" }}>
+                        <span className={`badge ${searchResult.role === "admin" ? "badge-danger" : "badge-primary"}`}>
+                          {searchResult.role.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thProjects")}</div>
+                      <div style={{ color: "#38bdf8", fontWeight: 800, fontSize: "1.1rem", marginTop: "0.15rem" }}>{searchResult.projectCount}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thRegistered")}</div>
+                      <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.9rem", marginTop: "0.25rem" }}>
+                        {new Date(searchResult.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: "flex",
+                    gap: "0.75rem",
+                    borderTop: "1px solid rgba(255,255,255,0.06)",
+                    paddingTop: "1rem",
+                    marginTop: "0.5rem"
+                  }}>
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={() => handleUpdateRole(searchResult.email, searchResult.role)}
+                      className="btn btn-outline"
+                      style={{ fontSize: "0.8rem", padding: "0.5rem 1rem" }}
+                    >
+                      {t("admin.actionChangeRole")} ({searchResult.role === "admin" ? "USER" : "ADMIN"})
+                    </button>
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={() => handleDeleteUser(searchResult.email)}
+                      className="btn-outline"
+                      style={{
+                        fontSize: "0.8rem",
+                        padding: "0.5rem 1rem",
+                        borderColor: "rgba(239, 68, 68, 0.2)",
+                        color: "#fca5a5"
+                      }}
+                    >
+                      {t("admin.actionDelete")}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-
-            {/* TAB 0: User Directory */}
-            {activeTab === 0 && (
-              <div className="glass-panel tab-content animate-fade-in">
-                {stats.users.length === 0 ? (
-                  <p className="empty-table-text">{t("admin.noUsers")}</p>
-                ) : (
-                  <div className="arche-table-wrapper">
-                    <table className="arche-table table-compact">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>{t("admin.thName")}</th>
-                          <th>{t("admin.thEmail")}</th>
-                          <th>{t("admin.thRole")}</th>
-                          <th>{t("admin.thProjects")}</th>
-                          <th>{t("admin.thRegistered")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {stats.users.map((u) => (
-                          <tr key={u.id}>
-                            <td>{u.id}</td>
-                            <td style={{ fontWeight: 700, color: "white" }}>{u.name}</td>
-                            <td>{u.email}</td>
-                            <td>
-                              <span className={`badge ${u.role === "admin" ? "badge-danger" : "badge-primary"}`}>
-                                {u.role.toUpperCase()}
-                              </span>
-                            </td>
-                            <td style={{ fontWeight: 700, color: "#38bdf8" }}>{u.projectCount}</td>
-                            <td>{new Date(u.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* TAB 1: Projects Monitor */}
-            {activeTab === 1 && (
-              <div className="glass-panel tab-content animate-fade-in">
-                {stats.projects.length === 0 ? (
-                  <p className="empty-table-text">{t("admin.noProjects")}</p>
-                ) : (
-                  <div className="arche-table-wrapper">
-                    <table className="arche-table table-compact">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>{t("admin.thName")} (Author)</th>
-                          <th>{t("dashboard.projectTitle")}</th>
-                          <th>{t("admin.thApproach")}</th>
-                          <th>{t("admin.thDesign")}</th>
-                          <th>{t("admin.thFormula")}</th>
-                          <th>{t("admin.thSample")}</th>
-                          <th>{t("admin.thDate")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredProjects.map((p) => (
-                          <tr key={p.id}>
-                            <td>{p.id}</td>
-                            <td style={{ fontWeight: 700, color: "white" }}>{p.userName}</td>
-                            <td style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {p.title}
-                            </td>
-                            <td>
-                              <span className="badge badge-primary">
-                                {p.approach ? p.approach.toUpperCase() : "N/A"}
-                              </span>
-                            </td>
-                            <td>{p.designType || "N/A"}</td>
-                            <td style={{ fontFamily: "monospace", color: "#a78bfa" }}>
-                              {p.formula ? p.formula.toUpperCase() : "N/A"}
-                            </td>
-                            <td style={{ fontWeight: 800, color: "#22d3ee" }}>
-                              {p.sampleSize || "N/A"}
-                            </td>
-                            <td>{new Date(p.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
           </>
         )}
       </main>
@@ -578,5 +634,14 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "8px",
     textAlign: "center",
     fontWeight: 600,
+  },
+  vacuumBtn: {
+    marginTop: "0.5rem",
+    padding: "0.4rem 0.8rem",
+    fontSize: "0.8rem",
+    border: "1px solid",
+    borderRadius: "6px",
+    cursor: "pointer",
+    transition: "all 0.2s ease"
   }
 };
