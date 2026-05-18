@@ -911,3 +911,68 @@ h1, h2, h3, h4, h5, h6 {
   text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
   transform: translateX(2px);
 }
+
+/* Standard Premium Modal Layout */
+.arche-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(3, 7, 18, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.arche-modal-card {
+  width: 100%;
+  max-width: 540px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arche-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.arche-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.arche-modal-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.arche-modal-close:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.arche-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.arche-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
