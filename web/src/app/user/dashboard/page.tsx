@@ -561,7 +561,7 @@ export default function DashboardPage() {
             </div>
             
             <div style={{ marginBottom: "1.25rem", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.88rem" }}>
-              {t("dashboard.archiveConfirm")}
+              {isTargetAlreadyArchived ? t("dashboard.deletePermanentConfirm") : t("dashboard.archiveConfirm")}
               <div style={{
                 marginTop: "0.5rem",
                 padding: "0.6rem 0.85rem",
