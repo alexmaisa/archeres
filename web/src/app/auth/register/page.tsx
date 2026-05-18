@@ -47,13 +47,13 @@ export default function RegisterPage() {
       try {
         const randomBytes = window.crypto.getRandomValues(new Uint8Array(32));
         const recoveryKeyBase64 = btoa(String.fromCharCode(...randomBytes));
-        const fileContent = `ARCHE ZERO-KNOWLEDGE MASTER RECOVERY KEY\n=========================================\n\nOwner: ${name} (${email})\nGenerated: ${new Date().toLocaleString()}\n\nThis file is highly confidential. If you lose your password, you can use this Master Recovery Key to restore access to your research vault.\n\nMaster Recovery Key:\n${recoveryKeyBase64}\n`;
+        const fileContent = `ARCHERES ZERO-KNOWLEDGE MASTER RECOVERY KEY\n=========================================\n\nOwner: ${name} (${email})\nGenerated: ${new Date().toLocaleString()}\n\nThis file is highly confidential. If you lose your password, you can use this Master Recovery Key to restore access to your research vault.\n\nMaster Recovery Key:\n${recoveryKeyBase64}\n`;
         
         const blob = new Blob([fileContent], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `arche_recovery_key_${email.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
+        link.download = `archeres_recovery_key_${email.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -103,7 +103,7 @@ export default function RegisterPage() {
 
       <div style={styles.card} className="glass-panel">
         <div style={styles.header}>
-          <h1 style={styles.logoText}>Arche</h1>
+          <h1 style={styles.logoText}>Archeres</h1>
           <p style={styles.subtitle}>{t("common.tagline")}</p>
         </div>
 

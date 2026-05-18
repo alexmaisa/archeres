@@ -101,7 +101,7 @@ export default function LoginPage() {
 
       <div style={styles.card} className="glass-panel">
         <div style={styles.header}>
-          <h1 style={styles.logoText}>Arche</h1>
+          <h1 style={styles.logoText}>Archeres</h1>
           <p style={styles.subtitle}>{t("common.tagline")}</p>
         </div>
 

@@ -1,19 +1,19 @@
-# Arche Platform Infrastructure & Architecture Guideline
+# Archeres Platform Infrastructure & Architecture Guideline
 
-Welcome to the **Arche** System Architecture Blueprint. This document serves as the formal infrastructure reference for both human developers and AI Agents to ensure that any future feature additions, migrations, or deployments align perfectly with the established technical paradigm.
+Welcome to the **Archeres** System Architecture Blueprint. This document serves as the formal infrastructure reference for both human developers and AI Agents to ensure that any future feature additions, migrations, or deployments align perfectly with the established technical paradigm.
 
 ---
 
 ## 🏛️ System Architecture Overview
 
-Arche adopts a modern, decoupled **Client-Server architecture** optimized for high security, zero runtime overhead, and low system footprints:
+Archeres adopts a modern, decoupled **Client-Server architecture** optimized for high security, zero runtime overhead, and low system footprints:
 
 ```mermaid
 graph TD
     Client[Web Browser Client] -->|HTTP Request: Port 3000| Nginx[Nginx Static Web Server]
     Client -->|REST API Handshake: Port 8080| Fiber[Go Fiber API Gateway]
     Fiber -->|ORM Queries| GORM[GORM Database Mapper]
-    GORM -->|Read / Write| SQLite[(SQLite persistent: arche.db)]
+    GORM -->|Read / Write| SQLite[(SQLite persistent: archeres.db)]
 ```
 
 The system separates static interface assets from dynamic business logic layers, utilizing standard Docker Compose linkages in production and a concurrent Makefile in local development.
@@ -27,7 +27,7 @@ Located under the [backend/](file:///Volumes/staDiff/GitHub/arche/backend/) dire
 * **Programming Language:** **Go 1.26** (utilizing native standard libraries and float precision structures).
 * **API Framework:** **Fiber v2** (built on top of fasthttp for lightning-fast concurrent request routing).
 * **Database Layer:** **SQLite** mapped via **GORM (Go Object Relational Mapper)**.
-  * **Database File:** `backend/arche.db` (persistent).
+  * **Database File:** `backend/archeres.db` (persistent).
   * **Auto-Migrations:** Configured in `backend/config/db.go` to automatically synchronize schemas on launch.
 * **Authentication Paradigm:** **Stateless JSON Web Tokens (JWT)**.
   * Hashed passwords stored using **Bcrypt** (cost factor 10).
@@ -66,10 +66,10 @@ For robust staging and deployment, the entire system is encapsulated within a co
   1. *Builder Stage:* Installs standard node modules using `node:22-alpine` and `pnpm`, then compiles the code into static files (`pnpm run build`).
   2. *Runtime Stage:* Copies `/app/out/` directly onto `nginx:1.25-alpine`.
 * **Service Orchestration ([compose.yaml](file:///Volumes/staDiff/GitHub/arche/compose.yaml)):**
-  * Spins up `arche-backend` and `arche-web` concurrently.
+  * Spins up `archeres-backend` and `archeres-web` concurrently.
   * Maps physical port `8080` for backend API routing and port `3000` for web serving.
-  * Maps a persistent Docker volume `sqlite_data` to `/app/data/` in the backend container to ensure database records persist across containers lifecycles.
-  * Sets up local `.dockerignore` filters in both backend and web directories to prevent heavy `node_modules` or local `arche.db` binary states from leaking into build contexts.
+  * Maps a persistent Docker volume `archeres-db` to `/app/data/` in the backend container to ensure database records persist across containers lifecycles.
+  * Sets up local `.dockerignore` filters in both backend and web directories to prevent heavy `node_modules` or local `archeres.db` binary states from leaking into build contexts.
 
 ---
 
@@ -81,14 +81,14 @@ For rapid, non-Docker local pair-programming, developer lifecycle controls are m
 * **`make dev`:** Launches both Go Fiber REST API and Next.js Turbopack dev server concurrently in a single terminal.
 * **`make stop`:** Scans active network processes occupying ports `3000` and `8080` using `lsof -t` and gracefully terminates them.
 * **`make test`:** Executes the rigorous unit testing suite (`backend/utils/sample_test.go`) validating Cochran, Slovin, Daniel, Yamane, and Lemeshow mathematics ceiling rounded assertions.
-* **`make clean`:** Purges Next.js caches and deletes local `backend/arche.db` databases to reset onboarding states cleanly.
+* **`make clean`:** Purges Next.js caches and deletes local `backend/archeres.db` databases to reset onboarding states cleanly.
 * **`make help`:** Prints a beautifully formatted, color-coded index of all targets.
 
 ---
 
 ## 🔒 5. Zero-Knowledge End-to-End Encryption (E2EE) Paradigm
 
-To guarantee absolute confidentiality and protect the intellectual property of researchers, Arche implements a **Zero-Knowledge E2EE cryptographic system** directly in the user's browser. This guarantees that not even system administrators or backend database owners can read the research ideas.
+To guarantee absolute confidentiality and protect the intellectual property of researchers, Archeres implements a **Zero-Knowledge E2EE cryptographic system** directly in the user's browser. This guarantees that not even system administrators or backend database owners can read the research ideas.
 
 ### Key Architectural Pillars:
 * **Client-Side Cryptography (Web Crypto API):**
@@ -105,6 +105,6 @@ To guarantee absolute confidentiality and protect the intellectual property of r
   * **Research Design:** `Approach` (e.g. Quantitative), `DesignType` (e.g. Quasi-Experimental), `VariablesJson` (complete variable indicator mapping), and `AnalysisMethod`.
   * **Unencrypted Metadata:** Statistical metrics like calculated sample size, margin of error, confidence level, and formula types remain unencrypted to support aggregate platform-wide telemetry without compromising research concepts.
 * **One-Time Master Recovery Key:**
-  * On successful registration, the client generates a secure random 256-bit recovery token and prompts the user to download an `arche_recovery_key_[email].txt` backup key file. Since the architecture is strictly zero-knowledge, this is the absolute only way to recover vault contents if a password is forgotten.
+  * On successful registration, the client generates a secure random 256-bit recovery token and prompts the user to download an `archeres_recovery_key_[email].txt` backup key file. Since the architecture is strictly zero-knowledge, this is the absolute only way to recover vault contents if a password is forgotten.
 * **Graceful Fallback:**
   * The decryption utility falls back to plaintext if data does not match the encrypted serialization format, ensuring seamless backward compatibility with older plaintext projects.

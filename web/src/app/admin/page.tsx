@@ -498,7 +498,7 @@ export default function AdminPage() {
       </main>
       <footer className="fixed-footer">
         <p className="footer-text">
-          &copy; 2026 Benny Maisa. Arche: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
+          &copy; 2026 Benny Maisa. Archeres: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
         </p>
       </footer>
     </div>

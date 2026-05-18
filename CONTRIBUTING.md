@@ -1,6 +1,6 @@
 # Contribution Guidelines (CONTRIBUTING.md)
 
-Thank you for contributing to **Arche**! To keep our repository clean, legible, and consistent, this project enforces strict Git commit message conventions (Conventional Commits) written in **English**.
+Thank you for contributing to **Archeres**! To keep our repository clean, legible, and consistent, this project enforces strict Git commit message conventions (Conventional Commits) written in **English**.
 
 ---
 

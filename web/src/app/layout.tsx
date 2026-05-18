@@ -3,7 +3,7 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata = {
-  title: "Arche - Scientific Research Methodology Planner",
+  title: "Archeres - Scientific Research Methodology Planner",
   description: "A compact, multiuser workspace to help beginner researchers select research designs, calculate sample sizes, and structure methodology drafts.",
 };
 

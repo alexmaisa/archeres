@@ -7,7 +7,7 @@ const resources = {
   en: {
     translation: {
       common: {
-        appName: "Arche",
+        appName: "Archeres",
         tagline: "Empowering beginner researchers to structure sound methodologies.",
         search: "Search...",
         save: "Save Progress",
@@ -22,14 +22,14 @@ const resources = {
         errorOccurred: "An error occurred. Please try again."
       },
       auth: {
-        loginTitle: "Access Arche Workspace",
+        loginTitle: "Access Archeres Workspace",
         registerTitle: "Create Researcher Account",
         nameLabel: "Full Name",
         emailLabel: "Email Address",
         passwordLabel: "Password",
         submitLogin: "Sign In",
         submitRegister: "Create Account",
-        noAccount: "New to Arche? Sign Up",
+        noAccount: "New to Archeres? Sign Up",
         hasAccount: "Already have an account? Sign In",
         invalidCreds: "Incorrect email address or password.",
         invalidInput: "Please fill in all fields correctly.",
@@ -129,7 +129,7 @@ const resources = {
   id: {
     translation: {
       common: {
-        appName: "Arche",
+        appName: "Archeres",
         tagline: "Membantu peneliti pemula merumuskan metodologi penelitian yang valid dan ilmiah.",
         search: "Cari...",
         save: "Simpan Progress",
@@ -144,14 +144,14 @@ const resources = {
         errorOccurred: "Terjadi kesalahan. Silakan coba kembali."
       },
       auth: {
-        loginTitle: "Akses Workspace Arche",
+        loginTitle: "Akses Workspace Archeres",
         registerTitle: "Buat Akun Peneliti Baru",
         nameLabel: "Nama Lengkap",
         emailLabel: "Alamat Email",
         passwordLabel: "Kata Sandi",
         submitLogin: "Masuk Sesi",
         submitRegister: "Daftar Akun",
-        noAccount: "Baru di Arche? Daftar Sekarang",
+        noAccount: "Baru di Archeres? Daftar Sekarang",
         hasAccount: "Sudah punya akun? Masuk Sesi",
         invalidCreds: "Alamat email atau kata sandi yang Anda masukkan salah.",
         invalidInput: "Harap isi seluruh formulir secara lengkap dan benar.",
