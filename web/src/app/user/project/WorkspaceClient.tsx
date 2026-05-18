@@ -1312,26 +1312,20 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             : "Originating from the seminal taxonomy developed by Stanley Smith Stevens (1946), measurement scales define the mathematical properties of your data and strictly dictate which statistical tests are valid. The scales represent a hierarchy of precision from lowest to highest: Nominal (categorical), Ordinal (ranked), Interval (equal intervals, arbitrary zero), and Ratio (absolute mathematical zero).",
           characteristics: isId
             ? [
-                "Skala Nominal: Klasifikasi kategori kualitatif murni tanpa peringkat (misal: Gender, Suku, Domisili, Jenis Pekerjaan).",
-                "Skala Ordinal: Kategori bertingkat yang memiliki urutan logis namun tanpa jarak setara antar nilai (misal: Tingkat Kepangkatan, Skala Likert 1-5).",
-                "Skala Interval: Data numerik dengan jarak setara antar angka namun tanpa nol mutlak (misal: Suhu Celcius, Skor IQ, Tahun Masehi).",
-                "Skala Rasio: Tingkat presisi tertinggi dengan nol mutlak riil di mana perkalian dan pembagian bernilai valid (misal: Berat Badan, Penghasilan, Usia)."
+                "Skala Nominal (Kualitatif/Kategorikal): Klasifikasi kategori murni tanpa tingkatan. Angka hanya simbol identitas kualitatif (contoh: Laki-laki = 1, Perempuan = 2; angka ini tidak dapat dijumlahkan atau dirata-ratakan).",
+                "Skala Ordinal (Kategorikal Bertingkat): Klasifikasi bertingkat dengan urutan logis, namun jarak antarkategori tidak setara atau tidak dapat diukur secara eksak (contoh: Peringkat Militer, Jenjang Pendidikan, atau Skala Likert 1-5).",
+                "Skala Interval (Metrik/Kuantitatif): Angka numerik dengan jarak antar nilai yang setara/konstan, namun tidak memiliki nol mutlak sehingga rasio perkalian tidak bermakna (contoh: Suhu Celsius atau Skor IQ; nol derajat bukan berarti tidak ada suhu).",
+                "Skala Rasio (Metrik/Kuantitatif Lanjut): Angka numerik presisi tertinggi yang memiliki nol mutlak riil. Nilai nol berarti ketiadaan atribut secara total, memungkinkan operasi perkalian/pembagian (contoh: Pendapatan Rp0, Berat Badan, atau Usia).",
+                "Implikasi Pengujian Statistik: Skala Nominal/Ordinal membatasi data pada analisis non-parametrik (seperti Chi-Square), sedangkan skala Interval/Rasio memenuhi prasyarat statistik parametrik yang lebih canggih (seperti Korelasi Pearson & Regresi)."
               ]
             : [
-                "Nominal Scale: Mutually exclusive categorical sorting with no inherent mathematical hierarchy or ranks (e.g., Gender, Ethnicity, Department).",
-                "Ordinal Scale: Ordered rank sequences where distances between points are mathematically unequal or arbitrary (e.g., Military Rank, Likert Agreement Scale).",
-                "Interval Scale: Numerical data with equal interval distances but an arbitrary zero point (e.g., Celsius Temperature, standardized IQ Scores).",
-                "Ratio Scale: The absolute highest precision scale featuring a true mathematical zero, allowing legitimate division and multiplication (e.g., Revenue, Age, Weight)."
+                "Nominal Scale (Qualitative/Categorical): Categorical classification with no intrinsic mathematical hierarchy. Numbers act purely as qualitative symbolic labels (e.g., Male = 1, Female = 2; calculating a mean is mathematically meaningless).",
+                "Ordinal Scale (Ranked/Categorical): Ordered rank sequences where categories have logical sequence but mathematical distances between ranks are unequal or arbitrary (e.g., Academic Degrees, Job Seniority, or Likert Scales).",
+                "Interval Scale (Metric/Quantitative): Numerical data with equal interval distances but lacks a true mathematical zero point. Zero is arbitrary, meaning ratios are invalid (e.g., Celsius Temperature or standardized IQ Scores).",
+                "Ratio Scale (Metric/Quantitative Advanced): Numerical data with a true, absolute mathematical zero denoting the total absence of the attribute, making division/multiplication valid (e.g., Revenue, Weight, or Age).",
+                "Statistical Method Implications: Nominal and Ordinal data generally require non-parametric statistical methods (e.g., Chi-Square), whereas Interval and Ratio data qualify for powerful parametric models (e.g., Pearson Correlation, Regression)."
               ],
-          examples: isId
-            ? [
-                "Nominal: Laki-laki = 1, Perempuan = 2 (Angka murni kode label, tidak ada operasi aritmatika).",
-                "Ordinal: Juara I, II, dan III (Kita tahu Juara I lebih baik dari II, tapi tidak tahu seberapa besar selisih skor performansi riil mereka)."
-              ]
-            : [
-                "Example: Nominal: Marketing Dept = 1, Finance Dept = 2 (Numbers are purely symbolic labels; calculating a mean is mathematically meaningless).",
-                "Example: Ordinal: Academic degrees (High School, Bachelor, Master, PhD). We know PhD > Master, but the physical educational gap between them is not uniform."
-              ],
+          examples: [],
           tips: isId
             ? "Variabel berskala Nominal/Ordinal membutuhkan uji non-parametrik, sedangkan variabel berskala Interval/Rasio memenuhi syarat pengujian parametrik (seperti Regresi Linear) asalkan lolos uji asumsi klasik."
             : "Nominal and Ordinal variables typically require non-parametric statistical tests, while Interval and Ratio variables qualify for parametric methods (like Regression) provided assumptions are met."
