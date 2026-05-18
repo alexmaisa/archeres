@@ -580,7 +580,7 @@ export default function AdminPage() {
     const loginArea = buildAreaString(loginPoints);
 
     return (
-      <div style={{ marginTop: "1rem", position: "relative" }} className="animate-fade-in">
+      <div style={{ marginTop: "1rem", position: "relative", maxWidth: "900px", margin: "1rem auto 0" }} className="animate-fade-in">
         {/* Dynamic legends block */}
         <div style={{ display: "flex", gap: "1.5rem", justifyContent: "flex-end", marginBottom: "0.5rem", fontSize: "0.8rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
