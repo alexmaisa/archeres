@@ -29,6 +29,8 @@ export default function DashboardPage() {
   const [projectTitleToDelete, setProjectTitleToDelete] = useState<string>("");
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
+  const [activeTab, setActiveTab] = useState<"active" | "archived">("active");
+
   const activeProjects = projects.filter((p) => !p.isArchived);
   const archivedProjects = projects.filter((p) => p.isArchived);
 
@@ -262,101 +264,49 @@ export default function DashboardPage() {
         ) : error ? (
           <div style={styles.errorAlert} className="badge-danger">{error}</div>
         ) : (
-          <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
-            <table className="arche-table">
-              <thead>
-                <tr>
-                  <th style={{ width: "25%" }}>{t("dashboard.projectTitleColumn")}</th>
-                  <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
-                  <th style={{ width: "15%" }}>{t("dashboard.projectApproachColumn")}</th>
-                  <th style={{ width: "15%" }}>{t("dashboard.createdAtColumn")}</th>
-                  <th style={{ width: "15%" }}>{t("dashboard.updatedAtColumn")}</th>
-                  <th style={{ width: "5%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {activeProjects.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
-                        <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
-                        <span style={{ fontSize: "0.95rem" }}>
-                          {i18n.language === "id" 
-                            ? "Belum ada proyek penelitian aktif yang dibuat." 
-                            : "No active research projects have been created yet."}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  activeProjects.map((proj) => (
-                  <tr key={proj.id}>
-                    <td style={{ verticalAlign: "middle" }}>
-                      <div
-                        onClick={() => router.push(`/user/project?id=${proj.id}`)}
-                        className="project-title-link"
-                      >
-                        {proj.title}
-                      </div>
-                    </td>
-                    <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.88rem" }}>
-                      {proj.description
-                        ? proj.description.length > 80
-                          ? `${proj.description.substring(0, 80)}...`
-                          : proj.description
-                        : "No description provided."}
-                    </td>
-                    <td style={{ verticalAlign: "middle" }}>
-                      {proj.approach ? (
-                        <span className={`badge ${
-                          proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
-                            ? "badge-primary"
-                            : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
-                              ? "badge-cyan"
-                              : "badge-success"
-                        }`}>
-                          {proj.approach}
-                        </span>
-                      ) : (
-                        <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
-                      )}
-                    </td>
-                    <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
-                      {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                    </td>
-                    <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
-                      {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                    </td>
-                    <td style={{ verticalAlign: "middle", textAlign: "right" }}>
-                      <button
-                        onClick={() => {
-                          setProjectIdToDelete(proj.id);
-                          setProjectTitleToDelete(proj.title);
-                          setShowDeleteModal(true);
-                        }}
-                        className="btn btn-outline project-action-delete"
-                        style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
-                      >
-                        <IconTrash size={13} />
-                      </button>
-                    </td>
-                  </tr>
-                )))}
-              </tbody>
-            </table>
-          </div>
-        )}
+          <div>
+            {/* Toggle Tab Selector */}
+            <div style={{ display: "inline-flex", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: "10px", padding: "4px", marginBottom: "1.25rem", gap: "4px" }}>
+              <button
+                onClick={() => setActiveTab("active")}
+                className="btn"
+                style={{
+                  background: activeTab === "active" ? "rgba(124, 58, 237, 0.15)" : "transparent",
+                  color: activeTab === "active" ? "#c084fc" : "rgba(255, 255, 255, 0.5)",
+                  border: "none",
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
+                }}
+              >
+                {t("dashboard.activeTitle")} ({activeProjects.length})
+              </button>
+              <button
+                onClick={() => setActiveTab("archived")}
+                className="btn"
+                style={{
+                  background: activeTab === "archived" ? "rgba(124, 58, 237, 0.15)" : "transparent",
+                  color: activeTab === "archived" ? "#c084fc" : "rgba(255, 255, 255, 0.5)",
+                  border: "none",
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
+                }}
+              >
+                {t("dashboard.archivedTitle")} ({archivedProjects.length})
+              </button>
+            </div>
 
-        {/* Archived Projects Listing */}
-        {archivedProjects.length > 0 && (
-          <div style={{ marginTop: "3rem" }}>
-            <h2 className="welcome-title" style={{ fontSize: "1.35rem", marginBottom: "1rem" }}>
-              {t("dashboard.archivedTitle")}
-            </h2>
-            <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden", border: "1px solid rgba(239, 68, 68, 0.15)" }}>
+            <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
               <table className="arche-table">
                 <thead>
-                  <tr style={{ backgroundColor: "rgba(3, 7, 18, 0.25)" }}>
+                  <tr>
                     <th style={{ width: "25%" }}>{t("dashboard.projectTitleColumn")}</th>
                     <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
                     <th style={{ width: "15%" }}>{t("dashboard.projectApproachColumn")}</th>
@@ -366,61 +316,147 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {archivedProjects.map((proj) => (
-                    <tr key={proj.id} style={{ opacity: 0.8 }}>
-                      <td style={{ verticalAlign: "middle" }}>
-                        <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
-                          {proj.title}
-                        </div>
-                      </td>
-                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.55)", fontSize: "0.88rem" }}>
-                        {proj.description
-                          ? proj.description.length > 80
-                            ? `${proj.description.substring(0, 80)}...`
-                            : proj.description
-                          : "No description provided."}
-                      </td>
-                      <td style={{ verticalAlign: "middle" }}>
-                        {proj.approach ? (
-                          <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
-                            {proj.approach}
-                          </span>
-                        ) : (
-                          <span style={{ color: "rgba(255, 255, 255, 0.2)", fontSize: "0.85rem" }}>—</span>
-                        )}
-                      </td>
-                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
-                        {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                      </td>
-                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
-                        {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                      </td>
-                      <td style={{ verticalAlign: "middle", textAlign: "right" }}>
-                        <div style={{ display: "inline-flex", gap: "0.5rem" }}>
-                          <button
-                            onClick={() => handleUnarchiveProject(proj.id)}
-                            className="btn btn-outline"
-                            title={t("dashboard.unarchiveBtn")}
-                            style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
-                          >
-                            <IconRefresh size={13} />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setProjectIdToDelete(proj.id);
-                              setProjectTitleToDelete(proj.title);
-                              setShowDeleteModal(true);
-                            }}
-                            className="btn btn-outline project-action-delete"
-                            title={t("dashboard.deletePermanent")}
-                            style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
-                          >
-                            <IconTrash size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {activeTab === "active" ? (
+                    activeProjects.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                            <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                            <span style={{ fontSize: "0.95rem" }}>
+                              {i18n.language === "id" 
+                                ? "Belum ada proyek penelitian aktif yang dibuat." 
+                                : "No active research projects have been created yet."}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      activeProjects.map((proj) => (
+                        <tr key={proj.id}>
+                          <td style={{ verticalAlign: "middle" }}>
+                            <div
+                              onClick={() => router.push(`/user/project?id=${proj.id}`)}
+                              className="project-title-link"
+                            >
+                              {proj.title}
+                            </div>
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.88rem" }}>
+                            {proj.description
+                              ? proj.description.length > 80
+                                ? `${proj.description.substring(0, 80)}...`
+                                : proj.description
+                              : "No description provided."}
+                          </td>
+                          <td style={{ verticalAlign: "middle" }}>
+                            {proj.approach ? (
+                              <span className={`badge ${
+                                proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
+                                  ? "badge-primary"
+                                  : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
+                                    ? "badge-cyan"
+                                    : "badge-success"
+                              }`}>
+                                {proj.approach}
+                              </span>
+                            ) : (
+                              <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
+                            )}
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
+                            {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
+                            {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                          </td>
+                          <td style={{ verticalAlign: "middle", textAlign: "right" }}>
+                            <button
+                              onClick={() => {
+                                setProjectIdToDelete(proj.id);
+                                setProjectTitleToDelete(proj.title);
+                                setShowDeleteModal(true);
+                              }}
+                              className="btn btn-outline project-action-delete"
+                              style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                            >
+                              <IconTrash size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )
+                  ) : (
+                    archivedProjects.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                            <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                            <span style={{ fontSize: "0.95rem" }}>
+                              {i18n.language === "id" 
+                                ? "Belum ada proyek penelitian yang diarsipkan." 
+                                : "No archived research projects found."}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      archivedProjects.map((proj) => (
+                        <tr key={proj.id} style={{ opacity: 0.8 }}>
+                          <td style={{ verticalAlign: "middle" }}>
+                            <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
+                              {proj.title}
+                            </div>
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.55)", fontSize: "0.88rem" }}>
+                            {proj.description
+                              ? proj.description.length > 80
+                                ? `${proj.description.substring(0, 80)}...`
+                                : proj.description
+                              : "No description provided."}
+                          </td>
+                          <td style={{ verticalAlign: "middle" }}>
+                            {proj.approach ? (
+                              <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
+                                {proj.approach}
+                              </span>
+                            ) : (
+                              <span style={{ color: "rgba(255, 255, 255, 0.2)", fontSize: "0.85rem" }}>—</span>
+                            )}
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                            {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                          </td>
+                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                            {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                          </td>
+                          <td style={{ verticalAlign: "middle", textAlign: "right" }}>
+                            <div style={{ display: "inline-flex", gap: "0.5rem" }}>
+                              <button
+                                onClick={() => handleUnarchiveProject(proj.id)}
+                                className="btn btn-outline"
+                                title={t("dashboard.unarchiveBtn")}
+                                style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
+                              >
+                                <IconRefresh size={13} />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setProjectIdToDelete(proj.id);
+                                  setProjectTitleToDelete(proj.title);
+                                  setShowDeleteModal(true);
+                                }}
+                                className="btn btn-outline project-action-delete"
+                                title={t("dashboard.deletePermanent")}
+                                style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                              >
+                                <IconTrash size={13} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )
+                  )}
                 </tbody>
               </table>
             </div>
