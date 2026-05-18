@@ -23,6 +23,12 @@ export default function DashboardPage() {
   const [newDesc, setNewDesc] = useState<string>("");
   const [modalLoading, setModalLoading] = useState<boolean>(false);
 
+  // Delete confirmation modal states
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(null);
+  const [projectTitleToDelete, setProjectTitleToDelete] = useState<string>("");
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+
   useEffect(() => {
     // Authenticate session locally
     const savedUser = localStorage.getItem("user");
@@ -99,14 +105,20 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteProject = async (id: string) => {
-    if (!confirm(t("dashboard.deleteConfirm"))) return;
+  const handleDeleteProject = async () => {
+    if (!projectIdToDelete) return;
 
+    setDeleteLoading(true);
     try {
-      await apiFetch(`/api/projects/${id}`, { method: "DELETE" });
-      setProjects(projects.filter((p) => p.id !== id));
+      await apiFetch(`/api/projects/${projectIdToDelete}`, { method: "DELETE" });
+      setProjects(projects.filter((p) => p.id !== projectIdToDelete));
+      setShowDeleteModal(false);
+      setProjectIdToDelete(null);
+      setProjectTitleToDelete("");
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -276,7 +288,11 @@ export default function DashboardPage() {
                     </td>
                     <td style={{ verticalAlign: "middle", textAlign: "right" }}>
                       <button
-                        onClick={() => handleDeleteProject(proj.id)}
+                        onClick={() => {
+                          setProjectIdToDelete(proj.id);
+                          setProjectTitleToDelete(proj.title);
+                          setShowDeleteModal(true);
+                        }}
                         className="btn btn-outline project-action-delete"
                         style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
                       >
@@ -351,6 +367,76 @@ export default function DashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={styles.modalOverlay}>
+          <div style={{ ...styles.modalCard, maxWidth: "460px" }} className="glass-panel animate-fade-in">
+            <div style={styles.modalHeader}>
+              <h2 style={{ ...styles.modalTitle, color: "hsl(var(--destructive-color, #ef4444))" }}>
+                {t("dashboard.deleteBtn")}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setProjectIdToDelete(null);
+                  setProjectTitleToDelete("");
+                }}
+                style={styles.modalClose}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div style={{ marginBottom: "1.75rem", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.95rem" }}>
+              {t("dashboard.deleteConfirm")}
+              <div style={{
+                marginTop: "0.75rem",
+                padding: "0.85rem 1rem",
+                backgroundColor: "rgba(239, 68, 68, 0.05)",
+                border: "1px dashed rgba(239, 68, 68, 0.2)",
+                borderRadius: "8px",
+                color: "rgba(255, 255, 255, 0.9)",
+                fontWeight: 600,
+                fontSize: "0.95rem",
+                wordBreak: "break-all"
+              }}>
+                "{projectTitleToDelete}"
+              </div>
+            </div>
+
+            <div style={styles.modalActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setProjectIdToDelete(null);
+                  setProjectTitleToDelete("");
+                }}
+                className="btn btn-outline"
+                disabled={deleteLoading}
+              >
+                {t("common.back")}
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteProject}
+                className="btn"
+                style={{
+                  backgroundColor: "#ef4444",
+                  color: "#fff",
+                  padding: "0.6rem 1.25rem",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
+                }}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? t("common.loading") : t("dashboard.deleteBtn")}
+              </button>
+            </div>
           </div>
         </div>
       )}
