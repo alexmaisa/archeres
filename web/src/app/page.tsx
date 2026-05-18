@@ -115,7 +115,7 @@ export default function Home() {
         {
           icon: "shield",
           name: "Keamanan & Kendali Platform",
-          desc: "Dilengkapi sistem hak akses terintegrasi untuk mengamankan data serta dashboard pemantauan metrik riset yang transparan."
+          desc: "Dilengkapi sistem hak akses terintegrasi untuk mengamankan data serta dashboard pemantauan metrik riset yang aman secara privasi."
         },
         {
           icon: "key",
