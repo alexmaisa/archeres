@@ -593,196 +593,197 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-          {/* Horizontal grid lines */}
-          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
-            const y = paddingTop + chartHeight * (1 - ratio);
-            return (
-              <line
-                key={idx}
-                x1={paddingLeft}
-                y1={y}
-                x2={width - paddingRight}
-                y2={y}
-                stroke="rgba(255,255,255,0.03)"
-                strokeWidth="1"
-              />
-            );
-          })}
+        {/* SVG Canvas and HTML Overlay Sub-Container */}
+        <div style={{ position: "relative", width: "100%", height: `${height}px` }}>
+          <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+            {/* Horizontal grid lines */}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+              const y = paddingTop + chartHeight * (1 - ratio);
+              return (
+                <line
+                  key={idx}
+                  x1={paddingLeft}
+                  y1={y}
+                  x2={width - paddingRight}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.03)"
+                  strokeWidth="1"
+                />
+              );
+            })}
 
-          {/* Area gradients under curves */}
-          <path d={userArea} fill="url(#userAreaGrad)" style={{ transition: "all 0.5s ease" }} />
-          <path d={loginArea} fill="url(#loginAreaGrad)" style={{ transition: "all 0.5s ease" }} />
+            {/* Area gradients under curves */}
+            <path d={userArea} fill="url(#userAreaGrad)" style={{ transition: "all 0.5s ease" }} />
+            <path d={loginArea} fill="url(#loginAreaGrad)" style={{ transition: "all 0.5s ease" }} />
 
-          {/* Draw lines */}
-          <path
-            d={userPath}
-            fill="none"
-            stroke="#f43f5e"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ transition: "all 0.5s ease" }}
-          />
-          <path
-            d={loginPath}
-            fill="none"
-            stroke="#10b981"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ transition: "all 0.5s ease" }}
-          />
+            {/* Draw lines */}
+            <path
+              d={userPath}
+              fill="none"
+              stroke="#f43f5e"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ transition: "all 0.5s ease" }}
+            />
+            <path
+              d={loginPath}
+              fill="none"
+              stroke="#10b981"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ transition: "all 0.5s ease" }}
+            />
 
-          {/* User registration data points dots */}
-          {userPoints.map((p, idx) => (
-            <g key={`u-${idx}`}>
-              <circle cx={p.x} cy={p.y} r="5" fill="#f43f5e" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-              <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#f43f5e" strokeWidth="1" opacity="0.2" />
-            </g>
-          ))}
+            {/* User registration data points dots */}
+            {userPoints.map((p, idx) => (
+              <g key={`u-${idx}`}>
+                <circle cx={p.x} cy={p.y} r="5" fill="#f43f5e" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#f43f5e" strokeWidth="1" opacity="0.2" />
+              </g>
+            ))}
 
-          {/* Login session data points dots */}
-          {loginPoints.map((p, idx) => (
-            <g key={`l-${idx}`}>
-              <circle cx={p.x} cy={p.y} r="5" fill="#10b981" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-              <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#10b981" strokeWidth="1" opacity="0.2" />
-            </g>
-          ))}
+            {/* Login session data points dots */}
+            {loginPoints.map((p, idx) => (
+              <g key={`l-${idx}`}>
+                <circle cx={p.x} cy={p.y} r="5" fill="#10b981" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+                <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#10b981" strokeWidth="1" opacity="0.2" />
+              </g>
+            ))}
 
-          <defs>
-            <linearGradient id="userAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
-            </linearGradient>
-            <linearGradient id="loginAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
+            <defs>
+              <linearGradient id="userAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="loginAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
 
-        {/* Y Axis Grid Labels (Native HTML Overlays) */}
-        <div style={{
-          position: "absolute",
-          left: "0",
-          top: "0",
-          height: `${height}px`,
-          width: `${paddingLeft - 4}px`,
-          pointerEvents: "none"
-        }}>
-          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
-            const gridLabel = Math.round(maxVal * ratio);
-            const topPct = ((paddingTop + chartHeight * (1 - ratio)) / height) * 100;
-            return (
-              <span key={idx} style={{
-                position: "absolute",
-                top: `${topPct}%`,
-                right: "0",
-                transform: "translateY(-50%)",
-                fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.45)",
-                fontFamily: "var(--font-outfit), sans-serif",
-                fontWeight: 600,
-                lineHeight: 1
-              }}>
-                {gridLabel}
-              </span>
-            );
-          })}
-        </div>
+          {/* Y Axis Grid Labels (Native HTML Overlays) */}
+          <div style={{
+            position: "absolute",
+            left: "0",
+            top: "0",
+            height: `${height}px`,
+            width: `${paddingLeft - 4}px`,
+            pointerEvents: "none"
+          }}>
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+              const gridLabel = Math.round(maxVal * ratio);
+              const topPct = ((paddingTop + chartHeight * (1 - ratio)) / height) * 100;
+              return (
+                <span key={idx} style={{
+                  position: "absolute",
+                  top: `${topPct}%`,
+                  right: "0",
+                  transform: "translateY(-50%)",
+                  fontSize: "0.75rem",
+                  color: "rgba(255,255,255,0.45)",
+                  fontFamily: "var(--font-outfit), sans-serif",
+                  fontWeight: 600,
+                  lineHeight: 1
+                }}>
+                  {gridLabel}
+                </span>
+              );
+            })}
+          </div>
 
-        {/* X Axis Month Labels (Native HTML Overlays) */}
-        <div style={{
-          position: "absolute",
-          left: "0",
-          bottom: "3px",
-          width: "100%",
-          height: `${paddingBottom}px`,
-          pointerEvents: "none"
-        }}>
-          {months.map((mStr, idx) => {
-            const xVal = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
-            const leftPct = (xVal / width) * 100;
-            return (
-              <span key={mStr} style={{
-                position: "absolute",
-                left: `${leftPct}%`,
-                transform: "translateX(-50%)",
-                fontSize: "0.72rem",
-                color: "rgba(255,255,255,0.5)",
-                fontFamily: "var(--font-outfit), sans-serif",
-                fontWeight: 600,
-                whiteSpace: "nowrap"
-              }}>
-                {getMonthLabel(mStr)}
-              </span>
-            );
-          })}
-        </div>
+          {/* X Axis Month Labels (Native HTML Overlays) */}
+          <div style={{
+            position: "absolute",
+            left: "0",
+            bottom: "3px",
+            width: "100%",
+            height: `${paddingBottom}px`,
+            pointerEvents: "none"
+          }}>
+            {months.map((mStr, idx) => {
+              const xVal = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
+              const leftPct = (xVal / width) * 100;
+              return (
+                <span key={mStr} style={{
+                  position: "absolute",
+                  left: `${leftPct}%`,
+                  transform: "translateX(-50%)",
+                  fontSize: "0.72rem",
+                  color: "rgba(255,255,255,0.5)",
+                  fontFamily: "var(--font-outfit), sans-serif",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap"
+                }}>
+                  {getMonthLabel(mStr)}
+                </span>
+              );
+            })}
+          </div>
 
-        {/* User Registration Point Value Labels (Native HTML Overlays) */}
-        <div style={{
-          position: "absolute",
-          left: "0",
-          top: "0",
-          width: "100%",
-          height: `${height}px`,
-          pointerEvents: "none"
-        }}>
-          {userPoints.map((p, idx) => {
-            if (p.val === 0) return null;
-            const leftPct = (p.x / width) * 100;
-            const topPct = (p.y / height) * 100;
-            return (
-              <span key={`uval-${idx}`} style={{
-                position: "absolute",
-                left: `${leftPct}%`,
-                top: `${topPct}%`,
-                transform: "translate(-50%, -130%)",
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                color: "#ffffff",
-                fontFamily: "var(--font-outfit), sans-serif",
-                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
-                lineHeight: 1
-              }}>
-                {p.val}
-              </span>
-            );
-          })}
-        </div>
+          {/* User Registration Point Value Labels (Native HTML Overlays) */}
+          <div style={{
+            position: "absolute",
+            left: "0",
+            top: "0",
+            width: "100%",
+            height: `${height}px`,
+            pointerEvents: "none"
+          }}>
+            {userPoints.map((p, idx) => {
+              if (p.val === 0) return null;
+              const leftPct = (p.x / width) * 100;
+              return (
+                <span key={`uval-${idx}`} style={{
+                  position: "absolute",
+                  left: `${leftPct}%`,
+                  top: `${p.y - 14}px`,
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: "#f43f5e",
+                  fontFamily: "var(--font-outfit), sans-serif",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.9)",
+                  lineHeight: 1
+                }}>
+                  {p.val}
+                </span>
+              );
+            })}
+          </div>
 
-        {/* Login Session Point Value Labels (Native HTML Overlays) */}
-        <div style={{
-          position: "absolute",
-          left: "0",
-          top: "0",
-          width: "100%",
-          height: `${height}px`,
-          pointerEvents: "none"
-        }}>
-          {loginPoints.map((p, idx) => {
-            if (p.val === 0) return null;
-            const leftPct = (p.x / width) * 100;
-            const topPct = (p.y / height) * 100;
-            return (
-              <span key={`lval-${idx}`} style={{
-                position: "absolute",
-                left: `${leftPct}%`,
-                top: `${topPct}%`,
-                transform: "translate(-50%, -130%)",
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                color: "#ffffff",
-                fontFamily: "var(--font-outfit), sans-serif",
-                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
-                lineHeight: 1
-              }}>
-                {p.val}
-              </span>
-            );
-          })}
+          {/* Login Session Point Value Labels (Native HTML Overlays) */}
+          <div style={{
+            position: "absolute",
+            left: "0",
+            top: "0",
+            width: "100%",
+            height: `${height}px`,
+            pointerEvents: "none"
+          }}>
+            {loginPoints.map((p, idx) => {
+              if (p.val === 0) return null;
+              const leftPct = (p.x / width) * 100;
+              return (
+                <span key={`lval-${idx}`} style={{
+                  position: "absolute",
+                  left: `${leftPct}%`,
+                  top: `${p.y - 14}px`,
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: "#10b981",
+                  fontFamily: "var(--font-outfit), sans-serif",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.9)",
+                  lineHeight: 1
+                }}>
+                  {p.val}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
