@@ -34,15 +34,15 @@ func GetStats(c *fiber.Ctx) error {
 	yesterday := time.Now().Add(-24 * time.Hour)
 	config.DB.Model(&models.User{}).Where("role = ? AND created_at >= ?", "user", yesterday).Count(&newUsers24h)
 
-	// Count by approach type
+	// Count by approach type (backward-compatible with both English and Indonesian values)
 	var quantCount int64
-	config.DB.Model(&models.ResearchDesign{}).Where("approach = ?", "Kuantitatif").Count(&quantCount)
+	config.DB.Model(&models.ResearchDesign{}).Where("approach = ? OR approach = ?", "Quantitative", "Kuantitatif").Count(&quantCount)
 
 	var qualCount int64
-	config.DB.Model(&models.ResearchDesign{}).Where("approach = ?", "Kualitatif").Count(&qualCount)
+	config.DB.Model(&models.ResearchDesign{}).Where("approach = ? OR approach = ?", "Qualitative", "Kualitatif").Count(&qualCount)
 
 	var mixedCount int64
-	config.DB.Model(&models.ResearchDesign{}).Where("approach = ?", "Metode Campuran").Count(&mixedCount)
+	config.DB.Model(&models.ResearchDesign{}).Where("approach = ? OR approach = ? OR approach = ?", "Mixed Methods", "Metode Campuran", "Campuran").Count(&mixedCount)
 
 	// Count by formula calculation model
 	var slovinCount int64

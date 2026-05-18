@@ -74,15 +74,15 @@ func CreateProject(c *fiber.Ctx) error {
 	// Initialize associated ResearchDesign
 	design := models.ResearchDesign{
 		ProjectID:        project.ID,
-		Approach:         "Kuantitatif", // default
-		DesignType:       "Belum ditentukan",
+		Approach:         "Quantitative", // default
+		DesignType:       "Undetermined",
 		FormulaType:      "Slovin",
 		PopulationSize:   100,
 		ConfidenceLevel:  95.0,
 		MarginOfError:    0.05,
 		CalculatedSample: 0,
 		Variables:        "[]",
-		AnalysisMethod:   "Belum ditentukan",
+		AnalysisMethod:   "Undetermined",
 	}
 
 	if err := config.DB.Create(&design).Error; err != nil {

@@ -13,15 +13,15 @@ import (
 )
 
 func main() {
-	// 1. Inisialisasi koneksi SQLite, migrasi GORM, dan seeding default administrator
+	// 1. Initialize SQLite connection, GORM migrations, and seed default administrator
 	config.ConnectDB()
 
-	// 2. Inisialisasi Fiber Application
+	// 2. Initialize Fiber Application
 	app := fiber.New(fiber.Config{
 		AppName: "Archeres Research Assistant API v1.0",
 	})
 
-	// 3. Registrasi Middleware Logging & CORS (Cross-Origin Resource Sharing)
+	// 3. Register Logging & CORS (Cross-Origin Resource Sharing) Middleware
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000, http://127.0.0.1:3000",
@@ -30,10 +30,10 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// 4. Struktur Routing API Archeres
+	// 4. Archeres API Routing Structure
 	api := app.Group("/api")
 
-	// Rute Autentikasi & Sesi
+	// Authentication & Session Routes
 	auth := api.Group("/auth")
 	auth.Post("/register", handlers.Register)
 	auth.Post("/login", handlers.Login)
@@ -43,7 +43,7 @@ func main() {
 	auth.Post("/reset-password", handlers.ResetPassword)
 	auth.Post("/reset-vault", handlers.ResetVault)
 
-	// Rute Manajemen Proyek Penelitian (Protected / Wajib Login)
+	// Research Project Management Routes (Protected / Login Required)
 	projects := api.Group("/projects", middleware.JWTMiddleware)
 	projects.Get("/", handlers.ListProjects)
 	projects.Post("/", handlers.CreateProject)
@@ -52,7 +52,7 @@ func main() {
 	projects.Delete("/:id", handlers.DeleteProject)
 	projects.Put("/:id/design", handlers.UpdateResearchDesign)
 
-	// Rute Panel Kontrol Administrator (Double Protection: Wajib Login & Wajib Role Admin)
+	// Administrator Control Panel Routes (Double Protection: Login Required & Admin Role Required)
 	admin := api.Group("/admin", middleware.JWTMiddleware, middleware.AdminMiddleware)
 	admin.Get("/stats", handlers.GetStats)
 	admin.Get("/users", handlers.ListUsers)
@@ -62,7 +62,7 @@ func main() {
 	admin.Post("/user/delete", handlers.DeleteUserByAdmin)
 	admin.Post("/user/role", handlers.UpdateUserRoleByAdmin)
 
-	// 5. Jalankan server pada port yang ditentukan
+	// 5. Run the server on the specified port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
