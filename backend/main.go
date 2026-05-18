@@ -41,6 +41,7 @@ func main() {
 	auth.Get("/me", middleware.JWTMiddleware, handlers.Me)
 	auth.Post("/forgot-password", handlers.ForgotPassword)
 	auth.Post("/reset-password", handlers.ResetPassword)
+	auth.Post("/reset-vault", handlers.ResetVault)
 
 	// Rute Manajemen Proyek Penelitian (Protected / Wajib Login)
 	projects := api.Group("/projects", middleware.JWTMiddleware)
@@ -50,7 +51,6 @@ func main() {
 	projects.Put("/:id", handlers.UpdateProject)
 	projects.Delete("/:id", handlers.DeleteProject)
 	projects.Put("/:id/design", handlers.UpdateResearchDesign)
-	projects.Get("/:id/export", handlers.ExportChapter3)
 
 	// Rute Panel Kontrol Administrator (Double Protection: Wajib Login & Wajib Role Admin)
 	admin := api.Group("/admin", middleware.JWTMiddleware, middleware.AdminMiddleware)

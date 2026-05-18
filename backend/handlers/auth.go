@@ -16,9 +16,13 @@ import (
 
 // RegisterInput models the expected JSON parameters for user sign-up
 type RegisterInput struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	PasswordVault string `json:"passwordVault"` // AES-GCM wrapped MEK (password-derived key)
+	RecoveryVault string `json:"recoveryVault"` // AES-GCM wrapped MEK (recovery-key-derived key)
+	VaultSalt     string `json:"vaultSalt"`     // PBKDF2 salt (base64)
+	RecoveryKey   string `json:"recoveryKey"`   // plaintext recovery key — sent to email, not stored
 }
 
 // LoginInput models the expected JSON parameters for user sign-in
@@ -68,10 +72,13 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	user := models.User{
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: string(hashedPassword),
-		Role:     role,
+		Name:          input.Name,
+		Email:         input.Email,
+		Password:      string(hashedPassword),
+		Role:          role,
+		PasswordVault: input.PasswordVault,
+		RecoveryVault: input.RecoveryVault,
+		VaultSalt:     input.VaultSalt,
 	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
@@ -80,8 +87,17 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
+	// Send welcome email with recovery key (graceful — registration succeeds even if email fails)
+	emailErr := utils.SendWelcomeEmail(user.Email, user.Name, input.RecoveryKey)
+	if emailErr != nil {
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"message":      "Registration successful. Please sign in.",
+			"emailWarning": "Recovery key could not be sent via email. Please store it manually.",
+		})
+	}
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Registration successful. Please sign in.",
+		"message": "Registration successful. Your recovery key has been sent to your email.",
 	})
 }
 
@@ -151,6 +167,9 @@ func Login(c *fiber.Ctx) error {
 			"email": user.Email,
 			"role":  user.Role,
 		},
+		// E2EE vault data returned so the client can unwrap the MEK
+		"passwordVault": user.PasswordVault,
+		"vaultSalt":     user.VaultSalt,
 	})
 }
 
@@ -181,10 +200,57 @@ func Me(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"id":    user.ID,
-		"name":  user.Name,
-		"email": user.Email,
-		"role":  user.Role,
+		"id":           user.ID,
+		"name":         user.Name,
+		"email":        user.Email,
+		"role":         user.Role,
+		// E2EE vault data for client session refresh
+		"passwordVault": user.PasswordVault,
+		"vaultSalt":     user.VaultSalt,
+	})
+}
+
+// ResetVaultInput models the expected JSON parameters for re-wrapping the MEK after a password reset
+type ResetVaultInput struct {
+	Email            string `json:"email"`
+	NewPasswordVault string `json:"newPasswordVault"` // MEK re-wrapped with new password-derived key
+	NewVaultSalt     string `json:"newVaultSalt"`     // New PBKDF2 salt
+}
+
+// ResetVault updates the passwordVault and vaultSalt after a successful password reset.
+// Called from the recover-vault UI page after the user provides their recovery key.
+func ResetVault(c *fiber.Ctx) error {
+	var input ResetVaultInput
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid input format.",
+		})
+	}
+
+	if input.Email == "" || input.NewPasswordVault == "" || input.NewVaultSalt == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Email, newPasswordVault, and newVaultSalt are required.",
+		})
+	}
+
+	var user models.User
+	if err := config.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found.",
+		})
+	}
+
+	user.PasswordVault = input.NewPasswordVault
+	user.VaultSalt = input.NewVaultSalt
+
+	if err := config.DB.Save(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update vault.",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Vault updated successfully. Please sign in with your new password.",
 	})
 }
 

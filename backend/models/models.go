@@ -16,9 +16,13 @@ type User struct {
 	Role             string     `gorm:"default:user;not null" json:"role"` // 'user' or 'admin'
 	ResetToken       *string    `json:"-"`
 	ResetTokenExpiry *time.Time `json:"-"`
-	Projects         []Project  `gorm:"foreignKey:UserID" json:"projects,omitempty"`
-	CreatedAt        time.Time  `json:"createdAt"`
-	UpdatedAt        time.Time  `json:"updatedAt"`
+	// E2EE Key Vault: stores AES-256-GCM wrapped Master Encryption Key (MEK)
+	PasswordVault string `gorm:"not null;default:''" json:"passwordVault"` // MEK wrapped with password-derived key
+	RecoveryVault string `gorm:"not null;default:''" json:"recoveryVault"` // MEK wrapped with recovery-key-derived key
+	VaultSalt     string `gorm:"not null;default:''" json:"vaultSalt"`     // PBKDF2 salt (base64, 32 bytes)
+	Projects      []Project  `gorm:"foreignKey:UserID" json:"projects,omitempty"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
 }
 
 // Project represents a research draft created by a User
