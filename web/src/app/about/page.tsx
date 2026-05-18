@@ -114,54 +114,54 @@ export default function AboutPage() {
       ctaRegister: "Register Workspace"
     },
     id: {
-      metaTitle: "Tentang Archeres | Perancang Metodologi Ilmiah",
-      title: "Presisi Ilmiah yang Sederhana",
-      subtitle: "Archeres adalah pendamping penyusunan metodologi akademik yang dirancang untuk membantu mahasiswa merumuskan penelitian yang valid, kokoh secara matematis, dan aman secara privasi.",
+      metaTitle: "Tentang Archeres | Asisten Perancangan Metodologi Penelitian",
+      title: "Presisi Ilmiah, Dibuat Lebih Sederhana",
+      subtitle: "Archeres adalah asisten perancangan metodologi akademik yang dirancang khusus untuk membantu peneliti pemula merumuskan rancangan penelitian yang valid, memiliki fondasi matematis yang kuat, serta menjamin privasi data secara mutlak.",
       howItWorksTitle: "Cara Kerja Platform",
       howItWorksSteps: [
         {
           number: "01",
-          title: "Estimasi Matematika Valid",
-          desc: "Hitung ukuran sampel minimal secara akurat menggunakan rumus teruji (Slovin, Cochran, Lemeshow, Yamane, Daniel) dengan pembulatan ke atas secara presisi."
+          title: "Estimasi Ukuran Sampel yang Valid",
+          desc: "Menentukan ukuran sampel minimal secara presisi menggunakan kalkulasi rumus ilmiah populer seperti Slovin, Lemeshow, Cochran, Yamane, dan Daniel dengan pembulatan ke atas secara otomatis."
         },
         {
           number: "02",
-          title: "Operasionalisasi Variabel",
-          desc: "Petakan variabel penelitian Anda ke dalam tingkat skala taksonomi Stevens (Nominal, Ordinal, Interval, Rasio) untuk mendapatkan saran uji statistik otomatis."
+          title: "Operasionalisasi Variabel Penelitian",
+          desc: "Memetakan variabel penelitian Anda ke dalam skala pengukuran Stevens (Nominal, Ordinal, Interval, atau Rasio) untuk mendapatkan rekomendasi uji statistik yang sesuai dengan konteks riset."
         },
         {
           number: "03",
-          title: "Penyusunan Draf Otomatis",
-          desc: "Satukan perhitungan rumus dan skala variabel menjadi draf Metodologi Penelitian (BAB III) berstandar akademik dalam Bahasa Indonesia maupun Inggris sekaligus."
+          title: "Penyusunan Draf Metodologi Penelitian",
+          desc: "Mengompilasi hasil kalkulasi sampel dan operasionalisasi variabel menjadi draf bab metodologi penelitian (BAB III) berstandar akademik dalam Bahasa Indonesia dan Inggris secara simultan."
         }
       ],
-      featuresTitle: "Pilar Utama Platform",
+      featuresTitle: "Pilar Utama Keunggulan Platform",
       featuresList: [
         {
           icon: "key",
-          title: "Privasi Zero-Knowledge",
-          desc: "Kekayaan intelektual Anda sepenuhnya milik Anda. Enkripsi draf dilakukan secara lokal di browser Anda untuk menjamin kerahasiaan sebelum dipublikasikan."
+          title: "Kerahasiaan Draf (Zero-Knowledge)",
+          desc: "Ide dan kekayaan intelektual Anda sepenuhnya terlindungi. Enkripsi data draf dilakukan secara lokal pada peramban Anda untuk mencegah potensi kebocoran gagasan ilmiah sebelum publikasi."
         },
         {
           icon: "shield",
-          title: "Telemetri Sesi Aman",
-          desc: "Keamanan privasi mutlak. Statistik platform mencatat telemetri login secara anonim deret waktu tanpa ada keterkaitan dengan identitas email atau ID pengguna."
+          title: "Telemetri Sesi Tanpa Identitas",
+          desc: "Jaminan privasi total melalui pencatatan telemetri aktivitas masuk secara agregat deret waktu (time-series), sepenuhnya terlepas dari identitas surel (email) atau ID unik pengguna."
         },
         {
           icon: "helix",
-          title: "Kalkulator Presisi Tinggi",
-          desc: "Bebas dari kesalahan matematis. Mesin backend Go mengevaluasi rumus dengan pembulatan matematis ketat demi kepastian validitas sidang penelitian."
+          title: "Kalkulasi Matematis Presisi Tinggi",
+          desc: "Menghindari risiko kesalahan hitung manual. Mesin komputasi backend Go mengevaluasi rumus dengan pembulatan matematika yang ketat untuk menjamin validitas metodologi di hadapan dewan penguji."
         },
         {
           icon: "book",
-          title: "Modul Pedagogi Akademis",
-          desc: "Belajar sambil menyusun draf. Pahami pengertian skala Stevens, kegunaan rumus sampel, dan arahan teoretis langsung di setiap langkah kerja."
+          title: "Pusat Edukasi Metodologi Interaktif",
+          desc: "Belajar secara aktif saat merancang draf penelitian. Pahami konsep dasar skala pengukuran Stevens, kegunaan setiap rumus sampel, serta konteks akademisnya langsung pada alur kerja Anda."
         }
       ],
-      stackTitle: "Arsitektur Teknologi Kami",
-      stackDesc: "Archeres dibangun dengan komponen berkecepatan tinggi: Next.js App Router untuk rendering antarmuka glassmorphic responsif, Go Fiber untuk gerbang API konkurensi kilat, serta SQLite dan GORM untuk database telemetri yang aman dan terisolasi.",
+      stackTitle: "Fondasi Teknologi Berkinerja Tinggi",
+      stackDesc: "Archeres dirancang menggunakan arsitektur modern berkecepatan tinggi: Next.js App Router untuk antarmuka glassmorphic yang responsif, Go Fiber untuk kinerja konkurensi API backend yang efisien, serta basis data SQLite terisolasi via GORM untuk keandalan penyimpanan telemetri secara lokal.",
       ctaBack: "Kembali ke Beranda",
-      ctaRegister: "Mulai Rancang Sekarang"
+      ctaRegister: "Mulai Susun Metodologi Sekarang"
     }
   };
 
