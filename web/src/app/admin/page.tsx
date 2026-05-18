@@ -415,21 +415,6 @@ export default function AdminPage() {
                   rx="3.5"
                   style={{ transition: "all 0.5s ease" }}
                 />
-
-                {/* Number tooltip inside SVG is fine since it's absolutely positioned over the bar */}
-                {val > 0 && (
-                  <text
-                    x={x + barW / 2}
-                    y={y - 4}
-                    fill="white"
-                    fontSize="9.5"
-                    fontWeight="700"
-                    textAnchor="middle"
-                    style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}
-                  >
-                    {val}
-                  </text>
-                )}
               </g>
             );
           })}
@@ -497,6 +482,45 @@ export default function AdminPage() {
                 whiteSpace: "nowrap"
               }}>
                 {getMonthLabel(mStr)}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Bar Value Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          width: "100%",
+          height: `${height}px`,
+          pointerEvents: "none"
+        }}>
+          {months.map((mStr, idx) => {
+            const val = projects[idx] || 0;
+            if (val === 0) return null;
+            const barHeight = (val / maxVal) * chartHeight;
+            const xVal = paddingLeft + idx * colWidth + colWidth * 0.15;
+            const barW = colWidth * 0.7;
+            const yVal = paddingTop + chartHeight - barHeight;
+
+            const leftPct = ((xVal + barW / 2) / width) * 100;
+            const topPct = (yVal / height) * 100;
+
+            return (
+              <span key={`val-${idx}`} style={{
+                position: "absolute",
+                left: `${leftPct}%`,
+                top: `${topPct}%`,
+                transform: "translate(-50%, -120%)",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                fontFamily: "var(--font-outfit), sans-serif",
+                textShadow: "0 1px 2px rgba(0,0,0,0.6)",
+                lineHeight: 1
+              }}>
+                {val}
               </span>
             );
           })}
@@ -615,11 +639,6 @@ export default function AdminPage() {
             <g key={`u-${idx}`}>
               <circle cx={p.x} cy={p.y} r="5" fill="#f43f5e" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
               <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#f43f5e" strokeWidth="1" opacity="0.2" />
-                {p.val > 0 && (
-                  <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="700" textAnchor="middle" style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}>
-                    {p.val}
-                  </text>
-                )}
             </g>
           ))}
 
@@ -628,11 +647,6 @@ export default function AdminPage() {
             <g key={`l-${idx}`}>
               <circle cx={p.x} cy={p.y} r="5" fill="#10b981" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
               <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#10b981" strokeWidth="1" opacity="0.2" />
-                {p.val > 0 && (
-                  <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="700" textAnchor="middle" style={{ fontFamily: "'Inter', sans-serif", textRendering: "geometricPrecision", letterSpacing: "-0.01em" }}>
-                    {p.val}
-                  </text>
-                )}
             </g>
           ))}
 
@@ -702,6 +716,70 @@ export default function AdminPage() {
                 whiteSpace: "nowrap"
               }}>
                 {getMonthLabel(mStr)}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* User Registration Point Value Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          width: "100%",
+          height: `${height}px`,
+          pointerEvents: "none"
+        }}>
+          {userPoints.map((p, idx) => {
+            if (p.val === 0) return null;
+            const leftPct = (p.x / width) * 100;
+            const topPct = (p.y / height) * 100;
+            return (
+              <span key={`uval-${idx}`} style={{
+                position: "absolute",
+                left: `${leftPct}%`,
+                top: `${topPct}%`,
+                transform: "translate(-50%, -130%)",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                fontFamily: "var(--font-outfit), sans-serif",
+                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+                lineHeight: 1
+              }}>
+                {p.val}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Login Session Point Value Labels (Native HTML Overlays) */}
+        <div style={{
+          position: "absolute",
+          left: "0",
+          top: "0",
+          width: "100%",
+          height: `${height}px`,
+          pointerEvents: "none"
+        }}>
+          {loginPoints.map((p, idx) => {
+            if (p.val === 0) return null;
+            const leftPct = (p.x / width) * 100;
+            const topPct = (p.y / height) * 100;
+            return (
+              <span key={`lval-${idx}`} style={{
+                position: "absolute",
+                left: `${leftPct}%`,
+                top: `${topPct}%`,
+                transform: "translate(-50%, -130%)",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                fontFamily: "var(--font-outfit), sans-serif",
+                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+                lineHeight: 1
+              }}>
+                {p.val}
               </span>
             );
           })}
