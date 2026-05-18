@@ -37,8 +37,24 @@ export default function AdminPage() {
   const fetchAdminStats = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch("/api/admin/stats", { method: "GET" });
-      setStats(data);
+      const statsData = await apiFetch("/api/admin/stats", { method: "GET" });
+      const usersData = await apiFetch("/api/admin/users", { method: "GET" });
+      const projectsData = await apiFetch("/api/admin/projects", { method: "GET" });
+      
+      setStats({
+        ...statsData,
+        users: usersData || [],
+        projects: (projectsData || []).map((p) => ({
+          id: p.id,
+          userName: p.user ? p.user.name : "N/A",
+          title: p.title,
+          approach: p.researchDesign ? p.researchDesign.approach : "",
+          designType: p.researchDesign ? p.researchDesign.designType : "",
+          formula: p.researchDesign ? p.researchDesign.formulaType : "",
+          sampleSize: p.researchDesign ? p.researchDesign.calculatedSample : 0,
+          createdAt: p.createdAt,
+        })),
+      });
     } catch (err) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
