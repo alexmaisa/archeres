@@ -26,10 +26,17 @@ interface StepItem {
   desc: string;
 }
 
+interface SymbolItem {
+  char: string;
+  meaning: string;
+}
+
 interface MathFormula {
   id: string;
   name: string;
   context: string;
+  useCase: string;
+  symbols: SymbolItem[];
 }
 
 interface ScaleAdvice {
@@ -53,6 +60,7 @@ interface AboutContent {
   featuresList: CardItem[];
   mathSectionTitle: string;
   mathSectionDesc: string;
+  mathLegendTitle: string;
   mathFormulas: MathFormula[];
   scaleSectionTitle: string;
   scaleSectionDesc: string;
@@ -136,12 +144,67 @@ export default function AboutPage() {
       ],
       mathSectionTitle: "Mathematical Estimator Equations",
       mathSectionDesc: "Archeres performs real-time sampling size estimations using rigorous math models verified by senior academic examiners.",
+      mathLegendTitle: "Symbols Legend",
       mathFormulas: [
-        { id: "slovin", name: "Slovin Formula", context: "Ideal for basic research with known, finite populations under general margin of error." },
-        { id: "cochran", name: "Cochran Formula", context: "Designed for infinite or extremely large populations where proportion parameters are estimated." },
-        { id: "lemeshow", name: "Lemeshow Equation", context: "The standard for epidemiological, healthcare, and clinical studies with unknown population sizes." },
-        { id: "yamane", name: "Yamane Formula", context: "A highly consistent estimator for finite populations based on rigorous confidence intervals." },
-        { id: "daniel", name: "Daniel Formula", context: "Used for estimating binary prevalence stats with high confidence tolerance controls." }
+        { 
+          id: "slovin", 
+          name: "Slovin Formula", 
+          useCase: "Commonly used in social sciences for simple random sampling when the exact population size is known and finite. Best suited for basic survey research due to its mathematical simplicity.",
+          context: "Used when N is known and you need a quick, highly generalizable estimation of n with a designated tolerance margin.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "N", meaning: "Total finite population size" },
+            { char: "e", meaning: "Margin of error (e.g., 0.05 for 5%)" }
+          ]
+        },
+        { 
+          id: "cochran", 
+          name: "Cochran Formula", 
+          useCase: "Designed for infinite or extremely large populations where the total population size is unknown or hard to estimate. Ideal for broad demographic surveys.",
+          context: "Used when the population size is practically infinite, leveraging a standardized critical confidence level.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "Z", meaning: "Standard normal deviation (typically 1.96 for 95% confidence)" },
+            { char: "p", meaning: "Estimated proportion of attributes in population (default 0.5)" },
+            { char: "q", meaning: "Inverse probability (1 - p)" },
+            { char: "e", meaning: "Acceptable margin of error" }
+          ]
+        },
+        { 
+          id: "lemeshow", 
+          name: "Lemeshow Equation", 
+          useCase: "A specialized epidemiological formula developed by Stanley Lemeshow for clinical trials and healthcare studies where the total population is unknown but expected disease prevalence is anticipated.",
+          context: "Used in clinical and medical settings with unknown population size to evaluate specific binary diagnostic attributes.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "Z", meaning: "Standard normal value (typically 1.96 for 95% confidence)" },
+            { char: "P", meaning: "Anticipated population prevalence or expected proportion" },
+            { char: "d", meaning: "Absolute precision limit required" }
+          ]
+        },
+        { 
+          id: "yamane", 
+          name: "Yamane Formula", 
+          useCase: "Introduced by Taro Yamane as an alternative for finite populations with a high degree of precision control. It calculates the necessary sample size based on total population size.",
+          context: "A highly consistent and academically accepted estimator for finite, known administrative populations.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "N", meaning: "Total finite population size" },
+            { char: "d", meaning: "Margin tolerance level of error" }
+          ]
+        },
+        { 
+          id: "daniel", 
+          name: "Daniel Formula", 
+          useCase: "Widely applied in medical diagnosis and prevalence research for assessing binary characteristics or characteristics of a specific subgroup.",
+          context: "Determines the necessary sample size when studying the prevalence of specific diagnostic parameters.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "Z", meaning: "Critical normal value based on confidence intervals" },
+            { char: "P", meaning: "Anticipated population prevalence of the trait" },
+            { char: "d", meaning: "Margin of precision desired" }
+          ]
+        }
       ],
       scaleSectionTitle: "Stevens' Scales & Statistical Advice",
       scaleSectionDesc: "Classifying study variables using Stevens' taxonomy of scales automatically triggers the appropriate statistical test recommendations.",
@@ -209,12 +272,67 @@ export default function AboutPage() {
       ],
       mathSectionTitle: "Formulasi Matematika Ukuran Sampel",
       mathSectionDesc: "Archeres melakukan estimasi ukuran sampel secara real-time menggunakan model matematika rigor yang teruji di hadapan penguji akademik.",
+      mathLegendTitle: "Legenda Simbol",
       mathFormulas: [
-        { id: "slovin", name: "Rumus Slovin", context: "Sangat ideal untuk penelitian umum dengan populasi terbatas yang diketahui ukuran pastinya." },
-        { id: "cochran", name: "Rumus Cochran", context: "Dikhususkan bagi populasi besar tak terbatas dengan estimasi proporsi parameter tertentu." },
-        { id: "lemeshow", name: "Persamaan Lemeshow", context: "Standar baku riset klinis, kedokteran, dan epidemiologi kesehatan dengan jumlah populasi tidak diketahui." },
-        { id: "yamane", name: "Rumus Yamane", context: "Estimator konsisten untuk populasi terbatas dengan basis tingkat kepercayaan presisi tinggi." },
-        { id: "daniel", name: "Rumus Daniel", context: "Digunakan untuk estimasi prevalensi biner pada studi diagnosis dengan toleransi margin terkendali." }
+        { 
+          id: "slovin", 
+          name: "Rumus Slovin", 
+          useCase: "Paling sering digunakan dalam penelitian sosial untuk pengambilan sampel acak sederhana ketika ukuran populasi (N) diketahui secara pasti dan berjumlah terbatas (populasi terbatas). Sangat direkomendasikan karena kesederhanaan perhitungannya.",
+          context: "Digunakan ketika total populasi (N) diketahui dan Anda membutuhkan estimasi ukuran sampel (n) secara cepat dengan tingkat batas kesalahan tertentu.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "N", meaning: "Ukuran total populasi penelitian" },
+            { char: "e", meaning: "Margin toleransi kesalahan (misal: 0,05 untuk 5%)" }
+          ]
+        },
+        { 
+          id: "cochran", 
+          name: "Rumus Cochran", 
+          useCase: "Dirancang oleh ahli statistik William G. Cochran untuk pengambilan sampel pada populasi yang sangat besar atau tidak terbatas (tidak diketahui jumlah pastinya). Sangat ideal untuk survei demografi berskala luas.",
+          context: "Digunakan ketika jumlah populasi dianggap tidak terbatas, memanfaatkan nilai deviasi standar normal kritis.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "Z", meaning: "Skor standar normal (biasanya 1,96 untuk tingkat kepercayaan 95%)" },
+            { char: "p", meaning: "Estimasi proporsi populasi dengan karakteristik tertentu (default 0,5)" },
+            { char: "q", meaning: "Peluang kebalikan proporsi populasi (1 - p)" },
+            { char: "e", meaning: "Margin toleransi kesalahan yang diterima" }
+          ]
+        },
+        { 
+          id: "lemeshow", 
+          name: "Persamaan Lemeshow", 
+          useCase: "Persamaan epidemiologi khusus yang dikembangkan oleh Stanley Lemeshow untuk uji klinis, kedokteran, dan bidang kesehatan umum ketika jumlah total populasi tidak diketahui namun estimasi prevalensi penyakit dapat diantisipasi.",
+          context: "Digunakan dalam latar medis/klinis dengan populasi tak terbatas untuk mengevaluasi karakteristik diagnosis biner.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "Z", meaning: "Skor standar normal kritis (biasanya 1,96 pada tingkat kepercayaan 95%)" },
+            { char: "P", meaning: "Ekspektasi proporsi atau tingkat prevalensi penyakit dalam populasi" },
+            { char: "d", meaning: "Batas presisi kesalahan absolut yang diinginkan" }
+          ]
+        },
+        { 
+          id: "yamane", 
+          name: "Rumus Yamane", 
+          useCase: "Diperkenalkan oleh Taro Yamane sebagai alternatif matematis yang konsisten untuk populasi terbatas yang diketahui jumlahnya. Rumus ini menghitung ukuran sampel berdasarkan total populasi dan batas toleransi.",
+          context: "Estimator yang sangat andal dan diterima secara luas di ranah akademis untuk populasi terbatas administratif.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "N", meaning: "Ukuran total populasi penelitian" },
+            { char: "d", meaning: "Toleransi batas kesalahan kesalahan presisi" }
+          ]
+        },
+        { 
+          id: "daniel", 
+          name: "Rumus Daniel", 
+          useCase: "Banyak diterapkan dalam diagnosis medis dan penelitian klinis untuk menguji prevalensi karakteristik biner (seperti keberadaan penyakit atau gejala khusus) pada populasi target.",
+          context: "Menentukan ukuran sampel ketika peneliti berfokus pada pengujian proporsi diagnosis pada populasi tak terbatas.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "Z", meaning: "Nilai kritis normal berdasarkan rentang tingkat kepercayaan" },
+            { char: "P", meaning: "Antisipasi nilai prevalensi/proporsi fenomena di populasi" },
+            { char: "d", meaning: "Margin presisi kesalahan toleransi" }
+          ]
+        }
       ],
       scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
       scaleSectionDesc: "Pengelompokan variabel berdasarkan taksonomi Stevens secara otomatis mengarahkan peneliti pada rekomendasi uji hipotesis yang valid.",
@@ -433,22 +551,61 @@ export default function AboutPage() {
             {copy.mathSectionDesc}
           </p>
           <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: "1.5rem"
+            display: "flex",
+            flexDirection: "column",
+            gap: "2rem"
           }}>
             {copy.mathFormulas.map((f, idx) => (
-              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "white" }}>{f.name}</h3>
-                  <span style={{ fontSize: "0.72rem", color: "#c084fc", background: "rgba(192,132,252,0.1)", padding: "0.2rem 0.5rem", borderRadius: "6px", fontFamily: "monospace" }}>Formula</span>
+              <div key={idx} className="glass-panel" style={{ padding: "2rem", borderRadius: "16px", display: "flex", flexDirection: isMobile ? "column" : "row", gap: "2rem", alignItems: "stretch" }}>
+                
+                {/* Left Side: Equation and Title */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.25rem", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 850, color: "white", fontFamily: "'Outfit', sans-serif" }}>{f.name}</h3>
+                      <span style={{ fontSize: "0.72rem", color: "#c084fc", background: "rgba(192,132,252,0.1)", padding: "0.2rem 0.6rem", borderRadius: "6px", fontFamily: "monospace", fontWeight: 700 }}>ESTIMATOR</span>
+                    </div>
+                    <p style={{ fontSize: "0.86rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
+                      {f.useCase}
+                    </p>
+                  </div>
+                  
+                  <div style={{ background: "rgba(0,0,0,0.2)", padding: "1.5rem 1rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    {renderMathFormula(f.id)}
+                  </div>
                 </div>
-                <div style={{ background: "rgba(0,0,0,0.15)", padding: "1.25rem 0.75rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "center" }}>
-                  {renderMathFormula(f.id)}
+
+                {/* Right Side: Usage & Symbols Legend */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.25rem", background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "1.5rem", borderRadius: "12px" }}>
+                  <div>
+                    <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>
+                      {currentLang === "id" ? "Konteks Penggunaan" : "Application Context"}
+                    </h4>
+                    <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.45 }}>
+                      {f.context}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.6rem" }}>
+                      {copy.mathLegendTitle}
+                    </h4>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      {f.symbols.map((sym, sIdx) => (
+                        <div key={sIdx} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                          <span style={{ fontSize: "0.95rem", fontWeight: 800, color: "#c084fc", fontFamily: "monospace", width: "20px", textAlign: "center", display: "inline-block" }}>
+                            {sym.char}
+                          </span>
+                          <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.35, flex: 1 }}>
+                            {sym.meaning}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
-                <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>
-                  {f.context}
-                </p>
+
               </div>
             ))}
           </div>
