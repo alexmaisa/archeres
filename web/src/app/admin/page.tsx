@@ -307,7 +307,7 @@ export default function AdminPage() {
         ) : !stats ? null : (
           <>
             {/* Global Admin Telemetry summary cards */}
-            <section className="telemetry-grid">
+            <section className="admin-telemetry-grid">
               {/* Card 1: Registered Researchers */}
               <div className="glass-panel telemetry-card">
                 <span className="telemetry-label">{t("admin.totalUsers")}</span>
@@ -375,7 +375,7 @@ export default function AdminPage() {
               </div>
 
               {/* Card 5: Research Methodology Approach Distribution */}
-              <div className="glass-panel telemetry-card" style={{ gridColumn: "span 2" }}>
+              <div className="glass-panel telemetry-card">
                 <span className="telemetry-label" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
                   {i18n.language === "id" ? "Distribusi Pendekatan Riset" : "Research Approach Distribution"}
                 </span>
