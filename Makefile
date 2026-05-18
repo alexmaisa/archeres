@@ -26,7 +26,7 @@ install:
 
 run-backend:
 	@echo "Starting backend local development server on port 8080..."
-	cd backend && PORT=8080 DATABASE_PATH=arche.db JWT_SECRET=supersecretjwtkeyforarche2026 go run main.go
+	cd backend && PORT=8080 DATABASE_PATH=archeres.db JWT_SECRET=supersecretjwtkeyforarcheres2026 go run main.go
 
 run-web:
 	@echo "Starting web local development server on port 3000..."
@@ -35,7 +35,7 @@ run-web:
 dev:
 	@echo "Starting both backend and web concurrently..."
 	@echo "Please make sure ports 8080 and 3000 are unoccupied."
-	@(cd backend && PORT=8080 DATABASE_PATH=arche.db JWT_SECRET=supersecretjwtkeyforarche2026 go run main.go) & \
+	@(cd backend && PORT=8080 DATABASE_PATH=archeres.db JWT_SECRET=supersecretjwtkeyforarcheres2026 go run main.go) & \
 	(cd web && pnpm run dev)
 
 test:
@@ -50,5 +50,5 @@ stop:
 
 clean:
 	@echo "Cleaning temporary local database and build folders..."
-	rm -f backend/arche.db
+	rm -f backend/archeres.db
 	rm -rf web/.next web/out

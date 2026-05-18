@@ -24,8 +24,8 @@ EXPOSE 8080
 
 # Production default configurations (overridden by compose)
 ENV PORT=8080
-ENV DATABASE_PATH=/app/data/arche.db
-ENV JWT_SECRET=supersecretjwtkeyforarche2026
+ENV DATABASE_PATH=/app/data/archeres.db
+ENV JWT_SECRET=supersecretjwtkeyforarcheres2026
 
 # Create a secure non-privileged system group and user
 RUN addgroup -g 10001 -S appgroup && \

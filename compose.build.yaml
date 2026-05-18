@@ -1,26 +1,26 @@
-name: arche
+name: archeres
 
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: arche-backend
+    container_name: archeres-backend
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
-      - DATABASE_PATH=/app/data/arche.db
-      - JWT_SECRET=${JWT_SECRET:-supersecretjwtkeyforarche2026}
+      - DATABASE_PATH=/app/data/archeres.db
+      - JWT_SECRET=${JWT_SECRET:-supersecretjwtkeyforarcheres2026}
     volumes:
-      - arche-db:/app/data
+      - archeres-db:/app/data
     restart: unless-stopped
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
-    container_name: arche-web
+    container_name: archeres-web
     ports:
       - "3000:3000"
     depends_on:
@@ -28,5 +28,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  arche-db:
-    name: arche-db-volume
+  archeres-db:
+    name: archeres-db-volume
