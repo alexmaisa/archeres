@@ -194,9 +194,19 @@ export default function Home() {
  
       {/* 1. COMPACT FIXED HEADER */}
       <header className="fixed-header">
-        <div className="nav-brand">
+        <div className="nav-brand" style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
           <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
+        </div>
+
+        <div style={styles.navLinks}>
+          <span
+            onClick={() => router.push("/about")}
+            style={styles.navLink}
+            className="hover-bright"
+          >
+            {currentLang === "id" ? "Tentang" : "About"}
+          </span>
         </div>
  
         <div style={styles.headerActions}>
@@ -451,5 +461,18 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "0.8rem",
     color: "rgba(255,255,255,0.45)",
     lineHeight: 1.35,
+  },
+  navLinks: {
+    display: "flex",
+    gap: "1.5rem",
+    marginRight: "auto",
+    marginLeft: "2rem",
+  },
+  navLink: {
+    fontSize: "0.85rem",
+    fontWeight: 600,
+    color: "rgba(255,255,255,0.7)",
+    cursor: "pointer",
+    transition: "color 0.2s ease",
   },
 };
