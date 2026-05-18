@@ -26,6 +26,7 @@ type ResearchDesignInput struct {
 	Variables        string  `json:"variables"` // Expected JSON array string
 	AnalysisMethod   string  `json:"analysisMethod"`
 	SamplingTechnique string  `json:"samplingTechnique"`
+	IsPopulationKnown bool    `json:"isPopulationKnown"`
 }
 
 // ListProjects retrieves all projects belonging to the logged-in user
@@ -85,6 +86,7 @@ func CreateProject(c *fiber.Ctx) error {
 		Variables:        "[]",
 		AnalysisMethod:   "Undetermined",
 		SamplingTechnique: "Simple Random Sampling",
+		IsPopulationKnown: true,
 	}
 
 	if err := config.DB.Create(&design).Error; err != nil {
@@ -214,6 +216,7 @@ func UpdateResearchDesign(c *fiber.Ctx) error {
 	design.Variables = input.Variables
 	design.AnalysisMethod = input.AnalysisMethod
 	design.SamplingTechnique = input.SamplingTechnique
+	design.IsPopulationKnown = input.IsPopulationKnown
 
 	if err := config.DB.Save(&design).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

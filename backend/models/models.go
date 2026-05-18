@@ -59,6 +59,7 @@ type ResearchDesign struct {
 	Variables        string  `json:"variables"`        // JSON string mapping variables, measurement scales, and indicators
 	AnalysisMethod   string  `json:"analysisMethod"`   // Recommended analytical testing
 	SamplingTechnique string  `json:"samplingTechnique"` // e.g. Simple Random, Stratified Random, Purposive, Snowball
+	IsPopulationKnown bool    `json:"isPopulationKnown"` // e.g. true (finite), false (infinite)
 }
 
 // LoginTelemetry represents a secure, zero-identity log of a user login session
