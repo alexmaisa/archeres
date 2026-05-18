@@ -1285,26 +1285,20 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             : "When establishing a structural research framework, variables are strictly categorized based on their functional causal roles. Researchers must clearly specify how the Independent Variable (IV / X) (the cause or predictor) influences the Dependent Variable (DV / Y) (the effect or outcome), and define the roles of any secondary variables such as Mediators (M) (which explain the underlying causal mechanism) or Moderators (W) (which modify the strength or direction of the primary relationship).",
           characteristics: isId
             ? [
-                "Variabel Independen (X): Variabel stimulus yang dimanipulasi atau diukur secara bebas guna memprediksi perubahan pada efek.",
-                "Variabel Dependen (Y): Variabel respon yang diukur guna melihat konsekuensi matematis dari perubahan variabel independen.",
-                "Variabel Mediator (M): Penghubung tidak langsung. Hubungan X -> Y dimediasi oleh M (X mempengaruhi M, lalu M mempengaruhi Y).",
-                "Variabel Moderator (W): Pemodifikasi. Hubungan X -> Y diperkuat atau diperlemah tergantung tingkat kepemilikan nilai W."
+                "Variabel Independen (IV / X - Prediktor): Berperan sebagai penyebab utama atau stimulus yang dimanipulasi atau diukur untuk memprediksi perubahan pada output (contoh: Kualitas Layanan atau Beban Kerja).",
+                "Variabel Dependen (DV / Y - Kriteria): Berperan sebagai konsekuensi atau efek yang diukur guna menilai hasil matematis dari pengaruh variabel independen (contoh: Loyalitas Nasabah atau Tingkat Stres Kerja).",
+                "Variabel Mediator (M - Perantara): Berfungsi menjelaskan mekanisme internal bagaimana atau mengapa hubungan X berpengaruh terhadap Y, membentuk rantai kausalitas tidak langsung: X -> M -> Y (contoh: Kepuasan menjembatani Kualitas ke Loyalitas).",
+                "Variabel Moderator (W - Konten): Berfungsi memodifikasi (memperkuat, memperlemah, atau membalikkan) arah atau kekuatan hubungan utama X ke Y berdasarkan variabel kontekstual (contoh: hubungan Beban Kerja ke Stres dilemahkan bila Dukungan Sosial tinggi).",
+                "Validitas Kerangka Konseptual: Penentuan struktur jalur variabel harus didukung oleh landasan teori Bab II yang kokoh guna menghindari bias spesifikasi model (specification error)."
               ]
             : [
-                "Independent Variable (IV / X): The causal antecedent or predictor that is measured or manipulated to observe its impact on the outcome.",
-                "Dependent Variable (DV / Y): The primary outcome of interest that is measured to quantify the mathematical effects of the predictor.",
-                "Mediator Variable (M): The causal conduit. Explains 'why' or 'how' X leads to Y (X -> M -> Y path structure).",
-                "Moderator Variable (W): The contextual boundary condition. Strengthens, weakens, or reverses the direct X -> Y path relationship."
+                "Independent Variable (IV / X - Predictor): The causal antecedent or predictor that is measured or manipulated to observe and forecast variations in the outcome (e.g., E-Service Quality or Job Demand).",
+                "Dependent Variable (DV / Y - Outcome): The primary outcome of interest that is measured to quantify the mathematical effects of the predictor (e.g., Customer Loyalty or Employee Burnout).",
+                "Mediator Variable (M - Intermediary): Clarifies the underlying causal mechanism of how or why X leads to Y, establishing an indirect path structure: X -> M -> Y (e.g., Customer Satisfaction bridging E-Service Quality to Loyalty).",
+                "Moderator Variable (W - Contextual): Alters the strength or direction of the primary X -> Y path (strengthens, weakens, or buffers) based on contextual boundary conditions (e.g., Social Support buffering the negative impact of Job Demand on Burnout).",
+                "Theoretical Foundation Requirement: The structural relations among variables must be rigorously supported by prior literature in Chapter 2 to prevent model specification errors."
               ],
-          examples: isId
-            ? [
-                "Independen (X): Kualitas Layanan. Dependen (Y): Loyalitas Nasabah. Mediator (M): Kepuasan Nasabah (Kualitas mempengaruhi Kepuasan, baru Kepuasan memicu Loyalitas).",
-                "Independen (X): Beban Kerja. Dependen (Y): Stres Kerja. Moderator (W): Dukungan Sosial (Beban memicu Stres tinggi, namun melemah bila Dukungan Sosial tinggi)."
-              ]
-            : [
-                "Example: Independent (X): E-Service Quality. Dependent (Y): Customer Loyalty. Mediator (M): Customer Satisfaction (Quality drives Satisfaction, which in turn fosters Loyalty).",
-                "Example: Independent (X): Job Demand. Dependent (Y): Employee Burnout. Moderator (W): Social Support (Demand triggers Burnout, but this negative effect is buffered/mitigated by Support)."
-              ],
+          examples: [],
           tips: isId
             ? "Gunakan diagram jalur visual (path diagram) di Bab II dan Bab III Anda untuk menggambarkan hubungan kausal antar variabel ini secara grafis sebelum menulis teks penjelasan."
             : "Always present a professional path diagram (conceptual framework) in your literature and methodology chapters to visually clarify these causal structural relationships before diving into text."
