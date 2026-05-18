@@ -18,14 +18,14 @@ interface VariableDefinition {
 interface ResearchDesign {
   approach?: string;
   designType?: string;
-  formula?: string;
+  formulaType?: string;
   populationSize?: number;
   confidenceLevel?: number;
   marginOfError?: number;
   estimatedProportion?: number;
   analysisMethod?: string;
   variables?: string;
-  sampleSize?: number;
+  calculatedSample?: number;
   samplingTechnique?: string;
   isPopulationKnown?: boolean;
 }
@@ -180,7 +180,7 @@ export default function WorkspaceClient() {
         const rd = data.researchDesign;
         if (rd.approach) setApproach(rd.approach);
         if (rd.designType) setDesign(rd.designType);
-        if (rd.formula) setFormula(rd.formula);
+        if (rd.formulaType) setFormula(rd.formulaType);
         if (rd.populationSize !== undefined) setPopSize(rd.populationSize);
         if (rd.confidenceLevel !== undefined) setConfLevel(rd.confidenceLevel);
         if (rd.marginOfError !== undefined) setMarginError(rd.marginOfError);
@@ -188,6 +188,7 @@ export default function WorkspaceClient() {
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
         if (rd.samplingTechnique) setSamplingTechnique(rd.samplingTechnique);
         if (rd.isPopulationKnown !== undefined) setIsPopKnown(rd.isPopulationKnown);
+        if (rd.calculatedSample !== undefined) setSampleSize(rd.calculatedSample);
         
         let loadedVariables: VariableDefinition[] = [];
         if (rd.variables) {
@@ -340,38 +341,28 @@ export default function WorkspaceClient() {
     setSaveLoading(true);
     try {
       const mek = await getMEK();
-      let payloadTitle = project.title;
-      let payloadDesc = project.description;
-      // approach and designType sent plaintext (enum metadata, not encrypted)
       let payloadAnalysis = analysisMethod;
       let payloadVariables = JSON.stringify(variables);
 
       if (mek) {
-        payloadTitle = await encryptText(payloadTitle, mek);
-        if (payloadDesc) payloadDesc = await encryptText(payloadDesc, mek);
         payloadAnalysis = await encryptText(payloadAnalysis, mek);
         payloadVariables = await encryptText(payloadVariables, mek);
       }
 
-      await apiFetch(`/api/projects/${projectId}`, {
+      await apiFetch(`/api/projects/${projectId}/design`, {
         method: "PUT",
         body: JSON.stringify({
-          title: payloadTitle,
-          description: payloadDesc,
-          researchDesign: {
-            approach,          // plaintext enum
-            designType: design, // plaintext enum
-            formula,
-            populationSize: Number(popSize),
-            confidenceLevel: Number(confLevel),
-            marginOfError: Number(marginError),
-            estimatedProportion: Number(proportion),
-            analysisMethod: payloadAnalysis,
-            variables: payloadVariables,
-            sampleSize: Number(sampleSize),
-            samplingTechnique,
-            isPopulationKnown: isPopKnown
-          }
+          approach,
+          designType: design,
+          formulaType: formula,
+          populationSize: Number(popSize),
+          confidenceLevel: Number(confLevel),
+          marginOfError: Number(marginError),
+          calculatedSample: Number(sampleSize),
+          variables: payloadVariables,
+          analysisMethod: payloadAnalysis,
+          samplingTechnique,
+          isPopulationKnown: isPopKnown
         }),
       });
       triggerAlert(t("common.saved"), t("common.notification"), "success");
