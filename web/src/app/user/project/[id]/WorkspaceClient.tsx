@@ -453,24 +453,6 @@ Aligned with the scale of measurements and variable distributions, statistical h
           >
             {t("common.dashboard")}
           </button>
-
-          {/* Toggle Draft Preview Panel Drawer */}
-          <button
-            onClick={() => setShowPreview(!showPreview)}
-            className="btn btn-outline"
-            style={{
-              ...styles.dashBtn,
-              backgroundColor: showPreview ? "rgba(124, 58, 237, 0.12)" : "rgba(255, 255, 255, 0.02)",
-              borderColor: showPreview ? "rgba(124, 58, 237, 0.3)" : "rgba(255, 255, 255, 0.08)",
-              color: showPreview ? "#c084fc" : "rgba(255, 255, 255, 0.75)",
-            }}
-          >
-            <IconBook size={13} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-            {i18n.language === "id"
-              ? (showPreview ? "Sembunyikan Draf" : "Tampilkan Draf")
-              : (showPreview ? "Hide Draft" : "Show Draft")}
-          </button>
-
           {/* Language Switcher Bar */}
           <div style={styles.langBar}>
             <button
@@ -505,8 +487,45 @@ Aligned with the scale of measurements and variable distributions, statistical h
         style={{
           ...styles.workspaceWrapper,
           gridTemplateColumns: showPreview ? "300px 1fr 500px" : "300px 1fr 0px",
+          position: "relative",
         }}
       >
+        {/* Floating Collapsible Drawer Tab Button on the edge */}
+        <button
+          onClick={() => setShowPreview(!showPreview)}
+          title={showPreview ? "Collapse Preview" : "Expand Preview"}
+          style={{
+            position: "absolute",
+            top: "50%",
+            transform: "translateY(-50%)",
+            right: showPreview ? "487px" : "-1px",
+            width: "26px",
+            height: "50px",
+            borderRadius: "8px 0 0 8px",
+            backgroundColor: "rgba(17, 24, 39, 0.95)",
+            border: "1px solid rgba(124, 58, 237, 0.35)",
+            borderRight: "none",
+            color: "#c084fc",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
+          }}
+          className="drawer-toggle-tab"
+        >
+          {showPreview ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          )}
+        </button>
         {/* 1. LEFT PANEL: Checklist & Navigation */}
         <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
           <div style={styles.leftHeader}>
