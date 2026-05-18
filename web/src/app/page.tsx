@@ -164,7 +164,7 @@ export default function Home() {
   const mainContainerStyle: React.CSSProperties = {
     ...styles.mainContainer,
     flexDirection: isMobile ? "column" : "row",
-    minHeight: isMobile ? "auto" : "calc(100vh - 105px)",
+    minHeight: isMobile ? "auto" : "calc(100vh - 140px)",
     height: "auto",
     marginTop: "80px",
     marginBottom: "60px",
