@@ -659,6 +659,42 @@ Aligned with the scale of measurements and variable distributions, statistical h
           position: "relative",
         }}
       >
+        {/* Drawer collapsible edge tab button - sits on the border, never clipped */}
+        <button
+          onClick={() => setShowPreview(!showPreview)}
+          title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf Bab III" : "Show Chapter 3 Draft")}
+          style={{
+            position: "absolute",
+            top: "50%",
+            transform: "translateY(-50%)",
+            right: "487px",
+            width: "26px",
+            height: "50px",
+            borderRadius: "8px 0 0 8px",
+            backgroundColor: "rgba(17, 24, 39, 0.95)",
+            border: "1px solid rgba(124, 58, 237, 0.35)",
+            borderRight: "none",
+            color: "#c084fc",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+            boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
+            transition: "all 0.2s ease",
+          }}
+          className="drawer-toggle-tab"
+        >
+          {showPreview ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          )}
+        </button>
         {/* 1. LEFT PANEL: Checklist & Navigation */}
         <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
           <div style={styles.leftHeader}>
@@ -1087,44 +1123,6 @@ Aligned with the scale of measurements and variable distributions, statistical h
               pointerEvents: showPreview ? "auto" : "none",
             }}
           >
-            {/* Drawer collapsible edge tab button - slides seamlessly with the drawer */}
-            <button
-              onClick={() => setShowPreview(!showPreview)}
-              title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf Bab III" : "Show Chapter 3 Draft")}
-              style={{
-                position: "absolute",
-                top: "50%",
-                transform: "translateY(-50%)",
-                left: "-25px",
-                width: "26px",
-                height: "50px",
-                borderRadius: "8px 0 0 8px",
-                backgroundColor: "rgba(17, 24, 39, 0.95)",
-                border: "1px solid rgba(124, 58, 237, 0.35)",
-                borderRight: "none",
-                color: "#c084fc",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 100,
-                boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
-                transition: "all 0.2s ease",
-                pointerEvents: "auto",
-              }}
-              className="drawer-toggle-tab"
-            >
-              {showPreview ? (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              ) : (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              )}
-            </button>
-
             {/* Academic Draft Content */}
             <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
               <div style={styles.rightHeader}>
