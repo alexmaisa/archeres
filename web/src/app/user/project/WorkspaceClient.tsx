@@ -1276,6 +1276,105 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? "Gunakan model diagram alir prosedural standar dari Creswell di Bab III Anda. Ini adalah cara termudah dan paling elegan untuk memukau dosen penguji riset Anda."
             : "Integrate Creswell's standardized procedural flowchart template in your Methodology chapter. It is the most elegant and academically persuasive way to demonstrate rigorous design to examiners."
         };
+      case "var_roles":
+        return {
+          title: isId ? "Peran Metodologis Variabel" : "Methodological Roles of Variables",
+          badge: isId ? "Struktur Variabel" : "Structural Roles",
+          definition: isId
+            ? "Dalam menyusun model konseptual Bab II dan Bab III, variabel penelitian diklasifikasikan berdasarkan peranan fungsionalnya dalam hubungan sebab-akibat. Peneliti harus merinci dengan jelas bagaimana Variabel Independen (bebas/mempengaruhi) mempengaruhi Variabel Dependen (terikat/dipengaruhi), serta apakah terdapat variabel perantara seperti Mediator (menjelaskan mekanisme kausal) atau pengubah seperti Moderator (mengubah kekuatan atau arah hubungan)."
+            : "When establishing a structural research framework, variables are strictly categorized based on their functional causal roles. Researchers must clearly specify how the Independent Variable (IV / X) (the cause or predictor) influences the Dependent Variable (DV / Y) (the effect or outcome), and define the roles of any secondary variables such as Mediators (M) (which explain the underlying causal mechanism) or Moderators (W) (which modify the strength or direction of the primary relationship).",
+          characteristics: isId
+            ? [
+                "Variabel Independen (X): Variabel stimulus yang dimanipulasi atau diukur secara bebas guna memprediksi perubahan pada efek.",
+                "Variabel Dependen (Y): Variabel respon yang diukur guna melihat konsekuensi matematis dari perubahan variabel independen.",
+                "Variabel Mediator (M): Penghubung tidak langsung. Hubungan X -> Y dimediasi oleh M (X mempengaruhi M, lalu M mempengaruhi Y).",
+                "Variabel Moderator (W): Pemodifikasi. Hubungan X -> Y diperkuat atau diperlemah tergantung tingkat kepemilikan nilai W."
+              ]
+            : [
+                "Independent Variable (IV / X): The causal antecedent or predictor that is measured or manipulated to observe its impact on the outcome.",
+                "Dependent Variable (DV / Y): The primary outcome of interest that is measured to quantify the mathematical effects of the predictor.",
+                "Mediator Variable (M): The causal conduit. Explains 'why' or 'how' X leads to Y (X -> M -> Y path structure).",
+                "Moderator Variable (W): The contextual boundary condition. Strengthens, weakens, or reverses the direct X -> Y path relationship."
+              ],
+          examples: isId
+            ? [
+                "Independen (X): Kualitas Layanan. Dependen (Y): Loyalitas Nasabah. Mediator (M): Kepuasan Nasabah (Kualitas mempengaruhi Kepuasan, baru Kepuasan memicu Loyalitas).",
+                "Independen (X): Beban Kerja. Dependen (Y): Stres Kerja. Moderator (W): Dukungan Sosial (Beban memicu Stres tinggi, namun melemah bila Dukungan Sosial tinggi)."
+              ]
+            : [
+                "Example: Independent (X): E-Service Quality. Dependent (Y): Customer Loyalty. Mediator (M): Customer Satisfaction (Quality drives Satisfaction, which in turn fosters Loyalty).",
+                "Example: Independent (X): Job Demand. Dependent (Y): Employee Burnout. Moderator (W): Social Support (Demand triggers Burnout, but this negative effect is buffered/mitigated by Support)."
+              ],
+          tips: isId
+            ? "Gunakan diagram jalur visual (path diagram) di Bab II dan Bab III Anda untuk menggambarkan hubungan kausal antar variabel ini secara grafis sebelum menulis teks penjelasan."
+            : "Always present a professional path diagram (conceptual framework) in your literature and methodology chapters to visually clarify these causal structural relationships before diving into text."
+        };
+      case "var_scales":
+        return {
+          title: isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales (Stevens' Taxonomy)",
+          badge: isId ? "Skala Pengukuran" : "Measurement Scales",
+          definition: isId
+            ? "Merupakan taksonomi tingkat presisi pengukuran data matematis yang dirumuskan oleh Stanley Smith Stevens (1946). Skala pengukuran ini menentukan jenis analisis statistik yang valid untuk digunakan. Mengelompokkan data ke dalam empat tingkat hierarki presisi: Nominal (kategori murni), Ordinal (tingkat/peringkat), Interval (jarak konstan tanpa nol mutlak), dan Rasio (memiliki nilai nol mutlak)."
+            : "Originating from the seminal taxonomy developed by Stanley Smith Stevens (1946), measurement scales define the mathematical properties of your data and strictly dictate which statistical tests are valid. The scales represent a hierarchy of precision from lowest to highest: Nominal (categorical), Ordinal (ranked), Interval (equal intervals, arbitrary zero), and Ratio (absolute mathematical zero).",
+          characteristics: isId
+            ? [
+                "Skala Nominal: Klasifikasi kategori kualitatif murni tanpa peringkat (misal: Gender, Suku, Domisili, Jenis Pekerjaan).",
+                "Skala Ordinal: Kategori bertingkat yang memiliki urutan logis namun tanpa jarak setara antar nilai (misal: Tingkat Kepangkatan, Skala Likert 1-5).",
+                "Skala Interval: Data numerik dengan jarak setara antar angka namun tanpa nol mutlak (misal: Suhu Celcius, Skor IQ, Tahun Masehi).",
+                "Skala Rasio: Tingkat presisi tertinggi dengan nol mutlak riil di mana perkalian dan pembagian bernilai valid (misal: Berat Badan, Penghasilan, Usia)."
+              ]
+            : [
+                "Nominal Scale: Mutually exclusive categorical sorting with no inherent mathematical hierarchy or ranks (e.g., Gender, Ethnicity, Department).",
+                "Ordinal Scale: Ordered rank sequences where distances between points are mathematically unequal or arbitrary (e.g., Military Rank, Likert Agreement Scale).",
+                "Interval Scale: Numerical data with equal interval distances but an arbitrary zero point (e.g., Celsius Temperature, standardized IQ Scores).",
+                "Ratio Scale: The absolute highest precision scale featuring a true mathematical zero, allowing legitimate division and multiplication (e.g., Revenue, Age, Weight)."
+              ],
+          examples: isId
+            ? [
+                "Nominal: Laki-laki = 1, Perempuan = 2 (Angka murni kode label, tidak ada operasi aritmatika).",
+                "Ordinal: Juara I, II, dan III (Kita tahu Juara I lebih baik dari II, tapi tidak tahu seberapa besar selisih skor performansi riil mereka)."
+              ]
+            : [
+                "Example: Nominal: Marketing Dept = 1, Finance Dept = 2 (Numbers are purely symbolic labels; calculating a mean is mathematically meaningless).",
+                "Example: Ordinal: Academic degrees (High School, Bachelor, Master, PhD). We know PhD > Master, but the physical educational gap between them is not uniform."
+              ],
+          tips: isId
+            ? "Variabel berskala Nominal/Ordinal membutuhkan uji non-parametrik, sedangkan variabel berskala Interval/Rasio memenuhi syarat pengujian parametrik (seperti Regresi Linear) asalkan lolos uji asumsi klasik."
+            : "Nominal and Ordinal variables typically require non-parametric statistical tests, while Interval and Ratio variables qualify for parametric methods (like Regression) provided assumptions are met."
+        };
+      case "var_testing":
+        return {
+          title: isId ? "Rekomendasi Analisis Statistik" : "Recommended Statistical Analysis",
+          badge: isId ? "Metode Analisis" : "Analysis Method",
+          definition: isId
+            ? `Berdasarkan konfigurasi operasional variabel yang telah Anda tentukan, sistem merekomendasikan metode analisis '${analysisMethod}' sebagai prosedur statistik formal yang paling valid untuk menguji hipotesis penelitian.`
+            : `Based on your variables' operational metrics, the system recommends '${analysisMethod}' as the most mathematically rigorous and academically valid statistical procedure to test your hypotheses.`,
+          characteristics: isId
+            ? [
+                analysisMethod === "Multiple Linear Regression" ? "Regresi Linear Berganda: Menguji pengaruh beberapa variabel independen (skala metrik) terhadap satu variabel dependen (skala metrik)." : `Metode '${analysisMethod}': Dioptimalkan secara statistik berdasarkan jumlah variabel bebas dan terikat yang Anda definisikan.`,
+                "Uji Asumsi Klasik: Analisis parametrik mewajibkan kelulusan pengujian Normalitas, Multikolinearitas, Heteroskedastisitas, dan Autokorelasi.",
+                "Koefisien Determinasi (R²): Mengukur sejauh mana variasi dalam variabel dependen dapat dijelaskan oleh model regresi Anda.",
+                "Signifikansi Uji (p-value): Menilai hipotesis dengan batas kritis p < 0,05 (tingkat kesalahan maksimal 5%) untuk menyatakan hubungan yang signifikan."
+              ]
+            : [
+                analysisMethod === "Multiple Linear Regression" ? "Multiple Linear Regression: Evaluates the relationship between two or more metric independent variables and a single metric outcome variable." : `Method '${analysisMethod}': Statistically optimized based on the exact quantity and scaling of your defined independent and dependent variables.`,
+                "Classical Assumptions Requirement: Parametric regression demands passing tests for Normality, Multicollinearity, Heteroskedasticity, and Autocorrelation.",
+                "Coefficient of Determination (R²): Measures the percentage of variance in the dependent variable explained by your structural model.",
+                "Hypothesis Significance (p-value): Employs a critical threshold of p < 0.05 (alpha = 5%) to declare a statistically significant relationship."
+              ],
+          examples: isId
+            ? [
+                analysisMethod === "Multiple Linear Regression" ? "Contoh Pengaruh Kualitas Sistem Informasi (X1) dan Kualitas Informasi (X2) terhadap Kepuasan Pengguna Akhir (Y)." : `Contoh uji hipotesis metodologi menggunakan metode '${analysisMethod}' pada model penelitian struktural.`,
+                analysisMethod === "Multiple Linear Regression" ? "Model Regresi: Y = a + b1X1 + b2X2 + e." : `Model Statistik: Menyesuaikan parameter operasional metode '${analysisMethod}'.`
+              ]
+            : [
+                analysisMethod === "Multiple Linear Regression" ? "Example: Estimating the simultaneous effects of Information System Quality (X1) and Information Quality (X2) on End-User Satisfaction (Y)." : `Example: Testing conceptual frameworks using the '${analysisMethod}' methodology.`,
+                analysisMethod === "Multiple Linear Regression" ? "Regression Equation: Y = a + b1X1 + b2X2 + e." : `Statistical Equation: Configured according to the parameters of '${analysisMethod}'.`
+              ],
+          tips: isId
+            ? "Sebelum melakukan pengujian regresi di program SPSS atau R, pastikan data Anda dibersihkan dari outlier ekstrem (pencilan) guna menghindari bias pada koefisien regresi Anda."
+            : "Before executing statistical software computations (e.g., SPSS, R, or SmartPLS), scan and clean your data of extreme outliers to prevent regression coefficient bias."
+        };
       default:
         return {
           title: "Research Concept",
@@ -1643,7 +1742,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 : "Defining how your research indicators are classified, measured, and structured for data analysis."}
             </p>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("var_roles");
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconLink size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
                 {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}
@@ -1655,7 +1761,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               </p>
             </div>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("var_scales");
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconRuler size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
                 {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}
@@ -1667,7 +1780,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               </p>
             </div>
 
-            <div style={styles.eduTip}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduTip, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("var_testing");
+                setEduPopupOpen(true);
+              }}
+            >
               <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <IconChart size={16} style={{ color: "#34d399" }} />
                 {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}
