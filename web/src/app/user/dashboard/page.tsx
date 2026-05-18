@@ -495,9 +495,13 @@ export default function DashboardPage() {
           setProjectIdToDelete(null);
           setProjectTitleToDelete("");
         }}>
-          <div className="arche-modal-card glass-panel animate-fade-in" style={{ maxWidth: "480px" }} onClick={(e) => e.stopPropagation()}>
-            <div className="arche-modal-header">
-              <h2 className="arche-modal-title" style={{ color: "hsl(var(--destructive-color, #ef4444))" }}>
+          <div 
+            className="arche-modal-card glass-panel animate-fade-in" 
+            style={{ maxWidth: "420px", padding: "1.75rem", borderRadius: "12px" }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="arche-modal-header" style={{ marginBottom: "1rem" }}>
+              <h2 className="arche-modal-title" style={{ fontSize: "1.25rem", color: "hsl(var(--destructive-color, #ef4444))" }}>
                 {t("dashboard.deleteBtn")}
               </h2>
               <button
@@ -507,29 +511,30 @@ export default function DashboardPage() {
                   setProjectTitleToDelete("");
                 }}
                 className="arche-modal-close"
+                style={{ fontSize: "1.25rem" }}
               >
                 ✕
               </button>
             </div>
             
-            <div style={{ marginBottom: "1.75rem", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.95rem" }}>
+            <div style={{ marginBottom: "1.25rem", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.88rem" }}>
               {t("dashboard.archiveConfirm")}
               <div style={{
-                marginTop: "0.75rem",
-                padding: "0.85rem 1rem",
+                marginTop: "0.5rem",
+                padding: "0.6rem 0.85rem",
                 backgroundColor: "rgba(239, 68, 68, 0.05)",
                 border: "1px dashed rgba(239, 68, 68, 0.2)",
                 borderRadius: "8px",
                 color: "rgba(255, 255, 255, 0.9)",
                 fontWeight: 600,
-                fontSize: "0.95rem",
+                fontSize: "0.88rem",
                 wordBreak: "break-all"
               }}>
                 "{projectTitleToDelete}"
               </div>
             </div>
 
-            <div className="arche-modal-actions">
+            <div className="arche-modal-actions" style={{ marginTop: "1rem", gap: "0.75rem" }}>
               <button
                 type="button"
                 onClick={handleArchiveProject}
@@ -538,9 +543,10 @@ export default function DashboardPage() {
                   backgroundColor: "rgba(245, 158, 11, 0.15)",
                   border: "1px solid rgba(245, 158, 11, 0.3)",
                   color: "#fbbf24",
-                  padding: "0.6rem 1.25rem",
-                  borderRadius: "10px",
+                  padding: "0.5rem 1.15rem",
+                  borderRadius: "8px",
                   fontWeight: 600,
+                  fontSize: "0.88rem",
                   transition: "all 0.2s ease"
                 }}
                 disabled={deleteLoading}
@@ -554,9 +560,10 @@ export default function DashboardPage() {
                 style={{
                   backgroundColor: "#ef4444",
                   color: "#fff",
-                  padding: "0.6rem 1.25rem",
-                  borderRadius: "10px",
+                  padding: "0.5rem 1.15rem",
+                  borderRadius: "8px",
                   fontWeight: 600,
+                  fontSize: "0.88rem",
                   transition: "all 0.2s ease"
                 }}
                 disabled={deleteLoading}
