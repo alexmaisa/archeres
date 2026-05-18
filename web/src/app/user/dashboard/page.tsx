@@ -223,42 +223,68 @@ export default function DashboardPage() {
             </button>
           </div>
         ) : (
-          <div className="projects-grid">
-            {projects.map((proj) => (
-              <div key={proj.id} className="glass-panel project-card">
-                <div className="project-card-header">
-                  <h3 className="project-card-title">{proj.title}</h3>
-                  <span className="project-card-date">
-                    {t("dashboard.created")} {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                  </span>
-                </div>
-                
-                <p className="project-card-desc">
-                  {proj.description
-                    ? proj.description.length > 140
-                      ? `${proj.description.substring(0, 140)}...`
-                      : proj.description
-                    : "No description provided."}
-                </p>
-
-                <div className="project-card-actions">
-                  <button
-                    onClick={() => router.push(`/user/project/${proj.id}`)}
-                    className="btn btn-primary project-action-open"
-                  >
-                    <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                    {t("dashboard.openWorkspace")}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProject(proj.id)}
-                    className="btn btn-outline project-action-delete"
-                  >
-                    <IconTrash size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-                    {t("dashboard.deleteBtn")}
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
+            <table className="arche-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "30%" }}>{t("dashboard.projectTitleColumn")}</th>
+                  <th style={{ width: "35%" }}>{t("dashboard.projectDescColumn")}</th>
+                  <th style={{ width: "15%" }}>{t("dashboard.projectApproachColumn")}</th>
+                  <th style={{ width: "20%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((proj) => (
+                  <tr key={proj.id}>
+                    <td style={{ verticalAlign: "middle" }}>
+                      <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.95)", fontSize: "1.05rem" }}>
+                        {proj.title}
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255, 255, 255, 0.4)", marginTop: "4px" }}>
+                        {t("dashboard.created")} {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                      </div>
+                    </td>
+                    <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.88rem" }}>
+                      {proj.description
+                        ? proj.description.length > 100
+                          ? `${proj.description.substring(0, 100)}...`
+                          : proj.description
+                        : "No description provided."}
+                    </td>
+                    <td style={{ verticalAlign: "middle" }}>
+                      <span className={`badge ${
+                        proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
+                          ? "badge-primary"
+                          : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
+                            ? "badge-cyan"
+                            : "badge-success"
+                      }`}>
+                        {proj.approach || "Kuantitatif"}
+                      </span>
+                    </td>
+                    <td style={{ verticalAlign: "middle", textAlign: "right" }}>
+                      <div style={{ display: "inline-flex", gap: "0.5rem" }}>
+                        <button
+                          onClick={() => router.push(`/user/project/${proj.id}`)}
+                          className="btn btn-primary"
+                          style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                        >
+                          <IconBook size={13} />
+                          {t("dashboard.openWorkspace")}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProject(proj.id)}
+                          className="btn btn-outline project-action-delete"
+                          style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                        >
+                          <IconTrash size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>

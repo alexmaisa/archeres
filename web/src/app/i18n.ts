@@ -64,7 +64,11 @@ const resources = {
         created: "Created on",
         openWorkspace: "Open Workspace",
         deleteBtn: "Archive Study",
-        deleteConfirm: "Are you sure you want to delete this project?"
+        deleteConfirm: "Are you sure you want to delete this project?",
+        projectTitleColumn: "Project Title",
+        projectDescColumn: "Description",
+        projectApproachColumn: "Approach",
+        actionsColumn: "Actions"
       },
       wizard: {
         title: "Methodology Planner",
@@ -210,7 +214,11 @@ const resources = {
         created: "Dibuat pada",
         openWorkspace: "Buka Lembar Kerja",
         deleteBtn: "Hapus Proyek",
-        deleteConfirm: "Apakah Anda yakin ingin menghapus proyek penelitian ini?"
+        deleteConfirm: "Apakah Anda yakin ingin menghapus proyek penelitian ini?",
+        projectTitleColumn: "Judul Penelitian",
+        projectDescColumn: "Deskripsi",
+        projectApproachColumn: "Pendekatan",
+        actionsColumn: "Aksi"
       },
       wizard: {
         title: "Perencana Metodologi",
