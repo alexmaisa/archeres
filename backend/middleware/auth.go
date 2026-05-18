@@ -34,34 +34,34 @@ func JWTMiddleware(c *fiber.Ctx) error {
 
 	if tokenString == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Akses ditolak. Silakan login terlebih dahulu.",
+			"error": "Access denied. Please log in first.",
 		})
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("metode enkripsi token tidak didukung: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unsupported token signing method: %v", token.Header["alg"])
 		}
 		return JWTSecret, nil
 	})
 
 	if err != nil || !token.Valid {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Sesi tidak valid atau telah kedaluwarsa. Silakan login kembali.",
+			"error": "Invalid or expired session. Please log in again.",
 		})
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Klaim session token tidak valid.",
+			"error": "Invalid session token claims.",
 		})
 	}
 
 	userIDFloat, ok := claims["userID"].(float64)
 	if !ok {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "ID pengguna tidak ditemukan di dalam token.",
+			"error": "User ID not found in session token.",
 		})
 	}
 
@@ -72,14 +72,14 @@ func JWTMiddleware(c *fiber.Ctx) error {
 	var user models.User
 	if err := config.DB.Select("id, role").First(&user, userID).Error; err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Sesi tidak valid. Pengguna tidak ditemukan di sistem.",
+			"error": "Invalid session. User not found in system.",
 		})
 	}
 
 	// Double check that the role hasn't changed in the database to prevent privilege escalation
 	if user.Role != role {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Peran pengguna telah berubah. Silakan login kembali.",
+			"error": "User role has changed. Please log in again.",
 		})
 	}
 
@@ -94,7 +94,7 @@ func AdminMiddleware(c *fiber.Ctx) error {
 	role := c.Locals("userRole")
 	if role != "admin" {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"error": "Akses ditolak. Halaman atau fitur ini hanya dapat diakses oleh Administrator.",
+			"error": "Access denied. This page or feature is only accessible by Administrators.",
 		})
 	}
 	return c.Next()
