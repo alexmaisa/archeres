@@ -15,6 +15,7 @@ export interface Project {
   sampleCalculated: boolean;
   createdAt: string;
   updatedAt: string;
+  isArchived: boolean;
   designType?: string;
   checklistChecked?: string;
   wizardStep?: number;
