@@ -96,7 +96,7 @@ const resources = {
         analysisPlaceholder: "E.g., Multiple Linear Regression, Pearson Correlation, Independent T-Test, ANOVA..."
       },
       preview: {
-        title: "Draft Bab III: Metodologi Penelitian",
+        title: "Draft BAB III: Metodologi Penelitian",
         subtitle: "Real-time Academic Markdown Preview (Language: Indonesian/English)",
         copy: "Copy Markdown Text",
         copied: "Markdown copied to clipboard!",
@@ -218,12 +218,12 @@ const resources = {
         analysisPlaceholder: "Misal: Regresi Linear Berganda, Korelasi Pearson, Uji-T Independen, ANOVA..."
       },
       preview: {
-        title: "Draf Bab III: Metodologi Penelitian",
+        title: "Draf BAB III: Metodologi Penelitian",
         subtitle: "Pratinjau Akademik Markdown Real-time (Bahasa: Indonesia/Inggris)",
         copy: "Salin Teks Markdown",
         copied: "Markdown berhasil disalin ke papan klip!",
         download: "Ekspor Draf (.md)",
-        noPreview: "Lengkapi panduan metodologi untuk menghasilkan draf Bab 3 akademik Anda secara otomatis."
+        noPreview: "Lengkapi panduan metodologi untuk menghasilkan draf BAB III akademik Anda secara otomatis."
       },
       admin: {
         title: "Administrasi Platform",

@@ -266,7 +266,7 @@ func ExportChapter3(c *fiber.Ctx) error {
 
 	// Standard header
 	markdown := fmt.Sprintf("# BAB III: METODOLOGI PENELITIAN\n\n")
-	markdown += fmt.Sprintf("Draft bab metodologi penelitian ini dibuat secara otomatis melalui platform **Archeres** untuk mempermudah perumusan struktur metodologi pada proposal penelitian yang berjudul **\"%s\"**.\n\n", project.Title)
+	markdown += fmt.Sprintf("Draf BAB III metodologi penelitian ini dibuat secara otomatis melalui platform **Archeres** untuk mempermudah perumusan struktur metodologi pada proposal penelitian yang berjudul **\"%s\"**.\n\n", project.Title)
 
 	// 3.1 Research Design
 	markdown += "## 3.1 Pendekatan dan Desain Penelitian\n\n"

@@ -307,7 +307,7 @@ export default function WorkspaceClient() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${project.title.replace(/\s+/g, "_")}_Bab_III.md`);
+    link.setAttribute("download", `${project.title.replace(/\s+/g, "_")}_BAB_III.md`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -552,7 +552,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
             <h3 style={styles.eduTitle}>{isId ? "Finalisasi Desain & Replikabilitas Riset" : "Finalizing Design & Replicability"}</h3>
             <p style={styles.eduIntro}>
               {isId 
-                ? "Selamat! Draf akademik Bab III Anda kini telah tersusun secara sistematis dan siap diintegrasikan ke dalam naskah skripsi atau tesis Anda." 
+                ? "Selamat! Draf akademik BAB III Anda kini telah tersusun secara sistematis dan siap diintegrasikan ke dalam naskah skripsi atau tesis Anda." 
                 : "Congratulations! Your Chapter 3 academic draft is now structured and ready for inclusion in your thesis."}
             </p>
 
@@ -560,7 +560,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <h4 style={styles.eduCardTitle}>🔁 {isId ? "Prinsip Replikabilitas Riset" : "Replicability Principle"}</h4>
               <p style={styles.eduCardBody}>
                 {isId 
-                  ? "Tujuan utama penulisan Bab III secara presisi dan ilmiah adalah memastikan langkah-langkah metodologi Anda diuraikan secara transparan agar peneliti masa depan dapat mereplikasi riset ini dengan hasil yang konsisten." 
+                  ? "Tujuan utama penulisan BAB III secara presisi dan ilmiah adalah memastikan langkah-langkah metodologi Anda diuraikan secara transparan agar peneliti masa depan dapat mereplikasi riset ini dengan hasil yang konsisten." 
                   : "The central goal of Chapter 3 is to state your procedures so clearly that any future researcher can duplicate your study easily."}
               </p>
             </div>
@@ -662,7 +662,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
         {/* Drawer collapsible edge tab button - sits on the border, never clipped */}
         <button
           onClick={() => setShowPreview(!showPreview)}
-          title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf Bab III" : "Show Chapter 3 Draft")}
+          title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf BAB III" : "Show Chapter 3 Draft")}
           style={{
             position: "absolute",
             top: "50%",
@@ -1020,7 +1020,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
                 </h2>
                 <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.6)", maxWidth: "480px", margin: "0 auto 2.5rem auto" }}>
                   {i18n.language === "id" 
-                    ? "Seluruh parameter ilmiah, ukuran sampel minimal, dan indikabel variabel Anda telah diintegrasikan secara akademis ke Bab III draf metodologi Anda." 
+                    ? "Seluruh parameter ilmiah, ukuran sampel minimal, dan indikabel variabel Anda telah diintegrasikan secara akademis ke BAB III draf metodologi Anda." 
                     : "All scientific variables, calculations, and paradigms have been successfully integrated into your Chapter 3 academic thesis draft."}
                 </p>
 

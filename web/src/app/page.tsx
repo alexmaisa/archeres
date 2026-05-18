@@ -92,8 +92,8 @@ export default function Home() {
       ]
     },
     id: {
-      title: "Rancang Metodologi & Bab III Penelitian Anda Secara Ilmiah",
-      subtitle: "Archeres membantu Anda menentukan ukuran sampel yang valid, memetakan skala variabel, dan menghasilkan draf Bab III (Metodologi Penelitian) yang siap pakai secara instan.",
+      title: "Rancang Metodologi & BAB III Penelitian Anda Secara Ilmiah",
+      subtitle: "Archeres membantu Anda menentukan ukuran sampel yang valid, memetakan skala variabel, dan menghasilkan draf BAB III (Metodologi Penelitian) yang siap pakai secara instan.",
       ctaStart: "Mulai Sekarang, Gratis",
       ctaLogin: "Masuk ke Workspace",
       features: [
@@ -109,8 +109,8 @@ export default function Home() {
         },
         {
           icon: "fileDown",
-          name: "Penyusun Draf Bab III",
-          desc: "Unduh hasil rancangan metodologi Anda menjadi draf Bab III berformat Markdown yang rapi dalam Bahasa Indonesia maupun Inggris sekaligus."
+          name: "Penyusun Draf BAB III",
+          desc: "Unduh hasil rancangan metodologi Anda menjadi draf BAB III berformat Markdown yang rapi dalam Bahasa Indonesia maupun Inggris sekaligus."
         },
         {
           icon: "shield",
