@@ -24,7 +24,7 @@ interface ResearchDesign {
   marginOfError?: number;
   estimatedProportion?: number;
   analysisMethod?: string;
-  variablesJson?: string;
+  variables?: string;
   sampleSize?: number;
 }
 
@@ -57,10 +57,7 @@ export default function WorkspaceClient() {
   const [confLevel, setConfLevel] = useState<number>(0.95);
   const [marginError, setMarginError] = useState<number>(0.05);
   const [proportion, setProportion] = useState<number>(0.5);
-  const [variables, setVariables] = useState<VariableDefinition[]>([
-    { name: "X1 - Social Media Exposure", role: "Independent (Cause)", scale: "Interval (Ordered, Equal Distances)" },
-    { name: "Y - Teen self-esteem score", role: "Dependent (Effect)", scale: "Ratio (Ordered, True Zero Point)" }
-  ]);
+  const [variables, setVariables] = useState<VariableDefinition[]>([]);
   const [analysisMethod, setAnalysisMethod] = useState<string>("Multiple Linear Regression");
   
   // Real-time calculated sample size
@@ -100,8 +97,8 @@ export default function WorkspaceClient() {
         if (data.researchDesign) {
           const rd = data.researchDesign;
           // approach and designType are NOT encrypted (enum metadata for admin stats)
-          if (rd.variablesJson) {
-            rd.variablesJson = await decryptText(rd.variablesJson, mek).catch(() => rd.variablesJson);
+          if (rd.variables) {
+            rd.variables = await decryptText(rd.variables, mek).catch(() => rd.variables);
           }
           if (rd.analysisMethod) {
             rd.analysisMethod = await decryptText(rd.analysisMethod, mek).catch(() => rd.analysisMethod);
@@ -122,9 +119,9 @@ export default function WorkspaceClient() {
         if (rd.marginOfError !== undefined) setMarginError(rd.marginOfError);
         if (rd.estimatedProportion !== undefined) setProportion(rd.estimatedProportion);
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
-        if (rd.variablesJson) {
+        if (rd.variables) {
           try {
-            setVariables(JSON.parse(rd.variablesJson));
+            setVariables(JSON.parse(rd.variables));
           } catch (e) {
             // Keep default
           }
@@ -282,7 +279,7 @@ export default function WorkspaceClient() {
             marginOfError: Number(marginError),
             estimatedProportion: Number(proportion),
             analysisMethod: payloadAnalysis,
-            variablesJson: payloadVariables,
+            variables: payloadVariables,
             sampleSize: Number(sampleSize)
           }
         }),
