@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../components/Icons";
 
 export default function WorkspaceClient() {
   const { t, i18n } = useTranslation();
@@ -336,10 +337,10 @@ Aligned with the scale of measurements and variable distributions, statistical h
 
         <nav style={styles.stepsNav}>
           {[
-            { step: 1, label: t("wizard.step1"), icon: "🧬" },
-            { step: 2, label: t("wizard.step2"), icon: "🧮" },
-            { step: 3, label: t("wizard.step3"), icon: "📊" },
-            { step: 4, label: t("wizard.step4"), icon: "📥" }
+            { step: 1, label: t("wizard.step1"), icon: <IconHelix size={16} /> },
+            { step: 2, label: t("wizard.step2"), icon: <IconMath size={16} /> },
+            { step: 3, label: t("wizard.step3"), icon: <IconChart size={16} /> },
+            { step: 4, label: t("wizard.step4"), icon: <IconFileDown size={16} /> }
           ].map((s) => (
             <button
               key={s.step}
@@ -393,7 +394,14 @@ Aligned with the scale of measurements and variable distributions, statistical h
             style={{ width: "100%", padding: "0.75rem" }}
             disabled={saveLoading}
           >
-            {saveLoading ? t("common.loading") : `💾 ${t("common.save")}`}
+            {saveLoading ? (
+              t("common.loading")
+            ) : (
+              <>
+                <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {t("common.save")}
+              </>
+            )}
           </button>
         </div>
       </aside>
@@ -593,7 +601,8 @@ Aligned with the scale of measurements and variable distributions, statistical h
               <div style={styles.varsHeaderRow}>
                 <label className="form-label">{t("wizard.varLabel")}</label>
                 <button onClick={handleAddVariable} className="btn btn-outline" style={styles.addVarBtn}>
-                  ➕ {t("wizard.addVarBtn")}
+                  <IconPlus size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                  {t("wizard.addVarBtn")}
                 </button>
               </div>
               <p style={styles.inputHelp} style={{ marginBottom: "1.5rem" }}>
@@ -674,10 +683,12 @@ Aligned with the scale of measurements and variable distributions, statistical h
 
               <div style={styles.exportControlsRow}>
                 <button onClick={handleDownloadMd} className="btn btn-primary" style={styles.exportBtn}>
-                  📥 {t("preview.download")}
+                  <IconFileDown size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                  {t("preview.download")}
                 </button>
                 <button onClick={handleCopyMarkdown} className="btn btn-outline" style={styles.exportBtn}>
-                  📋 {t("preview.copy")}
+                  <IconCopy size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                  {t("preview.copy")}
                 </button>
               </div>
             </div>
@@ -708,7 +719,14 @@ Aligned with the scale of measurements and variable distributions, statistical h
             className="btn btn-primary"
             style={styles.navBtn}
           >
-            {activeStep < 4 ? `${t("common.next")} →` : `💾 ${t("common.save")}`}
+            {activeStep < 4 ? (
+              `${t("common.next")} →`
+            ) : (
+              <>
+                <IconSave size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {t("common.save")}
+              </>
+            )}
           </button>
         </footer>
       </section>
@@ -757,7 +775,8 @@ Aligned with the scale of measurements and variable distributions, statistical h
 
         <div style={styles.rightFooter}>
           <button onClick={handleCopyMarkdown} className="btn-outline" style={styles.copyBtnRight}>
-            📋 {t("preview.copy")}
+            <IconCopy size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+            {t("preview.copy")}
           </button>
         </div>
       </section>
