@@ -27,8 +27,8 @@ interface StepItem {
 }
 
 interface MathFormula {
+  id: string;
   name: string;
-  formula: string;
   context: string;
 }
 
@@ -137,11 +137,11 @@ export default function AboutPage() {
       mathSectionTitle: "Mathematical Estimator Equations",
       mathSectionDesc: "Archeres performs real-time sampling size estimations using rigorous math models verified by senior academic examiners.",
       mathFormulas: [
-        { name: "Slovin Formula", formula: "n = N / (1 + N * e²)", context: "Ideal for basic research with known, finite populations under general margin of error." },
-        { name: "Cochran Formula", formula: "n = Z² * p * q / e²", context: "Designed for infinite or extremely large populations where proportion parameters are estimated." },
-        { name: "Lemeshow Equation", formula: "n = Z² * P * (1-P) / d²", context: "The standard for epidemiological, healthcare, and clinical studies with unknown population sizes." },
-        { name: "Yamane Formula", formula: "n = N / (1 + N * d²)", context: "A highly consistent estimator for finite populations based on rigorous confidence intervals." },
-        { name: "Daniel Formula", formula: "n = Z² * P * (1-P) / d²", context: "Used for estimating binary prevalence stats with high confidence tolerance controls." }
+        { id: "slovin", name: "Slovin Formula", context: "Ideal for basic research with known, finite populations under general margin of error." },
+        { id: "cochran", name: "Cochran Formula", context: "Designed for infinite or extremely large populations where proportion parameters are estimated." },
+        { id: "lemeshow", name: "Lemeshow Equation", context: "The standard for epidemiological, healthcare, and clinical studies with unknown population sizes." },
+        { id: "yamane", name: "Yamane Formula", context: "A highly consistent estimator for finite populations based on rigorous confidence intervals." },
+        { id: "daniel", name: "Daniel Formula", context: "Used for estimating binary prevalence stats with high confidence tolerance controls." }
       ],
       scaleSectionTitle: "Stevens' Scales & Statistical Advice",
       scaleSectionDesc: "Classifying study variables using Stevens' taxonomy of scales automatically triggers the appropriate statistical test recommendations.",
@@ -210,11 +210,11 @@ export default function AboutPage() {
       mathSectionTitle: "Formulasi Matematika Ukuran Sampel",
       mathSectionDesc: "Archeres melakukan estimasi ukuran sampel secara real-time menggunakan model matematika rigor yang teruji di hadapan penguji akademik.",
       mathFormulas: [
-        { name: "Rumus Slovin", formula: "n = N / (1 + N * e²)", context: "Sangat ideal untuk penelitian umum dengan populasi terbatas yang diketahui ukuran pastinya." },
-        { name: "Rumus Cochran", formula: "n = Z² * p * q / e²", context: "Dikhususkan bagi populasi besar tak terbatas dengan estimasi proporsi parameter tertentu." },
-        { name: "Persamaan Lemeshow", formula: "n = Z² * P * (1-P) / d²", context: "Standar baku riset klinis, kedokteran, dan epidemiologi kesehatan dengan jumlah populasi tidak diketahui." },
-        { name: "Rumus Yamane", formula: "n = N / (1 + N * d²)", context: "Estimator konsisten untuk populasi terbatas dengan basis tingkat kepercayaan presisi tinggi." },
-        { name: "Rumus Daniel", formula: "n = Z² * P * (1-P) / d²", context: "Digunakan untuk estimasi prevalensi biner pada studi diagnosis dengan toleransi margin terkendali." }
+        { id: "slovin", name: "Rumus Slovin", context: "Sangat ideal untuk penelitian umum dengan populasi terbatas yang diketahui ukuran pastinya." },
+        { id: "cochran", name: "Rumus Cochran", context: "Dikhususkan bagi populasi besar tak terbatas dengan estimasi proporsi parameter tertentu." },
+        { id: "lemeshow", name: "Persamaan Lemeshow", context: "Standar baku riset klinis, kedokteran, dan epidemiologi kesehatan dengan jumlah populasi tidak diketahui." },
+        { id: "yamane", name: "Rumus Yamane", context: "Estimator konsisten untuk populasi terbatas dengan basis tingkat kepercayaan presisi tinggi." },
+        { id: "daniel", name: "Rumus Daniel", context: "Digunakan untuk estimasi prevalensi biner pada studi diagnosis dengan toleransi margin terkendali." }
       ],
       scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
       scaleSectionDesc: "Pengelompokan variabel berdasarkan taksonomi Stevens secara otomatis mengarahkan peneliti pada rekomendasi uji hipotesis yang valid.",
@@ -253,6 +253,63 @@ export default function AboutPage() {
         return <IconKey size={24} style={{ color: "#34d399", strokeWidth: 2 }} />;
       case "book":
         return <IconBook size={24} style={{ color: "#fb7185", strokeWidth: 2 }} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderMathFormula = (id: string) => {
+    switch (id) {
+      case "slovin":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>N</span>
+              <span style={styles.denominator}>1 + N(e<sup>2</sup>)</span>
+            </div>
+          </div>
+        );
+      case "cochran":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>Z<sup>2</sup> &bull; p &bull; q</span>
+              <span style={styles.denominator}>e<sup>2</sup></span>
+            </div>
+          </div>
+        );
+      case "lemeshow":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>Z<sup>2</sup> &bull; P(1 - P)</span>
+              <span style={styles.denominator}>d<sup>2</sup></span>
+            </div>
+          </div>
+        );
+      case "yamane":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>N</span>
+              <span style={styles.denominator}>1 + N(d<sup>2</sup>)</span>
+            </div>
+          </div>
+        );
+      case "daniel":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>Z<sup>2</sup> &bull; P(1 - P)</span>
+              <span style={styles.denominator}>d<sup>2</sup></span>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -369,7 +426,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW EXPLORATIVE SECTION A: Mathematical formulas detail */}
+        {/* EXPLORATIVE SECTION A: Mathematical formulas detail */}
         <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
           <h2 style={styles.sectionHeader}>{copy.mathSectionTitle}</h2>
           <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
@@ -381,15 +438,13 @@ export default function AboutPage() {
             gap: "1.5rem"
           }}>
             {copy.mathFormulas.map((f, idx) => (
-              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "white" }}>{f.name}</h3>
                   <span style={{ fontSize: "0.72rem", color: "#c084fc", background: "rgba(192,132,252,0.1)", padding: "0.2rem 0.5rem", borderRadius: "6px", fontFamily: "monospace" }}>Formula</span>
                 </div>
-                <div style={{ background: "rgba(0,0,0,0.15)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "center" }}>
-                  <code style={{ fontSize: "1rem", fontWeight: 800, color: "#38bdf8", fontFamily: "monospace" }}>
-                    {f.formula}
-                  </code>
+                <div style={{ background: "rgba(0,0,0,0.15)", padding: "1.25rem 0.75rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "center" }}>
+                  {renderMathFormula(f.id)}
                 </div>
                 <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>
                   {f.context}
@@ -399,7 +454,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW EXPLORATIVE SECTION B: Scale measurement guidelines advice */}
+        {/* EXPLORATIVE SECTION B: Scale measurement guidelines advice */}
         <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
           <h2 style={styles.sectionHeader}>{copy.scaleSectionTitle}</h2>
           <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
@@ -428,7 +483,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* NEW EXPLORATIVE SECTION C: Generated chapters outline blueprint */}
+        {/* EXPLORATIVE SECTION C: Generated chapters outline blueprint */}
         <section style={{ width: "100%", maxWidth: "1000px", alignSelf: "center" }}>
           <h2 style={styles.sectionHeader}>{copy.chapterSectionTitle}</h2>
           <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginTop: "0.5rem", marginBottom: "1.5rem" }}>
@@ -608,5 +663,34 @@ const styles: Record<string, React.CSSProperties> = {
     color: "white",
     borderBottom: "1px solid rgba(255,255,255,0.06)",
     paddingBottom: "0.5rem"
+  },
+  // Beautiful fraction style classes
+  mathExpr: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: "1.35rem",
+    fontWeight: 800,
+    color: "#38bdf8",
+    gap: "0.5rem"
+  },
+  fraction: {
+    display: "inline-flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    verticalAlign: "middle"
+  },
+  numerator: {
+    borderBottom: "1.5px solid rgba(255,255,255,0.35)",
+    padding: "0 0.5rem 2px 0.5rem",
+    textAlign: "center",
+    fontSize: "1.1rem"
+  },
+  denominator: {
+    padding: "2px 0.5rem 0 0.5rem",
+    textAlign: "center",
+    fontSize: "1.1rem"
   }
 };
