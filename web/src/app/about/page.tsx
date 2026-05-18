@@ -37,6 +37,7 @@ interface MathFormula {
   context: string;
   useCase: string;
   symbols: SymbolItem[];
+  reference: string;
 }
 
 interface ScaleAdvice {
@@ -151,6 +152,7 @@ export default function AboutPage() {
           name: "Slovin Formula", 
           useCase: "Commonly used in social sciences for simple random sampling when the exact population size is known and finite. Best suited for basic survey research due to its mathematical simplicity.",
           context: "Used when N is known and you need a quick, highly generalizable estimation of n with a designated tolerance margin.",
+          reference: "Sevilla, C. G., Ochave, J. A., Punsalan, T. G., Regala, B. P., & Uriarte, G. G. (1984). An Introduction to Research Methods. Rex Book Store. (Commonly associated with Slovin, 1960).",
           symbols: [
             { char: "n", meaning: "Minimum sample size required" },
             { char: "N", meaning: "Total finite population size" },
@@ -162,6 +164,7 @@ export default function AboutPage() {
           name: "Cochran Formula", 
           useCase: "Designed for infinite or extremely large populations where the total population size is unknown or hard to estimate. Ideal for broad demographic surveys.",
           context: "Used when the population size is practically infinite, leveraging a standardized critical confidence level.",
+          reference: "Cochran, W. G. (1977). Sampling Techniques (3rd ed.). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Minimum sample size required" },
             { char: "Z", meaning: "Standard normal deviation (typically 1.96 for 95% confidence)" },
@@ -175,6 +178,7 @@ export default function AboutPage() {
           name: "Lemeshow Equation", 
           useCase: "A specialized epidemiological formula developed by Stanley Lemeshow for clinical trials and healthcare studies where the total population is unknown but expected disease prevalence is anticipated.",
           context: "Used in clinical and medical settings with unknown population size to evaluate specific binary diagnostic attributes.",
+          reference: "Lemeshow, S., Hosmer, D. W., Klar, J., & Lwanga, S. K. (1990). Adequacy of Sample Size in Health Studies. World Health Organization (WHO) / John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Minimum sample size required" },
             { char: "Z", meaning: "Standard normal value (typically 1.96 for 95% confidence)" },
@@ -187,6 +191,7 @@ export default function AboutPage() {
           name: "Yamane Formula", 
           useCase: "Introduced by Taro Yamane as an alternative for finite populations with a high degree of precision control. It calculates the necessary sample size based on total population size.",
           context: "A highly consistent and academically accepted estimator for finite, known administrative populations.",
+          reference: "Yamane, T. (1967). Elementary Sampling Theory. Prentice-Hall.",
           symbols: [
             { char: "n", meaning: "Minimum sample size required" },
             { char: "N", meaning: "Total finite population size" },
@@ -198,6 +203,7 @@ export default function AboutPage() {
           name: "Daniel Formula", 
           useCase: "Widely applied in medical diagnosis and prevalence research for assessing binary characteristics or characteristics of a specific subgroup.",
           context: "Determines the necessary sample size when studying the prevalence of specific diagnostic parameters.",
+          reference: "Daniel, W. W. (1999). Biostatistics: A Foundation for Analysis in the Health Sciences (7th ed.). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Minimum sample size required" },
             { char: "Z", meaning: "Critical normal value based on confidence intervals" },
@@ -279,6 +285,7 @@ export default function AboutPage() {
           name: "Rumus Slovin", 
           useCase: "Paling sering digunakan dalam penelitian sosial untuk pengambilan sampel acak sederhana ketika ukuran populasi (N) diketahui secara pasti dan berjumlah terbatas (populasi terbatas). Sangat direkomendasikan karena kesederhanaan perhitungannya.",
           context: "Digunakan ketika total populasi (N) diketahui dan Anda membutuhkan estimasi ukuran sampel (n) secara cepat dengan tingkat batas kesalahan tertentu.",
+          reference: "Sevilla, C. G., dkk. (1984). An Introduction to Research Methods. Rex Book Store. (Sering pula dikaitkan dengan Slovin, 1960).",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "N", meaning: "Ukuran total populasi penelitian" },
@@ -290,6 +297,7 @@ export default function AboutPage() {
           name: "Rumus Cochran", 
           useCase: "Dirancang oleh ahli statistik William G. Cochran untuk pengambilan sampel pada populasi yang sangat besar atau tidak terbatas (tidak diketahui jumlah pastinya). Sangat ideal untuk survei demografi berskala luas.",
           context: "Digunakan ketika jumlah populasi dianggap tidak terbatas, memanfaatkan nilai deviasi standar normal kritis.",
+          reference: "Cochran, W. G. (1977). Sampling Techniques (Edisi ke-3). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Skor standar normal (biasanya 1,96 untuk tingkat kepercayaan 95%)" },
@@ -301,8 +309,9 @@ export default function AboutPage() {
         { 
           id: "lemeshow", 
           name: "Persamaan Lemeshow", 
-          useCase: "Persamaan epidemiologi khusus yang dikembangkan oleh Stanley Lemeshow untuk uji klinis, kedokteran, dan bidang kesehatan umum ketika jumlah total populasi tidak diketahui namun estimasi prevalensi penyakit dapat diantisipasi.",
+          useCase: "Persamaan epidemiologi khusus yang dikembangkan oleh Stanley Lemeshow untuk uji klinis, kedokteran, dan bidang kesehatan umum ketika jumlah total populasi tidak diketahui namun estimasi prevalensi penyakit dapat diantisipasi secara biner.",
           context: "Digunakan dalam latar medis/klinis dengan populasi tak terbatas untuk mengevaluasi karakteristik diagnosis biner.",
+          reference: "Lemeshow, S., Hosmer, D. W., Klar, J., & Lwanga, S. K. (1990). Adequacy of Sample Size in Health Studies. Organisasi Kesehatan Dunia (WHO) / John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Skor standar normal kritis (biasanya 1,96 pada tingkat kepercayaan 95%)" },
@@ -315,6 +324,7 @@ export default function AboutPage() {
           name: "Rumus Yamane", 
           useCase: "Diperkenalkan oleh Taro Yamane sebagai alternatif matematis yang konsisten untuk populasi terbatas yang diketahui jumlahnya. Rumus ini menghitung ukuran sampel berdasarkan total populasi dan batas toleransi.",
           context: "Estimator yang sangat andal dan diterima secara luas di ranah akademis untuk populasi terbatas administratif.",
+          reference: "Yamane, T. (1967). Elementary Sampling Theory. Prentice-Hall.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "N", meaning: "Ukuran total populasi penelitian" },
@@ -326,6 +336,7 @@ export default function AboutPage() {
           name: "Rumus Daniel", 
           useCase: "Banyak diterapkan dalam diagnosis medis dan penelitian klinis untuk menguji prevalensi karakteristik biner (seperti keberadaan penyakit atau gejala khusus) pada populasi target.",
           context: "Menentukan ukuran sampel ketika peneliti berfokus pada pengujian proporsi diagnosis pada populasi tak terbatas.",
+          reference: "Daniel, W. W. (1999). Biostatistics: A Foundation for Analysis in the Health Sciences (Edisi ke-7). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Nilai kritis normal berdasarkan rentang tingkat kepercayaan" },
@@ -574,7 +585,7 @@ export default function AboutPage() {
                   </div>
                 </div>
 
-                {/* Right Side: Usage & Symbols Legend */}
+                {/* Right Side: Usage, Symbols Legend, & Academic Reference */}
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.25rem", background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "1.5rem", borderRadius: "12px" }}>
                   <div>
                     <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>
@@ -601,6 +612,15 @@ export default function AboutPage() {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#fb7185", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>
+                      {currentLang === "id" ? "Referensi Akademik" : "Academic Reference"}
+                    </h4>
+                    <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.45, fontStyle: "italic", borderLeft: "2px solid #fb7185", paddingLeft: "0.5rem" }}>
+                      {f.reference}
+                    </p>
                   </div>
 
                 </div>
@@ -753,37 +773,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     gap: "1.25rem",
-  },
-  langBar: {
-    display: "flex",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: "8px",
-    padding: "2px",
-  },
-  langBtn: {
-    background: "transparent",
-    border: "none",
-    color: "rgba(255,255,255,0.4)",
-    padding: "0.25rem 0.55rem",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "0.7rem",
-    fontWeight: 700,
-    transition: "all 0.2s ease",
-  },
-  langBtnActive: {
-    background: "rgba(124, 58, 237, 0.15)",
-    color: "#c084fc",
-  },
-  signInHeaderBtn: {
-    background: "transparent",
-    border: "none",
-    color: "rgba(255,255,255,0.75)",
-    cursor: "pointer",
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    transition: "color 0.2s ease",
   },
   navLinks: {
     display: "flex",
