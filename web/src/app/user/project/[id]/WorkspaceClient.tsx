@@ -67,7 +67,7 @@ export default function WorkspaceClient() {
   // Preview draft language ('id' or 'en')
   const [previewLang, setPreviewLang] = useState<string>("id");
   // Toggle visibility of Right Preview Panel as a sliding drawer
-  const [showPreview, setShowPreview] = useState<boolean>(true);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
 
   useEffect(() => {
     // Authenticate session locally
