@@ -360,7 +360,15 @@ Aligned with the scale of measurements and variable distributions, statistical h
   };
 
   const renderMarkdownToHtml = (md: string): string => {
-    let html = md
+    // Secure input: Escape raw HTML tags to prevent XSS injection before parsing markdown syntax
+    const escapedMd = md
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    let html = escapedMd
       .replace(/^# (.*$)/gim, '<h1 style="font-size:1.6rem; font-family:\'Outfit\', sans-serif; font-weight:800; border-bottom:1.5px solid rgba(255,255,255,0.08); padding-bottom:0.6rem; color:#c084fc; margin-bottom:1.25rem;">$1</h1>')
       .replace(/^## (.*$)/gim, '<h2 style="font-size:1.25rem; font-family:\'Outfit\', sans-serif; font-weight:700; color:#38bdf8; margin-top:1.5rem; margin-bottom:0.75rem;">$1</h2>')
       .replace(/^\* (.*$)/gim, '<li style="margin-left:1.5rem; list-style-type:square; font-size:0.92rem; color:rgba(255,255,255,0.85); margin-bottom:0.35rem;">$1</li>')
