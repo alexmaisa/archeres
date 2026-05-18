@@ -675,15 +675,19 @@ export default function DashboardPage() {
       {/* Creation Modal */}
       {showModal && (
         <div className="arche-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="arche-modal-card glass-panel animate-fade-in" onClick={(e) => e.stopPropagation()}>
-            <div className="arche-modal-header">
-              <h2 className="arche-modal-title">{t("dashboard.createNew")}</h2>
+          <div
+            className="arche-modal-card glass-panel animate-fade-in"
+            style={{ maxWidth: "460px", padding: "1.75rem", borderRadius: "12px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="arche-modal-header" style={{ marginBottom: "1.25rem" }}>
+              <h2 className="arche-modal-title" style={{ fontSize: "1.35rem" }}>{t("dashboard.createNew")}</h2>
               <button onClick={() => setShowModal(false)} className="arche-modal-close">✕</button>
             </div>
             
-            <form onSubmit={handleCreateProject} className="arche-modal-form">
-              <div className="form-group">
-                <label className="form-label">{t("dashboard.projectTitle")}</label>
+            <form onSubmit={handleCreateProject} className="arche-modal-form" style={{ gap: "1rem" }}>
+              <div className="form-group" style={{ marginBottom: "0.5rem" }}>
+                <label className="form-label" style={{ fontSize: "0.85rem", marginBottom: "0.35rem" }}>{t("dashboard.projectTitle")}</label>
                 <input
                   type="text"
                   value={newTitle}
@@ -692,34 +696,28 @@ export default function DashboardPage() {
                   placeholder="e.g., Impact of Social Media on Teenagers"
                   required
                   disabled={modalLoading}
+                  style={{ fontSize: "0.88rem", padding: "0.6rem 0.85rem" }}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">{t("dashboard.projectDesc")}</label>
+              <div className="form-group" style={{ marginBottom: "0.5rem" }}>
+                <label className="form-label" style={{ fontSize: "0.85rem", marginBottom: "0.35rem" }}>{t("dashboard.projectDesc")}</label>
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   className="form-input"
-                  rows={4}
+                  rows={3}
                   placeholder="Enter context, research objectives, scope..."
-                  style={{ resize: "none", fontFamily: "inherit" }}
+                  style={{ resize: "none", fontFamily: "inherit", fontSize: "0.88rem", padding: "0.6rem 0.85rem" }}
                   disabled={modalLoading}
                 />
               </div>
 
-              <div className="arche-modal-actions">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="btn btn-outline"
-                  disabled={modalLoading}
-                >
-                  {t("common.back")}
-                </button>
+              <div className="arche-modal-actions" style={{ marginTop: "1rem" }}>
                 <button
                   type="submit"
                   className="btn btn-primary"
+                  style={{ width: "100%", padding: "0.65rem 1rem", fontSize: "0.9rem", fontWeight: 600 }}
                   disabled={modalLoading}
                 >
                   {modalLoading ? t("common.loading") : t("dashboard.createBtn")}
