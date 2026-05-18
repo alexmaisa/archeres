@@ -282,6 +282,17 @@ h1, h2, h3, h4, h5, h6 {
   background-color: rgba(255, 255, 255, 0.01);
 }
 
+/* Compact data grids spacing overrides */
+.arche-table.table-compact th {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.75rem;
+}
+
+.arche-table.table-compact td {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
 /* Interactive Badges */
 .badge {
   display: inline-flex;
@@ -474,5 +485,95 @@ h1, h2, h3, h4, h5, h6 {
   }
   .workspace-wizard {
     padding: 1.25rem;
+  }
+}
+
+/* Unified Compact Toolbars & Active Telemetry Styles */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2.5rem;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.footer-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  max-width: 1200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-brand-logo {
+  color: #c084fc;
+}
+
+.nav-brand-name {
+  font-size: 1.3rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 60%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heartbeat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  display: inline-block;
+  animation: pulse-glow-green 2s infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulse-glow-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
 }

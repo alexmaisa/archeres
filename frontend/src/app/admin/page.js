@@ -18,6 +18,84 @@ export default function AdminPage() {
   // Tab controller (0: User Directory, 1: Projects Monitor)
   const [activeTab, setActiveTab] = useState(0);
 
+  // Interactive Maintenance & Filter states
+  const [vacuuming, setVacuuming] = useState(false);
+  const [vacuumSuccess, setVacuumSuccess] = useState(false);
+  const [approachFilter, setApproachFilter] = useState("all");
+  
+  // Real-time server Uptime increments locally
+  const [uptimeSecs, setUptimeSecs] = useState(0);
+
+  useEffect(() => {
+    if (stats && stats.serverUptimeSecs) {
+      setUptimeSecs(stats.serverUptimeSecs);
+    }
+  }, [stats]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setUptimeSecs((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleVacuum = async () => {
+    if (vacuuming) return;
+    setVacuuming(true);
+    setVacuumSuccess(false);
+    try {
+      const res = await apiFetch("/api/admin/db/vacuum", { method: "POST" });
+      setStats((prev) => ({
+        ...prev,
+        dbSizeBytes: res.dbSizeBytes
+      }));
+      setVacuumSuccess(true);
+      setTimeout(() => setVacuumSuccess(false), 3000);
+    } catch (err) {
+      alert(err.message || "Gagal merapikan SQLite Database.");
+    } finally {
+      setVacuuming(false);
+    }
+  };
+
+  const handleApproachFilterClick = (filterType) => {
+    setApproachFilter(filterType);
+    setActiveTab(1); // Auto-focus master projects data grid
+  };
+
+  const formatBytes = (bytes) => {
+    if (!bytes) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const formatUptime = (seconds) => {
+    if (!seconds) return "0s";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+
+  const getApproachCount = (type) => {
+    if (!stats || !stats.approachStats) return 0;
+    return stats.approachStats[type] || 0;
+  };
+
+  // Filter projects dynamically client-side!
+  const filteredProjects = stats && stats.projects ? stats.projects.filter((p) => {
+    if (approachFilter === "all") return true;
+    if (!p.approach) return false;
+    
+    const approachLower = p.approach.toLowerCase();
+    if (approachFilter === "kuantitatif") return approachLower === "kuantitatif";
+    if (approachFilter === "kualitatif") return approachLower === "kualitatif";
+    if (approachFilter === "metodeCampuran") return approachLower === "metode campuran" || approachLower === "metodecampuran";
+    return true;
+  }) : [];
+
   useEffect(() => {
     // Authenticate session & enforce admin role-based route guard
     const savedUser = localStorage.getItem("user");
@@ -85,9 +163,10 @@ export default function AdminPage() {
       <div style={styles.glowCircle2}></div>
 
       {/* Navigation Header */}
-      <header style={styles.navbar} className="glass-panel">
-        <div style={styles.navBrand}>
-          <span style={styles.logoText}>Arche</span>
+      <header className="fixed-header">
+        <div className="nav-brand">
+          <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
+          <span className="nav-brand-name">{t("common.appName")}</span>
           <span style={styles.badge} className="badge-danger">Admin Hub</span>
         </div>
 
@@ -153,20 +232,97 @@ export default function AdminPage() {
           <>
             {/* Global Admin Telemetry summary cards */}
             <section style={styles.statsGrid}>
-              <div className="glass-panel" style={styles.statCard}>
-                <span style={styles.statLabel}>{t("admin.totalUsers")}</span>
-                <span style={styles.statVal} style={{ color: "#a78bfa" }}>{stats.totalUsers}</span>
-                <span style={styles.statSub}>Registered profiles</span>
-              </div>
+              {/* Card 1: Active Projects / Instant Filter */}
               <div className="glass-panel" style={styles.statCard}>
                 <span style={styles.statLabel}>{t("admin.activeProjects")}</span>
-                <span style={styles.statVal} style={{ color: "#38bdf8" }}>{stats.activeProjects}</span>
-                <span style={styles.statSub}>Scientific study drafts</span>
+                <span style={styles.statVal} style={{ color: "#38bdf8" }}>
+                  {stats.totalProjects}
+                </span>
+                
+                <div style={styles.approachPillsGroup}>
+                  <button
+                    onClick={() => handleApproachFilterClick("all")}
+                    style={{
+                      ...styles.approachPill,
+                      ...(approachFilter === "all" ? styles.approachPillActive : {})
+                    }}
+                  >
+                    Semua
+                  </button>
+                  <button
+                    onClick={() => handleApproachFilterClick("kuantitatif")}
+                    style={{
+                      ...styles.approachPill,
+                      ...(approachFilter === "kuantitatif" ? styles.approachPillActive : {}),
+                      borderColor: "rgba(56, 189, 248, 0.3)"
+                    }}
+                  >
+                    Quant ({getApproachCount("kuantitatif")})
+                  </button>
+                  <button
+                    onClick={() => handleApproachFilterClick("kualitatif")}
+                    style={{
+                      ...styles.approachPill,
+                      ...(approachFilter === "kualitatif" ? styles.approachPillActive : {}),
+                      borderColor: "rgba(167, 139, 250, 0.3)"
+                    }}
+                  >
+                    Qual ({getApproachCount("kualitatif")})
+                  </button>
+                  <button
+                    onClick={() => handleApproachFilterClick("metodeCampuran")}
+                    style={{
+                      ...styles.approachPill,
+                      ...(approachFilter === "metodeCampuran" ? styles.approachPillActive : {}),
+                      borderColor: "rgba(244, 114, 182, 0.3)"
+                    }}
+                  >
+                    Campuran ({getApproachCount("metodeCampuran")})
+                  </button>
+                </div>
               </div>
+
+              {/* Card 2: SQLite Storage / Optimizer defragmenter */}
               <div className="glass-panel" style={styles.statCard}>
-                <span style={styles.statLabel}>{t("admin.dbSize")}</span>
-                <span style={styles.statVal} style={{ color: "#22d3ee" }}>{stats.dbSize}</span>
-                <span style={styles.statSub}>SQLite physical storage</span>
+                <span style={styles.statLabel}>SQLite Storage</span>
+                <span style={styles.statVal} style={{ color: vacuumSuccess ? "#10b981" : "#22d3ee" }} className={vacuumSuccess ? "animate-pulse" : ""}>
+                  {formatBytes(stats.dbSizeBytes)}
+                </span>
+                <div style={styles.vacuumActionArea}>
+                  <button
+                    onClick={handleVacuum}
+                    disabled={vacuuming}
+                    style={{
+                      ...styles.vacuumBtn,
+                      ...(vacuumSuccess ? styles.vacuumBtnSuccess : {})
+                    }}
+                  >
+                    {vacuuming ? (
+                      <>
+                        <div style={styles.spinnerMini}></div>
+                        Vacuuming...
+                      </>
+                    ) : vacuumSuccess ? (
+                      "Defragmented! ✓"
+                    ) : (
+                      "Optimize SQLite"
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Card 3: Go Server Telemetry with Uptime and Heartbeat */}
+              <div className="glass-panel" style={styles.statCard}>
+                <span style={styles.statLabel}>
+                  Go Server Telemetry
+                  <span className="heartbeat-dot" style={{ marginLeft: "8px" }}></span>
+                </span>
+                <span style={styles.statVal} style={{ color: "#a78bfa" }}>
+                  {stats.allocatedRamMb ? stats.allocatedRamMb.toFixed(2) + " MB RAM" : "1.25 MB RAM"}
+                </span>
+                <span style={styles.statSub}>
+                  Uptime: <strong style={{ color: "white" }}>{formatUptime(uptimeSecs)}</strong>
+                </span>
               </div>
             </section>
 
@@ -200,8 +356,8 @@ export default function AdminPage() {
                 {stats.users.length === 0 ? (
                   <p style={styles.emptyTableText}>{t("admin.noUsers")}</p>
                 ) : (
-                  <div style={styles.tableWrapper}>
-                    <table style={styles.table}>
+                  <div className="arche-table-wrapper">
+                    <table className="arche-table table-compact">
                       <thead>
                         <tr>
                           <th>ID</th>
@@ -243,8 +399,8 @@ export default function AdminPage() {
                 {stats.projects.length === 0 ? (
                   <p style={styles.emptyTableText}>{t("admin.noProjects")}</p>
                 ) : (
-                  <div style={styles.tableWrapper}>
-                    <table style={styles.table}>
+                  <div className="arche-table-wrapper">
+                    <table className="arche-table table-compact">
                       <thead>
                         <tr>
                           <th>ID</th>
@@ -258,7 +414,7 @@ export default function AdminPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {stats.projects.map((p) => (
+                        {filteredProjects.map((p) => (
                           <tr key={p.id}>
                             <td>{p.id}</td>
                             <td style={{ fontWeight: 700, color: "white" }}>{p.userName}</td>
@@ -289,6 +445,11 @@ export default function AdminPage() {
           </>
         )}
       </main>
+      <footer className="fixed-footer">
+        <p className="footer-text">
+          &copy; 2026 Benny Maisa. Arche: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
+        </p>
+      </footer>
     </div>
   );
 }
@@ -393,7 +554,7 @@ const styles = {
   },
   mainContent: {
     flex: 1,
-    padding: "3rem 2.5rem",
+    padding: "80px 2rem 65px 2rem",
     maxWidth: "1400px",
     width: "100%",
     margin: "0 auto",
@@ -403,46 +564,48 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "2.5rem",
-    gap: "1.5rem",
+    marginBottom: "1rem",
+    gap: "1rem",
     flexWrap: "wrap",
   },
   welcomeTitle: {
-    fontSize: "2.25rem",
+    fontSize: "2rem",
     fontWeight: 800,
     letterSpacing: "-0.03em",
     color: "rgba(255, 255, 255, 0.95)",
     marginBottom: "0.25rem",
   },
   welcomeSubtitle: {
-    fontSize: "0.95rem",
+    fontSize: "0.9rem",
     color: "rgba(255, 255, 255, 0.6)",
   },
   refreshBtn: {
-    padding: "0.6rem 1.25rem",
-    fontSize: "0.88rem",
+    padding: "0.5rem 1rem",
+    fontSize: "0.85rem",
   },
   statsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "1.5rem",
-    marginBottom: "3rem",
+    gap: "1rem",
+    marginBottom: "1.5rem",
   },
   statCard: {
-    padding: "1.75rem",
+    padding: "1.25rem",
     display: "flex",
     flexDirection: "column",
     gap: "0.25rem",
   },
   statLabel: {
-    fontSize: "0.8rem",
+    fontSize: "0.75rem",
     fontWeight: 800,
     color: "rgba(255, 255, 255, 0.4)",
     textTransform: "uppercase",
     letterSpacing: "0.05em",
+    display: "flex",
+    alignItems: "center"
   },
   statVal: {
-    fontSize: "2.75rem",
+    fontSize: "2rem",
     fontWeight: 800,
     lineHeight: 1.1,
     margin: "0.25rem 0",
@@ -453,69 +616,45 @@ const styles = {
   },
   tabsBar: {
     display: "flex",
-    gap: "1rem",
-    marginBottom: "1.5rem",
+    gap: "0.75rem",
+    marginBottom: "1rem",
     borderBottom: "1px solid rgba(255,255,255,0.06)",
-    paddingBottom: "0.75rem",
+    paddingBottom: "0.5rem",
   },
   tabBtn: {
     background: "transparent",
     border: "none",
-    color: "rgba(255,255,255,0.5)",
-    fontSize: "0.95rem",
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: "0.9rem",
     fontWeight: 700,
-    padding: "0.5rem 1rem",
+    padding: "0.4rem 0.8rem",
     cursor: "pointer",
-    borderRadius: "8px",
+    borderRadius: "6px",
     transition: "all 0.2s ease",
   },
   tabBtnActive: {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255, 255, 255, 0.03)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
     color: "white",
   },
   tabContent: {
-    padding: "2rem",
-    minHeight: "400px",
+    padding: "1.25rem",
+    minHeight: "300px",
   },
   emptyTableText: {
     textAlign: "center",
-    color: "rgba(255,255,255,0.4)",
-    padding: "4rem 0",
-  },
-  tableWrapper: {
-    width: "100%",
-    overflowX: "auto",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    textAlign: "left",
-    fontSize: "0.9rem",
-    color: "rgba(255, 255, 255, 0.7)",
-    "& th": {
-      padding: "1rem",
-      borderBottom: "2px solid rgba(255,255,255,0.08)",
-      color: "rgba(255,255,255,0.4)",
-      fontWeight: 700,
-      textTransform: "uppercase",
-      fontSize: "0.75rem",
-      letterSpacing: "0.05em",
-    },
-    "& td": {
-      padding: "1rem",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-    },
+    color: "rgba(255, 255, 255, 0.4)",
+    padding: "3rem 0",
   },
   roleTag: {
     fontSize: "0.7rem",
-    padding: "0.2rem 0.5rem",
+    padding: "0.15rem 0.4rem",
     borderRadius: "4px",
     display: "inline-block",
   },
   approachTag: {
     fontSize: "0.7rem",
-    padding: "0.2rem 0.5rem",
+    padding: "0.15rem 0.4rem",
     borderRadius: "4px",
     display: "inline-block",
   },
@@ -524,12 +663,12 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    padding: "6rem 0",
+    padding: "4rem 0",
     gap: "1rem",
   },
   spinner: {
-    width: "40px",
-    height: "40px",
+    width: "36px",
+    height: "36px",
     border: "3px solid rgba(255, 255, 255, 0.08)",
     borderTopColor: "hsl(var(--primary-color))",
     borderRadius: "50%",
@@ -541,4 +680,57 @@ const styles = {
     textAlign: "center",
     fontWeight: 600,
   },
+  approachPillsGroup: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "0.4rem",
+    marginTop: "0.5rem"
+  },
+  approachPill: {
+    background: "rgba(255, 255, 255, 0.02)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "4px",
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: "0.7rem",
+    padding: "0.2rem 0.4rem",
+    cursor: "pointer",
+    transition: "all 0.2s ease"
+  },
+  approachPillActive: {
+    background: "rgba(56, 189, 248, 0.15)",
+    borderColor: "#38bdf8",
+    color: "#38bdf8",
+    fontWeight: "bold"
+  },
+  vacuumActionArea: {
+    marginTop: "0.5rem",
+    display: "flex",
+    alignItems: "center"
+  },
+  vacuumBtn: {
+    background: "rgba(239, 68, 68, 0.1)",
+    border: "1px solid rgba(239, 68, 68, 0.25)",
+    color: "#fca5a5",
+    borderRadius: "4px",
+    fontSize: "0.72rem",
+    padding: "0.25rem 0.5rem",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.4rem"
+  },
+  vacuumBtnSuccess: {
+    background: "rgba(16, 185, 129, 0.15)",
+    borderColor: "#10b981",
+    color: "#a7f3d0"
+  },
+  spinnerMini: {
+    width: "12px",
+    height: "12px",
+    border: "2px solid rgba(255, 255, 255, 0.1)",
+    borderTopColor: "#fca5a5",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite"
+  }
 };

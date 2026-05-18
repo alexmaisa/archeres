@@ -152,10 +152,10 @@ export default function Home() {
       <div style={styles.orbCyan}></div>
 
       {/* 1. COMPACT FIXED HEADER */}
-      <header style={styles.header}>
-        <div style={styles.brand}>
-          <IconHelix size={22} style={{ color: "#c084fc", strokeWidth: 2.5 }} />
-          <span style={styles.brandName}>{t("common.appName")}</span>
+      <header className="fixed-header">
+        <div className="nav-brand">
+          <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
+          <span className="nav-brand-name">{t("common.appName")}</span>
         </div>
 
         <div style={styles.headerActions}>
@@ -233,8 +233,8 @@ export default function Home() {
       </main>
 
       {/* 3. COMPACT FIXED FOOTER */}
-      <footer style={styles.footer}>
-        <p style={styles.footerText}>
+      <footer className="fixed-footer">
+        <p className="footer-text">
           &copy; 2026 Benny Maisa. Arche: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
         </p>
       </footer>
@@ -290,39 +290,7 @@ const styles = {
     zIndex: 0,
     pointerEvents: "none",
   },
-  // Compact Fixed Header Style
-  header: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "60px",
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 2rem",
-    background: "rgba(10, 10, 10, 0.75)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-    zIndex: 100,
-    boxSizing: "border-box",
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-  },
-  brandName: {
-    fontSize: "1.3rem",
-    fontWeight: 850,
-    fontFamily: "'Outfit', sans-serif",
-    letterSpacing: "-0.02em",
-    background: "linear-gradient(135deg, #ffffff 60%, #c084fc 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
+  // Compact Fixed Header Style (Now controlled globally via globals.css)
   headerActions: {
     display: "flex",
     alignItems: "center",
@@ -450,32 +418,5 @@ const styles = {
     color: "rgba(255,255,255,0.45)",
     lineHeight: 1.35,
   },
-  // Compact Fixed Footer Style
-  footer: {
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: "45px",
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "0 2rem",
-    background: "rgba(10, 10, 10, 0.75)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
-    borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-    zIndex: 100,
-    boxSizing: "border-box",
-  },
-  footerText: {
-    fontSize: "0.75rem",
-    color: "rgba(255,255,255,0.4)",
-    textAlign: "center",
-    maxWidth: "1000px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap"
-  }
+  // Compact Fixed Footer Style (Now controlled globally via globals.css)
 };
