@@ -261,16 +261,6 @@ export default function DashboardPage() {
           </div>
         ) : error ? (
           <div style={styles.errorAlert} className="badge-danger">{error}</div>
-        ) : activeProjects.length === 0 ? (
-          <div className="glass-panel dashboard-empty-state">
-            <IconFolder size={48} style={{ color: "rgba(255, 255, 255, 0.2)", marginBottom: "1rem" }} />
-            <h2 className="dashboard-empty-title">{t("dashboard.emptyTitle")}</h2>
-            <p className="dashboard-empty-desc">{t("dashboard.emptyDesc")}</p>
-            <button onClick={() => setShowModal(true)} className="btn btn-primary" style={styles.emptyBtn}>
-              <IconPlus size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-              {t("dashboard.createNew")}
-            </button>
-          </div>
         ) : (
           <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
             <table className="arche-table">
@@ -285,7 +275,21 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {activeProjects.map((proj) => (
+                {activeProjects.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                        <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {i18n.language === "id" 
+                            ? "Belum ada proyek penelitian aktif yang dibuat." 
+                            : "No active research projects have been created yet."}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  activeProjects.map((proj) => (
                   <tr key={proj.id}>
                     <td style={{ verticalAlign: "middle" }}>
                       <div
@@ -337,7 +341,7 @@ export default function DashboardPage() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
