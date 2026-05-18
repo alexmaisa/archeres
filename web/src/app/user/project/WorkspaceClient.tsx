@@ -2824,7 +2824,9 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: "1.2rem", borderRadius: "12px", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)" }}>
                   <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "6px" }}>
                     <IconBook size={16} />
-                    {i18n.language === "id" ? "🔍 Contoh Penelitian" : "🔍 Research Example"}
+                    {eduPopupItemId === "var_testing"
+                      ? (i18n.language === "id" ? "📊 Penerapan & Interpretasi" : "📊 Application & Interpretation")
+                      : (i18n.language === "id" ? "🔍 Contoh Penelitian" : "🔍 Research Example")}
                   </h4>
                   <ul style={{ paddingLeft: "1.2rem", fontSize: "0.88rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.5rem", color: "rgba(255, 255, 255, 0.75)" }}>
                     {eduPopupData.examples.map((ex, i) => (
