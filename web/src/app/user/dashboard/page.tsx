@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
 import { User, Project } from "../../types";
-import { getActiveSessionKey, encryptData, decryptData } from "../../utils/crypto";
+import { encryptText, decryptText } from "../../lib/crypto";
+import { getMEK } from "../../lib/session";
+import { clearMEK } from "../../lib/session";
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
@@ -114,14 +116,14 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const data = await apiFetch<Project[]>("/api/projects", { method: "GET" });
-      const vaultKey = await getActiveSessionKey();
-      
-      if (vaultKey && data && data.length > 0) {
+      const mek = await getMEK();
+
+      if (mek && data && data.length > 0) {
         const decryptedProjects = await Promise.all(
           data.map(async (p) => ({
             ...p,
-            title: await decryptData(p.title, vaultKey),
-            description: await decryptData(p.description, vaultKey),
+            title: await decryptText(p.title, mek).catch(() => p.title),
+            description: p.description ? await decryptText(p.description, mek).catch(() => p.description) : p.description,
           }))
         );
         setProjects(decryptedProjects);
@@ -145,13 +147,13 @@ export default function DashboardPage() {
 
     setModalLoading(true);
     try {
-      const vaultKey = await getActiveSessionKey();
+      const mek = await getMEK();
       let payloadTitle = newTitle.trim();
       let payloadDesc = newDesc.trim();
 
-      if (vaultKey) {
-        payloadTitle = await encryptData(payloadTitle, vaultKey);
-        payloadDesc = await encryptData(payloadDesc, vaultKey);
+      if (mek) {
+        payloadTitle = await encryptText(payloadTitle, mek);
+        if (payloadDesc) payloadDesc = await encryptText(payloadDesc, mek);
       }
 
       const newProj = await apiFetch<Project>("/api/projects", {
@@ -165,7 +167,7 @@ export default function DashboardPage() {
       setNewTitle("");
       setNewDesc("");
       setShowModal(false);
-      
+
       // Dynamic routing direct into user workspace
       router.push(`/user/project?id=${newProj.id}`);
     } catch (err: any) {
@@ -232,6 +234,7 @@ export default function DashboardPage() {
     } catch (err) {
       // Continue cleanup anyway
     }
+    clearMEK();
     localStorage.removeItem("user");
     router.push("/auth/login");
   };

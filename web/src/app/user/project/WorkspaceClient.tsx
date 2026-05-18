@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
 import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook } from "../../components/Icons";
 import { User } from "../../types";
-import { getActiveSessionKey, encryptData, decryptData } from "../../utils/crypto";
+import { encryptText, decryptText } from "../../lib/crypto";
+import { getMEK, clearMEK } from "../../lib/session";
 
 interface VariableDefinition {
   name: string;
@@ -89,31 +90,27 @@ export default function WorkspaceClient() {
     setLoading(true);
     try {
       const data = await apiFetch<WorkspaceProject>(`/api/projects/${projectId}`, { method: "GET" });
-      const vaultKey = await getActiveSessionKey();
-      
-      if (vaultKey) {
-        data.title = await decryptData(data.title, vaultKey);
-        data.description = await decryptData(data.description, vaultKey);
-        
+      const mek = await getMEK();
+
+      if (mek) {
+        // Decrypt only sensitive content fields
+        data.title = await decryptText(data.title, mek).catch(() => data.title);
+        if (data.description) data.description = await decryptText(data.description, mek).catch(() => data.description);
+
         if (data.researchDesign) {
           const rd = data.researchDesign;
+          // approach and designType are NOT encrypted (enum metadata for admin stats)
           if (rd.variablesJson) {
-            rd.variablesJson = await decryptData(rd.variablesJson, vaultKey);
+            rd.variablesJson = await decryptText(rd.variablesJson, mek).catch(() => rd.variablesJson);
           }
           if (rd.analysisMethod) {
-            rd.analysisMethod = await decryptData(rd.analysisMethod, vaultKey);
-          }
-          if (rd.approach) {
-            rd.approach = await decryptData(rd.approach, vaultKey);
-          }
-          if (rd.designType) {
-            rd.designType = await decryptData(rd.designType, vaultKey);
+            rd.analysisMethod = await decryptText(rd.analysisMethod, mek).catch(() => rd.analysisMethod);
           }
         }
       }
 
       setProject(data);
-      
+
       // Load saved research design wizard state if present
       if (data.researchDesign) {
         const rd = data.researchDesign;
@@ -147,6 +144,7 @@ export default function WorkspaceClient() {
     } catch (err) {
       // Continue cleanup anyway
     }
+    clearMEK();
     localStorage.removeItem("user");
     router.push("/auth/login");
   };
@@ -256,21 +254,18 @@ export default function WorkspaceClient() {
     if (!project) return;
     setSaveLoading(true);
     try {
-      const vaultKey = await getActiveSessionKey();
+      const mek = await getMEK();
       let payloadTitle = project.title;
       let payloadDesc = project.description;
-      let payloadApproach = approach;
-      let payloadDesign = design;
+      // approach and designType sent plaintext (enum metadata, not encrypted)
       let payloadAnalysis = analysisMethod;
       let payloadVariables = JSON.stringify(variables);
 
-      if (vaultKey) {
-        payloadTitle = await encryptData(payloadTitle, vaultKey);
-        payloadDesc = await encryptData(payloadDesc, vaultKey);
-        payloadApproach = await encryptData(payloadApproach, vaultKey);
-        payloadDesign = await encryptData(payloadDesign, vaultKey);
-        payloadAnalysis = await encryptData(payloadAnalysis, vaultKey);
-        payloadVariables = await encryptData(payloadVariables, vaultKey);
+      if (mek) {
+        payloadTitle = await encryptText(payloadTitle, mek);
+        if (payloadDesc) payloadDesc = await encryptText(payloadDesc, mek);
+        payloadAnalysis = await encryptText(payloadAnalysis, mek);
+        payloadVariables = await encryptText(payloadVariables, mek);
       }
 
       await apiFetch(`/api/projects/${projectId}`, {
@@ -279,8 +274,8 @@ export default function WorkspaceClient() {
           title: payloadTitle,
           description: payloadDesc,
           researchDesign: {
-            approach: payloadApproach,
-            designType: payloadDesign,
+            approach,          // plaintext enum
+            designType: design, // plaintext enum
             formula,
             populationSize: Number(popSize),
             confidenceLevel: Number(confLevel),
