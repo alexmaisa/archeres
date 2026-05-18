@@ -561,9 +561,8 @@ export default function AboutPage() {
                 {/* Left Side: Equation and Title */}
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.25rem", justifyContent: "space-between" }}>
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <div style={{ marginBottom: "0.5rem" }}>
                       <h3 style={{ fontSize: "1.1rem", fontWeight: 850, color: "white", fontFamily: "'Outfit', sans-serif" }}>{f.name}</h3>
-                      <span style={{ fontSize: "0.72rem", color: "#c084fc", background: "rgba(192,132,252,0.1)", padding: "0.2rem 0.6rem", borderRadius: "6px", fontFamily: "monospace", fontWeight: 700 }}>ESTIMATOR</span>
                     </div>
                     <p style={{ fontSize: "0.86rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
                       {f.useCase}
