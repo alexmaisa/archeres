@@ -75,7 +75,7 @@ export async function deriveWrappingKey(
   return crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: fromBase64(saltBase64),
+      salt: fromBase64(saltBase64) as BufferSource,
       iterations: PBKDF2_ITERATIONS,
       hash: "SHA-256",
     },
