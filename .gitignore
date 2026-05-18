@@ -1,5 +1,9 @@
 # SQLite persistent runtime files
+*.db
+*.sqlite
+*.sqlite3
 backend/arche.db
+backend/archeres.db
 
 # OS specific metadata
 .DS_Store
