@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash } from "../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
@@ -117,7 +118,8 @@ export default function DashboardPage() {
               className="btn btn-outline"
               style={styles.adminBtn}
             >
-              🛠️ {t("common.admin")}
+              <IconWrench size={13} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {t("common.admin")}
             </button>
           )}
 
@@ -159,7 +161,8 @@ export default function DashboardPage() {
             <p style={styles.welcomeSubtitle}>{t("dashboard.subtitle")}</p>
           </div>
           <button onClick={() => setShowModal(true)} className="btn btn-primary" style={styles.newBtn}>
-            ➕ {t("dashboard.createNew")}
+            <IconPlus size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+            {t("dashboard.createNew")}
           </button>
         </div>
 
@@ -181,11 +184,12 @@ export default function DashboardPage() {
           <div style={styles.errorAlert} className="badge-danger">{error}</div>
         ) : projects.length === 0 ? (
           <div style={styles.emptyState} className="glass-panel">
-            <span style={styles.emptyIcon}>📂</span>
+            <IconFolder size={48} style={{ color: "rgba(255, 255, 255, 0.2)", marginBottom: "1rem" }} />
             <h2 style={styles.emptyTitle}>{t("dashboard.emptyTitle")}</h2>
             <p style={styles.emptyDesc}>{t("dashboard.emptyDesc")}</p>
             <button onClick={() => setShowModal(true)} className="btn btn-primary" style={styles.emptyBtn}>
-              ➕ {t("dashboard.createNew")}
+              <IconPlus size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+              {t("dashboard.createNew")}
             </button>
           </div>
         ) : (
@@ -213,14 +217,16 @@ export default function DashboardPage() {
                     className="btn btn-primary"
                     style={styles.actionOpen}
                   >
-                    📖 {t("dashboard.openWorkspace")}
+                    <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                    {t("dashboard.openWorkspace")}
                   </button>
                   <button
                     onClick={() => handleDeleteProject(proj.id)}
                     className="btn btn-outline"
                     style={styles.actionDelete}
                   >
-                    🗑️ {t("dashboard.deleteBtn")}
+                    <IconTrash size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                    {t("dashboard.deleteBtn")}
                   </button>
                 </div>
               </div>
