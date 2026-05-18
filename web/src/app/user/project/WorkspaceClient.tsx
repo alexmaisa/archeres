@@ -1362,17 +1362,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 "Coefficient of Determination (R²): Measures the percentage of variance in the dependent variable explained by your structural model.",
                 "Hypothesis Significance (p-value): Employs a critical threshold of p < 0.05 (alpha = 5%) to declare a statistically significant relationship."
               ],
-          examples: isId
-            ? [
-                analysisMethod === "Multiple Linear Regression" ? "Interpretasi Uji F (Simultan): Jika Nilai F-hitung > F-tabel (p-value < 0.05), maka X1 dan X2 secara bersama-sama berpengaruh signifikan terhadap Y." : "Langkah 1: Menentukan formulasi hipotesis nol (H0) vs hipotesis alternatif (H1) secara matematis sesuai parameter model.",
-                analysisMethod === "Multiple Linear Regression" ? "Interpretasi Uji t (Parsial): Jika nilai t-hitung X1 adalah 3.45 (p < 0.01), berarti setiap kenaikan 1 satuan X1 akan menaikkan nilai Y sebesar 3.45 satuan secara parsial." : "Langkah 2: Menarik simpulan akademis dengan mengekstrak nilai signifikansi statistik (p-value) dan membandingkannya terhadap alpha kritis 0.05.",
-                analysisMethod === "Multiple Linear Regression" ? "Persamaan Hasil Regresi: Y = 1.25 + 0.45*X1 + 0.35*X2 + e (1.25 adalah konstanta intercept, sedangkan 0.45 dan 0.35 adalah koefisien beta)." : "Langkah 3: Mengambil keputusan untuk menolak H0 (yang membuktikan bahwa hipotesis riset Anda didukung data)."
-              ]
-            : [
-                analysisMethod === "Multiple Linear Regression" ? "F-Test Interpretation (Simultaneous): If F-value > F-critical (p-value < 0.05), it confirms that predictors X1 and X2 collectively exert a significant effect on Y." : "Step 1: Mathematically formulate the null hypothesis (H0) vs the alternative hypothesis (H1) matching your specific model.",
-                analysisMethod === "Multiple Linear Regression" ? "t-Test Interpretation (Partial): If the t-statistic coefficient for X1 is 3.45 (p < 0.01), each 1-unit increase in X1 yields a 3.45-unit increase in Y, ceteris paribus." : "Step 2: Render an academic decision by extracting the calculated significance level (p-value) and comparing it against alpha = 0.05.",
-                analysisMethod === "Multiple Linear Regression" ? "Regression Equation: Y = 1.25 + 0.45*X1 + 0.35*X2 + e (1.25 represents the intercept constant, and 0.45 and 0.35 represent the beta coefficients)." : "Step 3: Reach a final decision to reject H0 (confirming that your research hypothesis is statistically supported by the data)."
-              ],
+          examples: [],
           tips: isId
             ? "Sebelum melakukan pengujian regresi di program SPSS atau R, pastikan data Anda dibersihkan dari outlier ekstrem (pencilan) guna menghindari bias pada koefisien regresi Anda."
             : "Before executing statistical software computations (e.g., SPSS, R, or SmartPLS), scan and clean your data of extreme outliers to prevent regression coefficient bias."
