@@ -27,8 +27,16 @@ ENV PORT=8080
 ENV DATABASE_PATH=/app/data/arche.db
 ENV JWT_SECRET=supersecretjwtkeyforarche2026
 
-# Ensure data directory for persistent SQLite volume is available
-RUN mkdir -p /app/data
+# Create a secure non-privileged system group and user
+RUN addgroup -g 10001 -S appgroup && \
+    adduser -u 10001 -S appuser -G appgroup
+
+# Ensure data directory for persistent SQLite volume is available and owned by appuser
+RUN mkdir -p /app/data && \
+    chown -R appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
 
 # Run binary
 CMD ["./main"]
