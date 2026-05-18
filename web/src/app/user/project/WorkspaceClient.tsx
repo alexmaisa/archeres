@@ -86,6 +86,13 @@ export default function WorkspaceClient() {
   useEffect(() => {
     calculateSample();
   }, [formula, popSize, confLevel, marginError, proportion]);
+
+  // Automatically shut draft preview drawer if all variables are removed
+  useEffect(() => {
+    if (variables.length === 0) {
+      setShowPreview(false);
+    }
+  }, [variables]);
   const handleApproachChange = (apId: string) => {
     setApproach(apId);
     if (apId === "quant") {
@@ -112,6 +119,13 @@ export default function WorkspaceClient() {
     } else {
       setFormula("cochran");
     }
+  };
+  const isStepUnlocked = (stepNum: number): boolean => {
+    if (stepNum === 1) return true;
+    if (stepNum === 2) return !!approach && !!design;
+    if (stepNum === 3) return isStepUnlocked(2) && !!samplingTechnique && sampleSize > 0;
+    if (stepNum === 4) return isStepUnlocked(3) && variables.length > 0;
+    return false;
   };
   const fetchProjectDetails = async () => {
     setLoading(true);
@@ -901,41 +915,43 @@ Aligned with the scale of measurements and variable distribution, statistical hy
         }}
       >
         {/* Drawer collapsible edge tab button - sits on the border, never clipped */}
-        <button
-          onClick={() => setShowPreview(!showPreview)}
-          title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf BAB III" : "Show Chapter 3 Draft")}
-          style={{
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            right: showPreview ? "487px" : "-1px",
-            width: "26px",
-            height: "50px",
-            borderRadius: "8px 0 0 8px",
-            backgroundColor: "rgba(17, 24, 39, 0.95)",
-            border: "1px solid rgba(124, 58, 237, 0.35)",
-            borderRight: "none",
-            color: "#c084fc",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 100,
-            boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-          className="drawer-toggle-tab"
-        >
-          {showPreview ? (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          ) : (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          )}
-        </button>
+        {variables.length > 0 && (
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            title={showPreview ? (i18n.language === "id" ? "Tampilkan Penjelasan Edukasi" : "Show Educational Explanation") : (i18n.language === "id" ? "Tampilkan Draf BAB III" : "Show Chapter 3 Draft")}
+            style={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              right: showPreview ? "487px" : "-1px",
+              width: "26px",
+              height: "50px",
+              borderRadius: "8px 0 0 8px",
+              backgroundColor: "rgba(17, 24, 39, 0.95)",
+              border: "1px solid rgba(124, 58, 237, 0.35)",
+              borderRight: "none",
+              color: "#c084fc",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 100,
+              boxShadow: "-4px 0 15px rgba(0, 0, 0, 0.5)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+            className="drawer-toggle-tab"
+          >
+            {showPreview ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            )}
+          </button>
+        )}
         {/* 1. LEFT PANEL: Checklist & Navigation */}
         <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
           <div style={styles.leftHeader}>
@@ -952,23 +968,33 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               { step: 2, label: t("wizard.step2"), icon: <IconMath size={16} /> },
               { step: 3, label: t("wizard.step3"), icon: <IconChart size={16} /> },
               { step: 4, label: t("wizard.step4"), icon: <IconFileDown size={16} /> }
-            ].map((s) => (
-              <button
-                key={s.step}
-                onClick={() => setActiveStep(s.step)}
-                style={{
-                  ...styles.stepBtn,
-                  ...(activeStep === s.step ? styles.stepBtnActive : {}),
-                }}
-              >
-                <span style={styles.stepIcon}>{s.icon}</span>
-                <div style={styles.stepMeta}>
-                  <span style={styles.stepNum}>Step {s.step}</span>
-                  <span style={styles.stepLabel}>{s.label}</span>
-                </div>
-                {activeStep > s.step && <span style={styles.stepCheck}>✓</span>}
-              </button>
-            ))}
+            ].map((s) => {
+              const unlocked = isStepUnlocked(s.step);
+              return (
+                <button
+                  key={s.step}
+                  onClick={() => {
+                    if (unlocked) {
+                      setActiveStep(s.step);
+                    } else {
+                      alert(t("wizard.stepLockedAlert", { prevStep: s.step - 1 }));
+                    }
+                  }}
+                  style={{
+                    ...styles.stepBtn,
+                    ...(activeStep === s.step ? styles.stepBtnActive : {}),
+                    ...(!unlocked ? { opacity: 0.4, cursor: "not-allowed", pointerEvents: "auto" } : {})
+                  }}
+                >
+                  <span style={styles.stepIcon}>{s.icon}</span>
+                  <div style={styles.stepMeta}>
+                    <span style={styles.stepNum}>Step {s.step}</span>
+                    <span style={styles.stepLabel}>{s.label}</span>
+                  </div>
+                  {activeStep > s.step && <span style={styles.stepCheck}>✓</span>}
+                </button>
+              );
+            })}
           </nav>
 
           <div style={styles.leftFooter}>
@@ -1443,7 +1469,15 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             <button
               onClick={() => {
                 if (activeStep < 4) {
-                  setActiveStep(activeStep + 1);
+                  if (isStepUnlocked(activeStep + 1)) {
+                    setActiveStep(activeStep + 1);
+                  } else {
+                    if (activeStep === 3) {
+                      alert(t("wizard.step3RequiredAlert"));
+                    } else {
+                      alert(t("wizard.stepLockedAlert", { prevStep: activeStep }));
+                    }
+                  }
                 } else {
                   handleSaveProgress();
                 }
