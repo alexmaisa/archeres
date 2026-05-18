@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix } from "../../components/Icons";
+import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix, IconRefresh } from "../../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
@@ -28,6 +28,9 @@ export default function DashboardPage() {
   const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(null);
   const [projectTitleToDelete, setProjectTitleToDelete] = useState<string>("");
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+
+  const activeProjects = projects.filter((p) => !p.isArchived);
+  const archivedProjects = projects.filter((p) => p.isArchived);
 
   useEffect(() => {
     // Authenticate session locally
@@ -122,6 +125,40 @@ export default function DashboardPage() {
     }
   };
 
+  const handleArchiveProject = async () => {
+    if (!projectIdToDelete) return;
+
+    setDeleteLoading(true);
+    try {
+      await apiFetch(`/api/projects/${projectIdToDelete}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isArchived: true }),
+      });
+      setProjects(projects.map((p) => (p.id === projectIdToDelete ? { ...p, isArchived: true } : p)));
+      setShowDeleteModal(false);
+      setProjectIdToDelete(null);
+      setProjectTitleToDelete("");
+    } catch (err: any) {
+      alert(err.message || t("common.errorOccurred"));
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleUnarchiveProject = async (id: string) => {
+    try {
+      await apiFetch(`/api/projects/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isArchived: false }),
+      });
+      setProjects(projects.map((p) => (p.id === id ? { ...p, isArchived: false } : p)));
+    } catch (err: any) {
+      alert(err.message || t("common.errorOccurred"));
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
@@ -209,7 +246,7 @@ export default function DashboardPage() {
               <IconFolder size={12} style={{ marginRight: "6px" }} />
               {t("dashboard.totalProjects")}
             </span>
-            <span className="telemetry-val" style={{ color: "#22d3ee" }}>{projects.length}</span>
+            <span className="telemetry-val" style={{ color: "#22d3ee" }}>{activeProjects.length}</span>
             <span className="telemetry-sub">
               {i18n.language === "id" ? "Proyek penelitian aktif Anda" : "Your active research projects"}
             </span>
@@ -224,7 +261,7 @@ export default function DashboardPage() {
           </div>
         ) : error ? (
           <div style={styles.errorAlert} className="badge-danger">{error}</div>
-        ) : projects.length === 0 ? (
+        ) : activeProjects.length === 0 ? (
           <div className="glass-panel dashboard-empty-state">
             <IconFolder size={48} style={{ color: "rgba(255, 255, 255, 0.2)", marginBottom: "1rem" }} />
             <h2 className="dashboard-empty-title">{t("dashboard.emptyTitle")}</h2>
@@ -248,7 +285,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {projects.map((proj) => (
+                {activeProjects.map((proj) => (
                   <tr key={proj.id}>
                     <td style={{ verticalAlign: "middle" }}>
                       <div
@@ -305,6 +342,86 @@ export default function DashboardPage() {
             </table>
           </div>
         )}
+
+        {/* Archived Projects Listing */}
+        {archivedProjects.length > 0 && (
+          <div style={{ marginTop: "3rem" }}>
+            <h2 className="welcome-title" style={{ fontSize: "1.35rem", marginBottom: "1rem" }}>
+              {t("dashboard.archivedTitle")}
+            </h2>
+            <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden", border: "1px solid rgba(239, 68, 68, 0.15)" }}>
+              <table className="arche-table">
+                <thead>
+                  <tr style={{ backgroundColor: "rgba(3, 7, 18, 0.25)" }}>
+                    <th style={{ width: "25%" }}>{t("dashboard.projectTitleColumn")}</th>
+                    <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
+                    <th style={{ width: "15%" }}>{t("dashboard.projectApproachColumn")}</th>
+                    <th style={{ width: "15%" }}>{t("dashboard.createdAtColumn")}</th>
+                    <th style={{ width: "15%" }}>{t("dashboard.updatedAtColumn")}</th>
+                    <th style={{ width: "5%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivedProjects.map((proj) => (
+                    <tr key={proj.id} style={{ opacity: 0.8 }}>
+                      <td style={{ verticalAlign: "middle" }}>
+                        <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
+                          {proj.title}
+                        </div>
+                      </td>
+                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.55)", fontSize: "0.88rem" }}>
+                        {proj.description
+                          ? proj.description.length > 80
+                            ? `${proj.description.substring(0, 80)}...`
+                            : proj.description
+                          : "No description provided."}
+                      </td>
+                      <td style={{ verticalAlign: "middle" }}>
+                        {proj.approach ? (
+                          <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
+                            {proj.approach}
+                          </span>
+                        ) : (
+                          <span style={{ color: "rgba(255, 255, 255, 0.2)", fontSize: "0.85rem" }}>—</span>
+                        )}
+                      </td>
+                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                        {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                      </td>
+                      <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                        {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                      </td>
+                      <td style={{ verticalAlign: "middle", textAlign: "right" }}>
+                        <div style={{ display: "inline-flex", gap: "0.5rem" }}>
+                          <button
+                            onClick={() => handleUnarchiveProject(proj.id)}
+                            className="btn btn-outline"
+                            title={t("dashboard.unarchiveBtn")}
+                            style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
+                          >
+                            <IconRefresh size={13} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setProjectIdToDelete(proj.id);
+                              setProjectTitleToDelete(proj.title);
+                              setShowDeleteModal(true);
+                            }}
+                            className="btn btn-outline project-action-delete"
+                            title={t("dashboard.deletePermanent")}
+                            style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                          >
+                            <IconTrash size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="fixed-footer">
@@ -315,14 +432,14 @@ export default function DashboardPage() {
 
       {/* Creation Modal */}
       {showModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard} className="glass-panel animate-fade-in">
-            <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>{t("dashboard.createNew")}</h2>
-              <button onClick={() => setShowModal(false)} style={styles.modalClose}>✕</button>
+        <div className="arche-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="arche-modal-card glass-panel animate-fade-in" onClick={(e) => e.stopPropagation()}>
+            <div className="arche-modal-header">
+              <h2 className="arche-modal-title">{t("dashboard.createNew")}</h2>
+              <button onClick={() => setShowModal(false)} className="arche-modal-close">✕</button>
             </div>
             
-            <form onSubmit={handleCreateProject} style={styles.modalForm}>
+            <form onSubmit={handleCreateProject} className="arche-modal-form">
               <div className="form-group">
                 <label className="form-label">{t("dashboard.projectTitle")}</label>
                 <input
@@ -349,7 +466,7 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div style={styles.modalActions}>
+              <div className="arche-modal-actions">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
@@ -370,12 +487,17 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div style={styles.modalOverlay}>
-          <div style={{ ...styles.modalCard, maxWidth: "460px" }} className="glass-panel animate-fade-in">
-            <div style={styles.modalHeader}>
-              <h2 style={{ ...styles.modalTitle, color: "hsl(var(--destructive-color, #ef4444))" }}>
+        <div className="arche-modal-overlay" onClick={() => {
+          setShowDeleteModal(false);
+          setProjectIdToDelete(null);
+          setProjectTitleToDelete("");
+        }}>
+          <div className="arche-modal-card glass-panel animate-fade-in" style={{ maxWidth: "480px" }} onClick={(e) => e.stopPropagation()}>
+            <div className="arche-modal-header">
+              <h2 className="arche-modal-title" style={{ color: "hsl(var(--destructive-color, #ef4444))" }}>
                 {t("dashboard.deleteBtn")}
               </h2>
               <button
@@ -384,14 +506,14 @@ export default function DashboardPage() {
                   setProjectIdToDelete(null);
                   setProjectTitleToDelete("");
                 }}
-                style={styles.modalClose}
+                className="arche-modal-close"
               >
                 ✕
               </button>
             </div>
             
             <div style={{ marginBottom: "1.75rem", lineHeight: "1.6", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.95rem" }}>
-              {t("dashboard.deleteConfirm")}
+              {t("dashboard.archiveConfirm")}
               <div style={{
                 marginTop: "0.75rem",
                 padding: "0.85rem 1rem",
@@ -407,18 +529,23 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div style={styles.modalActions}>
+            <div className="arche-modal-actions">
               <button
                 type="button"
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setProjectIdToDelete(null);
-                  setProjectTitleToDelete("");
+                onClick={handleArchiveProject}
+                className="btn"
+                style={{
+                  backgroundColor: "rgba(245, 158, 11, 0.15)",
+                  border: "1px solid rgba(245, 158, 11, 0.3)",
+                  color: "#fbbf24",
+                  padding: "0.6rem 1.25rem",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease"
                 }}
-                className="btn btn-outline"
                 disabled={deleteLoading}
               >
-                {t("common.back")}
+                {deleteLoading ? t("common.loading") : t("dashboard.archiveBtn")}
               </button>
               <button
                 type="button"
@@ -434,7 +561,7 @@ export default function DashboardPage() {
                 }}
                 disabled={deleteLoading}
               >
-                {deleteLoading ? t("common.loading") : t("dashboard.deleteBtn")}
+                {deleteLoading ? t("common.loading") : t("dashboard.deletePermanent")}
               </button>
             </div>
           </div>
@@ -521,56 +648,5 @@ const styles: Record<string, React.CSSProperties> = {
   },
   emptyBtn: {
     padding: "0.75rem 1.5rem",
-  },
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(3, 7, 18, 0.8)",
-    backdropFilter: "blur(8px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 100,
-    padding: "1.5rem",
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth: "540px",
-    padding: "2.5rem",
-    boxShadow: "var(--shadow-lg)",
-  },
-  modalHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "1.5rem",
-  },
-  modalTitle: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "rgba(255, 255, 255, 0.9)",
-  },
-  modalClose: {
-    background: "transparent",
-    border: "none",
-    color: "rgba(255, 255, 255, 0.4)",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    lineHeight: 1,
-    transition: "color 0.15s ease",
-  },
-  modalForm: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1.25rem",
-  },
-  modalActions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "1rem",
-    marginTop: "1rem",
   },
 };
