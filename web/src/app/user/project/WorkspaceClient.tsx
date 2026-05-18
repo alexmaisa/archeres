@@ -50,6 +50,7 @@ export default function WorkspaceClient() {
 
   // Wizard active step (1: Paradigm, 2: Sample Size, 3: Variables, 4: Export)
   const [activeStep, setActiveStep] = useState<number>(1);
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
 
   // Wizard states
   const [approach, setApproach] = useState<string>("quant");
@@ -95,6 +96,7 @@ export default function WorkspaceClient() {
   }, [variables]);
   const handleApproachChange = (apId: string) => {
     setApproach(apId);
+    setMaxUnlockedStep(1); // Reset progression when paradigm changes
     if (apId === "quant") {
       setFormula("slovin");
       setSamplingTechnique("Simple Random Sampling");
@@ -121,11 +123,7 @@ export default function WorkspaceClient() {
     }
   };
   const isStepUnlocked = (stepNum: number): boolean => {
-    if (stepNum === 1) return true;
-    if (stepNum === 2) return !!approach && !!design;
-    if (stepNum === 3) return isStepUnlocked(2) && !!samplingTechnique && sampleSize > 0;
-    if (stepNum === 4) return isStepUnlocked(3) && variables.length > 0;
-    return false;
+    return stepNum <= maxUnlockedStep;
   };
   const fetchProjectDetails = async () => {
     setLoading(true);
@@ -165,13 +163,29 @@ export default function WorkspaceClient() {
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
         if (rd.samplingTechnique) setSamplingTechnique(rd.samplingTechnique);
         if (rd.isPopulationKnown !== undefined) setIsPopKnown(rd.isPopulationKnown);
+        
+        let loadedVariables: VariableDefinition[] = [];
         if (rd.variables) {
           try {
-            setVariables(JSON.parse(rd.variables));
+            loadedVariables = JSON.parse(rd.variables);
+            setVariables(loadedVariables);
           } catch (e) {
             // Keep default
           }
         }
+
+        // Determine highest step reached dynamically based on persisted database fields
+        let initialMaxStep = 1;
+        if (rd.designType && rd.designType !== "Undetermined") {
+          initialMaxStep = 2;
+          if (rd.samplingTechnique) {
+            initialMaxStep = 3;
+            if (loadedVariables.length > 0) {
+              initialMaxStep = 4;
+            }
+          }
+        }
+        setMaxUnlockedStep(initialMaxStep);
       }
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
@@ -1469,14 +1483,22 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             <button
               onClick={() => {
                 if (activeStep < 4) {
-                  if (isStepUnlocked(activeStep + 1)) {
-                    setActiveStep(activeStep + 1);
-                  } else {
-                    if (activeStep === 3) {
-                      alert(t("wizard.step3RequiredAlert"));
-                    } else {
-                      alert(t("wizard.stepLockedAlert", { prevStep: activeStep }));
+                  if (activeStep === 1) {
+                    if (design === "Undetermined") {
+                      setDesign(approach === "quant" ? "Experimental" : approach === "qual" ? "Case Study" : "Convergent Parallel");
                     }
+                    setMaxUnlockedStep(prev => Math.max(prev, 2));
+                    setActiveStep(2);
+                  } else if (activeStep === 2) {
+                    setMaxUnlockedStep(prev => Math.max(prev, 3));
+                    setActiveStep(3);
+                  } else if (activeStep === 3) {
+                    if (variables.length === 0) {
+                      alert(t("wizard.step3RequiredAlert"));
+                      return;
+                    }
+                    setMaxUnlockedStep(prev => Math.max(prev, 4));
+                    setActiveStep(4);
                   }
                 } else {
                   handleSaveProgress();
