@@ -246,12 +246,18 @@ export default function RegisterPage() {
               border: "1px solid rgba(239, 68, 68, 0.25)",
               borderRadius: "8px",
               padding: "0.85rem",
-              marginTop: "0.5rem"
+              marginTop: "0.5rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "0.4rem"
             }}>
+              <span style={{ fontSize: "1.25rem", lineHeight: 1 }}>⚠️</span>
               <p style={{ color: "#fca5a5", fontSize: "0.8rem", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
                 {i18n.language === "id"
-                  ? "⚠️ JANGAN BAGIKAN kunci ini kepada siapapun. Tim Archeres tidak menyimpan cadangannya dan tidak dapat merestorasinya."
-                  : "⚠️ NEVER share this key. Archeres team does not keep a backup and cannot restore it."}
+                  ? "JANGAN BAGIKAN kunci ini kepada siapapun. Tim Archeres tidak menyimpan cadangannya dan tidak dapat merestorasinya."
+                  : "NEVER share this key. Archeres team does not keep a backup and cannot restore it."}
               </p>
             </div>
 
@@ -261,7 +267,7 @@ export default function RegisterPage() {
               className="btn btn-primary"
               style={{ marginTop: "1rem", padding: "0.75rem", fontSize: "0.95rem", fontWeight: 700 }}
             >
-              {i18n.language === "id" ? "Saya Sudah Menyimpan Kunci & Lanjut Masuk" : "I Have Saved The Key & Proceed to Login"}
+              {i18n.language === "id" ? "Saya Sudah Menyimpan Kunci & Lanjut Masuk" : "I Have Saved the Key & Proceed to Login"}
             </button>
           </div>
         ) : (
