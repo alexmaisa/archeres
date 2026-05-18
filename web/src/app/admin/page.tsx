@@ -29,6 +29,21 @@ interface AdminStatsState {
     metodeCampuran: number;
     [key: string]: number;
   };
+  formulaStats: {
+    slovin: number;
+    cochran: number;
+    lemeshow: number;
+    krejcieMorgan: number;
+    yamane: number;
+    daniel: number;
+    [key: string]: number;
+  };
+  trends: {
+    months: string[];
+    projects: number[];
+    users: number[];
+    logins: number[];
+  };
   users: AdminUser[];
   projects: any[];
 }
@@ -228,6 +243,401 @@ export default function AdminPage() {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  // --- SVG Charts Calculations & Renders ---
+
+  const formulaKeys = ["slovin", "cochran", "lemeshow", "krejcieMorgan", "yamane", "daniel"];
+  const formulaColors: Record<string, string> = {
+    slovin: "#38bdf8",
+    cochran: "#f472b6",
+    lemeshow: "#a78bfa",
+    krejcieMorgan: "#34d399",
+    yamane: "#fb7185",
+    daniel: "#fbbf24"
+  };
+  const formulaLabels: Record<string, string> = {
+    slovin: "Slovin",
+    cochran: "Cochran",
+    lemeshow: "Lemeshow",
+    krejcieMorgan: "Krejcie-M.",
+    yamane: "Yamane",
+    daniel: "Daniel"
+  };
+
+  const getFormulaData = () => {
+    if (!stats || !stats.formulaStats) return { items: [], total: 0 };
+    let total = 0;
+    const items = formulaKeys.map((key) => {
+      const val = stats.formulaStats[key] || 0;
+      total += val;
+      return { key, val, color: formulaColors[key], label: formulaLabels[key] };
+    });
+    return { items, total };
+  };
+
+  const renderDonutChart = () => {
+    const { items, total } = getFormulaData();
+    const r = 48;
+    const circ = 2 * Math.PI * r; // ~301.59
+    
+    if (total === 0) {
+      return (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2rem", height: "160px" }}>
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle cx="65" cy="65" r={r} fill="transparent" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
+          </svg>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>
+            {i18n.language === "id" ? "Belum ada data formula" : "No formula data yet"}
+          </div>
+        </div>
+      );
+    }
+
+    let currentOffset = 0;
+
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.5rem", marginTop: "1rem" }} className="animate-fade-in">
+        <div style={{ position: "relative", width: "130px", height: "130px", margin: "0 auto" }}>
+          <svg width="130" height="130" viewBox="0 0 130 130" style={{ transform: "rotate(-90deg)" }}>
+            {items.map((item) => {
+              if (item.val === 0) return null;
+              const pct = (item.val / total) * 100;
+              const strokeLength = (pct / 100) * circ;
+              const dashOffset = circ - strokeLength + currentOffset;
+              currentOffset -= strokeLength;
+
+              return (
+                <circle
+                  key={item.key}
+                  cx="65"
+                  cy="65"
+                  r={r}
+                  fill="transparent"
+                  stroke={item.color}
+                  strokeWidth="12"
+                  strokeDasharray={`${circ} ${circ}`}
+                  strokeDashoffset={dashOffset}
+                  strokeLinecap="round"
+                  style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                />
+              );
+            })}
+          </svg>
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center"
+          }}>
+            <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "white", display: "block", lineHeight: 1.1 }}>{total}</span>
+            <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total</span>
+          </div>
+        </div>
+
+        {/* Dynamic Legends Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem 1rem", flex: 1, minWidth: "160px" }}>
+          {items.map((item) => {
+            const pct = total > 0 ? ((item.val / total) * 100).toFixed(0) : "0";
+            return (
+              <div key={item.key} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", opacity: item.val > 0 ? 1 : 0.35 }}>
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: item.color, flexShrink: 0 }}></span>
+                <span style={{ color: "rgba(255,255,255,0.75)" }}>{item.label}</span>
+                <strong style={{ color: "white", marginLeft: "auto" }}>{pct}%</strong>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderBarChart = () => {
+    if (!stats || !stats.trends || !stats.trends.months) return null;
+    const months = stats.trends.months;
+    const projects = stats.trends.projects;
+    const maxVal = Math.max(...projects, 4); // Scale nicely
+
+    const width = 360;
+    const height = 150;
+    const paddingLeft = 30;
+    const paddingRight = 10;
+    const paddingTop = 15;
+    const paddingBottom = 25;
+
+    const chartWidth = width - paddingLeft - paddingRight;
+    const chartHeight = height - paddingTop - paddingBottom;
+    const colWidth = chartWidth / months.length;
+
+    const getMonthLabel = (mStr: string) => {
+      const [year, month] = mStr.split("-");
+      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+      return date.toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US", { month: "short" });
+    };
+
+    return (
+      <div style={{ marginTop: "1rem" }} className="animate-fade-in">
+        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          {/* Horizontal grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const y = paddingTop + chartHeight * (1 - ratio);
+            const gridLabel = Math.round(maxVal * ratio);
+            return (
+              <g key={idx}>
+                <line
+                  x1={paddingLeft}
+                  y1={y}
+                  x2={width - paddingRight}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.03)"
+                  strokeWidth="1"
+                />
+                <text
+                  x={paddingLeft - 8}
+                  y={y + 3}
+                  fill="rgba(255,255,255,0.3)"
+                  fontSize="9.5"
+                  textAnchor="end"
+                >
+                  {gridLabel}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Bars */}
+          {months.map((mStr, idx) => {
+            const val = projects[idx] || 0;
+            const barHeight = (val / maxVal) * chartHeight;
+            const x = paddingLeft + idx * colWidth + colWidth * 0.15;
+            const y = paddingTop + chartHeight - barHeight;
+            const barW = colWidth * 0.7;
+
+            return (
+              <g key={mStr}>
+                {/* Rect with gradient fill */}
+                <rect
+                  x={x}
+                  y={y}
+                  width={barW}
+                  height={barHeight}
+                  fill="url(#barGradient)"
+                  rx="3.5"
+                  style={{ transition: "all 0.5s ease" }}
+                />
+
+                {/* Number tooltip */}
+                {val > 0 && (
+                  <text
+                    x={x + barW / 2}
+                    y={y - 4}
+                    fill="white"
+                    fontSize="9.5"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                  >
+                    {val}
+                  </text>
+                )}
+
+                {/* X Axis Labels */}
+                <text
+                  x={x + barW / 2}
+                  y={height - 7}
+                  fill="rgba(255,255,255,0.4)"
+                  fontSize="9.5"
+                  textAnchor="middle"
+                >
+                  {getMonthLabel(mStr)}
+                </text>
+              </g>
+            );
+          })}
+
+          <defs>
+            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" />
+              <stop offset="100%" stopColor="#0284c7" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    );
+  };
+
+  const renderLineChart = () => {
+    if (!stats || !stats.trends || !stats.trends.months) return null;
+    const months = stats.trends.months;
+    const users = stats.trends.users;
+    const logins = stats.trends.logins;
+    const maxVal = Math.max(...users, ...logins, 4);
+
+    const width = 800;
+    const height = 180;
+    const paddingLeft = 35;
+    const paddingRight = 15;
+    const paddingTop = 20;
+    const paddingBottom = 25;
+
+    const chartWidth = width - paddingLeft - paddingRight;
+    const chartHeight = height - paddingTop - paddingBottom;
+
+    const getMonthLabel = (mStr: string) => {
+      const [year, month] = mStr.split("-");
+      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+      return date.toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US", { month: "short" });
+    };
+
+    const getCoordinates = (data: number[]) => {
+      return data.map((val, idx) => {
+        const x = paddingLeft + idx * (chartWidth / 5);
+        const y = paddingTop + chartHeight * (1 - val / maxVal);
+        return { x, y, val };
+      });
+    };
+
+    const userPoints = getCoordinates(users);
+    const loginPoints = getCoordinates(logins);
+
+    const buildPathString = (points: { x: number; y: number }[]) => {
+      return points.map((p, idx) => (idx === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
+    };
+
+    const buildAreaString = (points: { x: number; y: number }[]) => {
+      if (points.length === 0) return "";
+      const path = buildPathString(points);
+      return `${path} L ${points[points.length - 1].x} ${paddingTop + chartHeight} L ${points[0].x} ${paddingTop + chartHeight} Z`;
+    };
+
+    const userPath = buildPathString(userPoints);
+    const loginPath = buildPathString(loginPoints);
+
+    const userArea = buildAreaString(userPoints);
+    const loginArea = buildAreaString(loginPoints);
+
+    return (
+      <div style={{ marginTop: "1rem", position: "relative" }} className="animate-fade-in">
+        {/* Dynamic legends block */}
+        <div style={{ display: "flex", gap: "1.5rem", justifyContent: "flex-end", marginBottom: "0.5rem", fontSize: "0.8rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <span style={{ width: "12px", height: "3px", backgroundColor: "#f43f5e", borderRadius: "1.5px" }}></span>
+            <span style={{ color: "rgba(255,255,255,0.7)" }}>{t("admin.chartLegendRegistrations")}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <span style={{ width: "12px", height: "3px", backgroundColor: "#10b981", borderRadius: "1.5px" }}></span>
+            <span style={{ color: "rgba(255,255,255,0.7)" }}>{t("admin.chartLegendLogins")}</span>
+          </div>
+        </div>
+
+        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          {/* Horizontal grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const y = paddingTop + chartHeight * (1 - ratio);
+            const gridLabel = Math.round(maxVal * ratio);
+            return (
+              <g key={idx}>
+                <line
+                  x1={paddingLeft}
+                  y1={y}
+                  x2={width - paddingRight}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.03)"
+                  strokeWidth="1"
+                />
+                <text
+                  x={paddingLeft - 8}
+                  y={y + 3}
+                  fill="rgba(255,255,255,0.3)"
+                  fontSize="9.5"
+                  textAnchor="end"
+                >
+                  {gridLabel}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Area gradients under curves */}
+          <path d={userArea} fill="url(#userAreaGrad)" style={{ transition: "all 0.5s ease" }} />
+          <path d={loginArea} fill="url(#loginAreaGrad)" style={{ transition: "all 0.5s ease" }} />
+
+          {/* Draw lines */}
+          <path
+            d={userPath}
+            fill="none"
+            stroke="#f43f5e"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ transition: "all 0.5s ease" }}
+          />
+          <path
+            d={loginPath}
+            fill="none"
+            stroke="#10b981"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ transition: "all 0.5s ease" }}
+          />
+
+          {/* User registration data points dots */}
+          {userPoints.map((p, idx) => (
+            <g key={`u-${idx}`}>
+              <circle cx={p.x} cy={p.y} r="5" fill="#f43f5e" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#f43f5e" strokeWidth="1" opacity="0.2" />
+              {p.val > 0 && (
+                <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  {p.val}
+                </text>
+              )}
+            </g>
+          ))}
+
+          {/* Login session data points dots */}
+          {loginPoints.map((p, idx) => (
+            <g key={`l-${idx}`}>
+              <circle cx={p.x} cy={p.y} r="5" fill="#10b981" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <circle cx={p.x} cy={p.y} r="9" fill="transparent" stroke="#10b981" strokeWidth="1" opacity="0.2" />
+              {p.val > 0 && (
+                <text x={p.x} y={p.y - 9} fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  {p.val}
+                </text>
+              )}
+            </g>
+          ))}
+
+          {/* X Axis Labels */}
+          {months.map((mStr, idx) => {
+            const x = paddingLeft + idx * (chartWidth / 5);
+            return (
+              <text
+                key={`lbl-${idx}`}
+                x={x}
+                y={height - 6}
+                fill="rgba(255,255,255,0.4)"
+                fontSize="9.5"
+                textAnchor="middle"
+              >
+                {getMonthLabel(mStr)}
+              </text>
+            );
+          })}
+
+          <defs>
+            <linearGradient id="userAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="loginAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    );
   };
 
   if (!user || user.role !== "admin") return null;
@@ -548,6 +958,43 @@ export default function AdminPage() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Visual Charts Analytics Section */}
+            <div style={{ marginTop: "2.5rem" }}>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>
+                {t("admin.chartSectionTitle")}
+              </h2>
+              
+              {/* Row 1: Donut (Grafik A) and Bar (Grafik B) side-by-side (2 columns) */}
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+                gap: "1.5rem",
+                marginBottom: "1.5rem"
+              }}>
+                <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                    {t("admin.chartFormulaTitle")}
+                  </h3>
+                  {renderDonutChart()}
+                </div>
+
+                <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                    {t("admin.chartProjectsTitle")}
+                  </h3>
+                  {renderBarChart()}
+                </div>
+              </div>
+
+              {/* Row 2: Dual Line Chart (Grafik C) full width (1 column stretching) */}
+              <div className="glass-panel" style={{ padding: "1.5rem", marginBottom: "2rem" }}>
+                <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                  {t("admin.chartActivityTitle")}
+                </h3>
+                {renderLineChart()}
+              </div>
             </div>
           </>
         )}

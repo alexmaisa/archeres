@@ -139,6 +139,9 @@ func Login(c *fiber.Ctx) error {
 		Path:     "/",
 	})
 
+	// Insert an anonymous, zero-identity login event for telemetry line charts
+	config.DB.Create(&models.LoginTelemetry{})
+
 	return c.JSON(fiber.Map{
 		"message": "Authentication successful.",
 		"token":   tokenString,

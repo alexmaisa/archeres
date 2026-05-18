@@ -80,6 +80,57 @@ func GetStats(c *fiber.Ctx) error {
 	allocatedRamMb := float64(m.Alloc) / 1024.0 / 1024.0
 	serverUptimeSecs := int64(time.Since(startTime).Seconds())
 
+	// Build target months slice (last 6 months in format "YYYY-MM")
+	var months []string
+	now := time.Now()
+	for i := 5; i >= 0; i-- {
+		t := now.AddDate(0, -i, 0)
+		months = append(months, t.Format("2006-01"))
+	}
+
+	// Fetch projects count per month
+	projectMonthlyMap := make(map[string]int64)
+	var prjRows []struct {
+		Month string
+		Count int64
+	}
+	config.DB.Raw("SELECT strftime('%Y-%m', created_at) as month, count(id) as count FROM projects GROUP BY month").Scan(&prjRows)
+	for _, row := range prjRows {
+		projectMonthlyMap[row.Month] = row.Count
+	}
+
+	// Fetch user registrations per month
+	userMonthlyMap := make(map[string]int64)
+	var usrRows []struct {
+		Month string
+		Count int64
+	}
+	config.DB.Raw("SELECT strftime('%Y-%m', created_at) as month, count(id) as count FROM users WHERE role = 'user' GROUP BY month").Scan(&usrRows)
+	for _, row := range usrRows {
+		userMonthlyMap[row.Month] = row.Count
+	}
+
+	// Fetch login sessions per month
+	loginMonthlyMap := make(map[string]int64)
+	var lgnRows []struct {
+		Month string
+		Count int64
+	}
+	config.DB.Raw("SELECT strftime('%Y-%m', created_at) as month, count(id) as count FROM login_telemetries GROUP BY month").Scan(&lgnRows)
+	for _, row := range lgnRows {
+		loginMonthlyMap[row.Month] = row.Count
+	}
+
+	// Construct final unified trend arrays matching the 6-month timeline exactly
+	var prjTrend []int64
+	var usrTrend []int64
+	var lgnTrend []int64
+	for _, m := range months {
+		prjTrend = append(prjTrend, projectMonthlyMap[m])
+		usrTrend = append(usrTrend, userMonthlyMap[m])
+		lgnTrend = append(lgnTrend, loginMonthlyMap[m])
+	}
+
 	return c.JSON(fiber.Map{
 		"totalUsers":       totalUsers,
 		"totalProjects":    totalProjects,
@@ -99,6 +150,12 @@ func GetStats(c *fiber.Ctx) error {
 			"krejcieMorgan": krejcieCount,
 			"yamane":        yamaneCount,
 			"daniel":        danielCount,
+		},
+		"trends": fiber.Map{
+			"months":   months,
+			"projects": prjTrend,
+			"users":    usrTrend,
+			"logins":   lgnTrend,
 		},
 	})
 }

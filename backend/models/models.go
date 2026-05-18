@@ -45,3 +45,9 @@ type ResearchDesign struct {
 	Variables        string  `json:"variables"`        // JSON string mapping variables, measurement scales, and indicators
 	AnalysisMethod   string  `json:"analysisMethod"`   // Recommended analytical testing
 }
+
+// LoginTelemetry represents a secure, zero-identity log of a user login session
+type LoginTelemetry struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+}

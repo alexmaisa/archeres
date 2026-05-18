@@ -139,7 +139,14 @@ const resources = {
         actionDelete: "Delete Account",
         actionDeleteConfirm: "Are you sure you want to permanently delete this user and all associated research projects? This action cannot be undone.",
         actionChangeRole: "Change Role",
-        actionChangeRoleConfirm: "Are you sure you want to change the role of this user?"
+        actionChangeRoleConfirm: "Are you sure you want to change the role of this user?",
+        chartSectionTitle: "Analytics & Platform Insights",
+        chartFormulaTitle: "Sample Size Formula Popularity",
+        chartProjectsTitle: "Monthly Methodology Growth",
+        chartActivityTitle: "User Activity & Session Telemetry (Last 6 Months)",
+        chartLegendRegistrations: "New Registrations",
+        chartLegendLogins: "Successful Sessions",
+        chartLegendProjects: "Methodologies Drafted"
       }
     }
   },
@@ -278,7 +285,14 @@ const resources = {
         actionDelete: "Hapus Akun",
         actionDeleteConfirm: "Apakah Anda yakin ingin menghapus pengguna ini beserta seluruh proyek penelitian terkait secara permanen? Tindakan ini tidak dapat dibatalkan.",
         actionChangeRole: "Ubah Peran",
-        actionChangeRoleConfirm: "Apakah Anda yakin ingin mengubah peran pengguna ini?"
+        actionChangeRoleConfirm: "Apakah Anda yakin ingin mengubah peran pengguna ini?",
+        chartSectionTitle: "Analitik & Wawasan Platform",
+        chartFormulaTitle: "Popularitas Rumus Ukuran Sampel",
+        chartProjectsTitle: "Pertumbuhan Metodologi Bulanan",
+        chartActivityTitle: "Tren Aktivitas Pengguna & Telemetri Sesi (6 Bulan Terakhir)",
+        chartLegendRegistrations: "Registrasi Akun Baru",
+        chartLegendLogins: "Sesi Masuk Berhasil",
+        chartLegendProjects: "Metodologi Dirumuskan"
       }
     }
   }
