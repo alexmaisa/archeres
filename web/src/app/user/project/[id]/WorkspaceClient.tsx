@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench } from "../../../components/Icons";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook } from "../../../components/Icons";
 import { User } from "../../../types";
 import { getActiveSessionKey, encryptData, decryptData } from "../../../utils/crypto";
 
@@ -66,6 +66,8 @@ export default function WorkspaceClient() {
   const [sampleSize, setSampleSize] = useState<number>(286);
   // Preview draft language ('id' or 'en')
   const [previewLang, setPreviewLang] = useState<string>("id");
+  // Toggle visibility of Right Preview Panel as a sliding drawer
+  const [showPreview, setShowPreview] = useState<boolean>(true);
 
   useEffect(() => {
     // Authenticate session locally
@@ -452,6 +454,23 @@ Aligned with the scale of measurements and variable distributions, statistical h
             {t("common.dashboard")}
           </button>
 
+          {/* Toggle Draft Preview Panel Drawer */}
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className="btn btn-outline"
+            style={{
+              ...styles.dashBtn,
+              backgroundColor: showPreview ? "rgba(124, 58, 237, 0.12)" : "rgba(255, 255, 255, 0.02)",
+              borderColor: showPreview ? "rgba(124, 58, 237, 0.3)" : "rgba(255, 255, 255, 0.08)",
+              color: showPreview ? "#c084fc" : "rgba(255, 255, 255, 0.75)",
+            }}
+          >
+            <IconBook size={13} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+            {i18n.language === "id"
+              ? (showPreview ? "Sembunyikan Draf" : "Tampilkan Draf")
+              : (showPreview ? "Hide Draft" : "Show Draft")}
+          </button>
+
           {/* Language Switcher Bar */}
           <div style={styles.langBar}>
             <button
@@ -481,7 +500,13 @@ Aligned with the scale of measurements and variable distributions, statistical h
       </header>
 
       {/* 3-Panel Workspace between Header & Footer */}
-      <div className="workspace-layout" style={styles.workspaceWrapper}>
+      <div
+        className="workspace-layout"
+        style={{
+          ...styles.workspaceWrapper,
+          gridTemplateColumns: showPreview ? "300px 1fr 500px" : "300px 1fr 0px",
+        }}
+      >
         {/* 1. LEFT PANEL: Checklist & Navigation */}
         <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
           <div style={styles.leftHeader}>
@@ -862,7 +887,18 @@ Aligned with the scale of measurements and variable distributions, statistical h
         </section>
 
         {/* 3. RIGHT PANEL: Real-time Markdown Thesis Preview */}
-        <section className="workspace-preview glass-panel" style={styles.rightPanel}>
+        <section
+          className="workspace-preview glass-panel"
+          style={{
+            ...styles.rightPanel,
+            width: showPreview ? "500px" : "0px",
+            opacity: showPreview ? 1 : 0,
+            overflow: "hidden",
+            visibility: showPreview ? "visible" : "hidden",
+            padding: showPreview ? "1.5rem" : "0px",
+            borderLeft: showPreview ? "1px solid hsl(var(--card-border))" : "none",
+          }}
+        >
           <div style={styles.rightHeader}>
             <div>
               <h2 style={styles.rightTitleText}>{t("preview.title")}</h2>
@@ -938,6 +974,7 @@ const styles: Record<string, React.CSSProperties> = {
     gridTemplateColumns: "300px 1fr 500px",
     width: "100vw",
     overflow: "hidden",
+    transition: "grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   navControls: {
     display: "flex",
@@ -1344,6 +1381,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     height: "100%",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   rightHeader: {
     padding: "1.5rem",
