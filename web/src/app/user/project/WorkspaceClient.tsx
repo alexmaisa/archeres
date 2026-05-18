@@ -2377,8 +2377,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "1.25rem",
-    height: "100%",
-    overflowY: "auto",
+    height: "auto",
     paddingRight: "0.25rem",
   },
   eduBadge: {
@@ -2412,6 +2411,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "0.35rem",
+    flexShrink: 0,
   },
   eduCardTitle: {
     fontSize: "0.9rem",
@@ -2429,6 +2429,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "1rem",
     borderRadius: "10px",
     color: "#c084fc",
+    flexShrink: 0,
   },
   container: {
     minHeight: "100vh",
