@@ -894,3 +894,20 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.5;
   margin-bottom: 1.5rem;
 }
+
+/* Premium Project Title Link */
+.project-title-link {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+  text-decoration: none;
+}
+
+.project-title-link:hover {
+  color: #22d3ee !important; /* Premium Cyan research highlight */
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+  transform: translateX(2px);
+}

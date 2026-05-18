@@ -68,6 +68,8 @@ const resources = {
         projectTitleColumn: "Project Title",
         projectDescColumn: "Description",
         projectApproachColumn: "Approach",
+        createdAtColumn: "Created Date",
+        updatedAtColumn: "Last Edited",
         actionsColumn: "Actions"
       },
       wizard: {
@@ -218,6 +220,8 @@ const resources = {
         projectTitleColumn: "Judul Penelitian",
         projectDescColumn: "Deskripsi",
         projectApproachColumn: "Pendekatan",
+        createdAtColumn: "Tanggal Dibuat",
+        updatedAtColumn: "Terakhir Diedit",
         actionsColumn: "Aksi"
       },
       wizard: {
