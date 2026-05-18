@@ -285,7 +285,7 @@ export default function AboutPage() {
           name: "Rumus Slovin", 
           useCase: "Paling sering digunakan dalam penelitian sosial untuk pengambilan sampel acak sederhana ketika ukuran populasi (N) diketahui secara pasti dan berjumlah terbatas (populasi terbatas). Sangat direkomendasikan karena kesederhanaan perhitungannya.",
           context: "Digunakan ketika total populasi (N) diketahui dan Anda membutuhkan estimasi ukuran sampel (n) secara cepat dengan tingkat batas kesalahan tertentu.",
-          reference: "Sevilla, C. G., dkk. (1984). An Introduction to Research Methods. Rex Book Store. (Sering pula dikaitkan dengan Slovin, 1960).",
+          reference: "Sevilla, C. G., Ochave, J. A., Punsalan, T. G., Regala, B. P., & Uriarte, G. G. (1984). An Introduction to Research Methods. Rex Book Store. (Commonly associated with Slovin, 1960).",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "N", meaning: "Ukuran total populasi penelitian" },
@@ -297,7 +297,7 @@ export default function AboutPage() {
           name: "Rumus Cochran", 
           useCase: "Dirancang oleh ahli statistik William G. Cochran untuk pengambilan sampel pada populasi yang sangat besar atau tidak terbatas (tidak diketahui jumlah pastinya). Sangat ideal untuk survei demografi berskala luas.",
           context: "Digunakan ketika jumlah populasi dianggap tidak terbatas, memanfaatkan nilai deviasi standar normal kritis.",
-          reference: "Cochran, W. G. (1977). Sampling Techniques (Edisi ke-3). John Wiley & Sons.",
+          reference: "Cochran, W. G. (1977). Sampling Techniques (3rd ed.). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Skor standar normal (biasanya 1,96 untuk tingkat kepercayaan 95%)" },
@@ -311,7 +311,7 @@ export default function AboutPage() {
           name: "Persamaan Lemeshow", 
           useCase: "Persamaan epidemiologi khusus yang dikembangkan oleh Stanley Lemeshow untuk uji klinis, kedokteran, dan bidang kesehatan umum ketika jumlah total populasi tidak diketahui namun estimasi prevalensi penyakit dapat diantisipasi secara biner.",
           context: "Digunakan dalam latar medis/klinis dengan populasi tak terbatas untuk mengevaluasi karakteristik diagnosis biner.",
-          reference: "Lemeshow, S., Hosmer, D. W., Klar, J., & Lwanga, S. K. (1990). Adequacy of Sample Size in Health Studies. Organisasi Kesehatan Dunia (WHO) / John Wiley & Sons.",
+          reference: "Lemeshow, S., Hosmer, D. W., Klar, J., & Lwanga, S. K. (1990). Adequacy of Sample Size in Health Studies. World Health Organization (WHO) / John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Skor standar normal kritis (biasanya 1,96 pada tingkat kepercayaan 95%)" },
@@ -336,7 +336,7 @@ export default function AboutPage() {
           name: "Rumus Daniel", 
           useCase: "Banyak diterapkan dalam diagnosis medis dan penelitian klinis untuk menguji prevalensi karakteristik biner (seperti keberadaan penyakit atau gejala khusus) pada populasi target.",
           context: "Menentukan ukuran sampel ketika peneliti berfokus pada pengujian proporsi diagnosis pada populasi tak terbatas.",
-          reference: "Daniel, W. W. (1999). Biostatistics: A Foundation for Analysis in the Health Sciences (Edisi ke-7). John Wiley & Sons.",
+          reference: "Daniel, W. W. (1999). Biostatistics: A Foundation for Analysis in the Health Sciences (7th ed.). John Wiley & Sons.",
           symbols: [
             { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
             { char: "Z", meaning: "Nilai kritis normal berdasarkan rentang tingkat kepercayaan" },
@@ -616,7 +616,7 @@ export default function AboutPage() {
 
                   <div>
                     <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#fb7185", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>
-                      {currentLang === "id" ? "Referensi Akademik" : "Academic Reference"}
+                      {currentLang === "id" ? "Referensi" : "Reference"}
                     </h4>
                     <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.45, fontStyle: "italic", borderLeft: "2px solid #fb7185", paddingLeft: "0.5rem" }}>
                       {f.reference}
