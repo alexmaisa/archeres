@@ -43,7 +43,13 @@ const resources = {
         resetDesc: "Please enter your new password to regain access to your research vault.",
         newPasswordLabel: "New Password",
         resetSubmit: "Update Password",
-        resetSuccess: "Password reset successful! Redirecting to login..."
+        resetSuccess: "Password reset successful! Redirecting to login...",
+        strengthLabel: "Password Strength",
+        strengthEmpty: "",
+        strengthWeak: "Very Weak",
+        strengthMedium: "Medium",
+        strengthGood: "Good",
+        strengthStrong: "Strong"
       },
       dashboard: {
         title: "Research Dashboard",
@@ -175,7 +181,13 @@ const resources = {
         resetDesc: "Silakan masukkan kata sandi baru Anda untuk memulihkan akses ke lembar kerja penelitian.",
         newPasswordLabel: "Kata Sandi Baru",
         resetSubmit: "Perbarui Kata Sandi",
-        resetSuccess: "Reset kata sandi berhasil! Mengalihkan ke halaman masuk..."
+        resetSuccess: "Reset kata sandi berhasil! Mengalihkan ke halaman masuk...",
+        strengthLabel: "Kekuatan Sandi",
+        strengthEmpty: "",
+        strengthWeak: "Sangat Lemah",
+        strengthMedium: "Sedang",
+        strengthGood: "Cukup Kuat",
+        strengthStrong: "Sangat Kuat"
       },
       dashboard: {
         title: "Dashboard Penelitian",
