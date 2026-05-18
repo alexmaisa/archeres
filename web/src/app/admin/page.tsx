@@ -359,7 +359,7 @@ export default function AdminPage() {
     const projects = stats.trends.projects;
     const maxVal = Math.max(...projects, 4); // Scale nicely
 
-    const width = 360;
+    const width = 500;
     const height = 150;
     const paddingLeft = 30;
     const paddingRight = 10;
@@ -368,7 +368,7 @@ export default function AdminPage() {
 
     const chartWidth = width - paddingLeft - paddingRight;
     const chartHeight = height - paddingTop - paddingBottom;
-    const colWidth = chartWidth / months.length;
+    const colWidth = chartWidth / (months.length || 1);
 
     const getMonthLabel = (mStr: string) => {
       const [year, month] = mStr.split("-");
@@ -491,7 +491,7 @@ export default function AdminPage() {
 
     const getCoordinates = (data: number[]) => {
       return data.map((val, idx) => {
-        const x = paddingLeft + idx * (chartWidth / 5);
+        const x = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
         const y = paddingTop + chartHeight * (1 - val / maxVal);
         return { x, y, val };
       });
@@ -610,7 +610,7 @@ export default function AdminPage() {
 
           {/* X Axis Labels */}
           {months.map((mStr, idx) => {
-            const x = paddingLeft + idx * (chartWidth / 5);
+            const x = paddingLeft + idx * (chartWidth / (months.length - 1 || 1));
             return (
               <text
                 key={`lbl-${idx}`}

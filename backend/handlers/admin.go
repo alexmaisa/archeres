@@ -80,10 +80,10 @@ func GetStats(c *fiber.Ctx) error {
 	allocatedRamMb := float64(m.Alloc) / 1024.0 / 1024.0
 	serverUptimeSecs := int64(time.Since(startTime).Seconds())
 
-	// Build target months slice (last 6 months in format "YYYY-MM")
+	// Build target months slice (last 12 months in format "YYYY-MM")
 	var months []string
 	now := time.Now()
-	for i := 5; i >= 0; i-- {
+	for i := 11; i >= 0; i-- {
 		t := now.AddDate(0, -i, 0)
 		months = append(months, t.Format("2006-01"))
 	}

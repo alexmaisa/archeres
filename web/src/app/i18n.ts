@@ -176,7 +176,7 @@ const resources = {
         chartSectionTitle: "Analytics & Platform Insights",
         chartFormulaTitle: "Sample Size Formula Popularity",
         chartProjectsTitle: "Monthly Methodology Growth",
-        chartActivityTitle: "User Activity & Session Telemetry (Last 6 Months)",
+        chartActivityTitle: "User Activity & Session Telemetry (Last 12 Months)",
         chartLegendRegistrations: "New Registrations",
         chartLegendLogins: "Successful Sessions",
         chartLegendProjects: "Methodologies Drafted"
@@ -355,7 +355,7 @@ const resources = {
         chartSectionTitle: "Analitik & Wawasan Platform",
         chartFormulaTitle: "Popularitas Rumus Ukuran Sampel",
         chartProjectsTitle: "Pertumbuhan Metodologi Bulanan",
-        chartActivityTitle: "Tren Aktivitas Pengguna & Telemetri Sesi (6 Bulan Terakhir)",
+        chartActivityTitle: "Tren Aktivitas Pengguna & Telemetri Sesi (12 Bulan Terakhir)",
         chartLegendRegistrations: "Registrasi Akun Baru",
         chartLegendLogins: "Sesi Masuk Berhasil",
         chartLegendProjects: "Metodologi Dirumuskan"
