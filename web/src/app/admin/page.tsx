@@ -698,7 +698,7 @@ export default function AdminPage() {
           <div style={{
             position: "absolute",
             left: "0",
-            bottom: "3px",
+            bottom: "-10px",
             width: "100%",
             height: `${paddingBottom}px`,
             pointerEvents: "none"
