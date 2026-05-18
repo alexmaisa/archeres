@@ -19,7 +19,9 @@ const resources = {
         dashboard: "My Projects",
         language: "Language",
         loading: "Processing, please wait...",
-        errorOccurred: "An error occurred. Please try again."
+        errorOccurred: "An error occurred. Please try again.",
+        understand: "Got It",
+        notification: "Notice"
       },
       auth: {
         loginTitle: "Access Archeres Workspace",
@@ -228,7 +230,9 @@ const resources = {
         dashboard: "Proyek Saya",
         language: "Bahasa",
         loading: "Sedang memproses, harap tunggu...",
-        errorOccurred: "Terjadi kesalahan. Silakan coba kembali."
+        errorOccurred: "Terjadi kesalahan. Silakan coba kembali.",
+        understand: "Mengerti",
+        notification: "Pemberitahuan"
       },
       auth: {
         loginTitle: "Akses Workspace Archeres",

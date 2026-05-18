@@ -52,6 +52,19 @@ export default function WorkspaceClient() {
   const [activeStep, setActiveStep] = useState<number>(1);
   const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
 
+  // Premium Custom Alert Dialog States
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [alertTitle, setAlertTitle] = useState<string>("");
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertType, setAlertType] = useState<"info" | "warning" | "error" | "success">("warning");
+
+  const triggerAlert = (message: string, title?: string, type: "info" | "warning" | "error" | "success" = "warning") => {
+    setAlertMessage(message);
+    setAlertTitle(title || t("common.notification"));
+    setAlertType(type);
+    setAlertOpen(true);
+  };
+
   // Wizard states
   const [approach, setApproach] = useState<string>("quant");
   const [design, setDesign] = useState<string>("Experimental");
@@ -349,9 +362,9 @@ export default function WorkspaceClient() {
           }
         }),
       });
-      alert(t("common.saved"));
+      triggerAlert(t("common.saved"), t("common.notification"), "success");
     } catch (err: any) {
-      alert(err.message || t("common.errorOccurred"));
+      triggerAlert(err.message || t("common.errorOccurred"), t("common.notification"), "error");
     } finally {
       setSaveLoading(false);
     }
@@ -372,7 +385,7 @@ export default function WorkspaceClient() {
 
   const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(generateMarkdownDraft(previewLang));
-    alert(t("preview.copied"));
+    triggerAlert(t("preview.copied"), t("common.notification"), "success");
   };
 
   // Dynamic Markdown compiler
@@ -991,7 +1004,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     if (unlocked) {
                       setActiveStep(s.step);
                     } else {
-                      alert(t("wizard.stepLockedAlert", { prevStep: s.step - 1 }));
+                      triggerAlert(t("wizard.stepLockedAlert", { prevStep: s.step - 1 }), t("common.notification"), "warning");
                     }
                   }}
                   style={{
@@ -1494,7 +1507,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     setActiveStep(3);
                   } else if (activeStep === 3) {
                     if (variables.length === 0) {
-                      alert(t("wizard.step3RequiredAlert"));
+                      triggerAlert(t("wizard.step3RequiredAlert"), t("common.notification"), "warning");
                       return;
                     }
                     setMaxUnlockedStep(prev => Math.max(prev, 4));
@@ -1624,6 +1637,89 @@ Aligned with the scale of measurements and variable distribution, statistical hy
           &copy; 2026 Benny Maisa. Archeres: Empowering beginner researchers to structure sound methodologies. Powered by Next.js, Go Fiber, & SQLite.
         </p>
       </footer>
+
+      {/* Premium Custom Alert Modal */}
+      {alertOpen && (
+        <div className="arche-modal-overlay animate-fade-in" onClick={() => setAlertOpen(false)}>
+          <div
+            className="arche-modal-card glass-panel"
+            style={{ maxWidth: "420px", padding: "1.75rem", borderRadius: "12px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="arche-modal-header" style={{ marginBottom: "1rem" }}>
+              <h2 className="arche-modal-title" style={{ fontSize: "1.25rem", color: alertType === "error" ? "hsl(var(--danger-color))" : alertType === "success" ? "hsl(var(--success-color))" : "#c084fc", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                {alertType === "success" ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ verticalAlign: "middle", color: "hsl(var(--success-color))" }}
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                ) : alertType === "error" ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ verticalAlign: "middle", color: "hsl(var(--danger-color))" }}
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ verticalAlign: "middle", color: "#c084fc" }}
+                  >
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                )}
+                {alertTitle}
+              </h2>
+              <button onClick={() => setAlertOpen(false)} className="arche-modal-close">✕</button>
+            </div>
+            
+            <div style={{ marginBottom: "1.5rem", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)", fontSize: "0.9rem" }}>
+              {alertMessage}
+            </div>
+
+            <div className="arche-modal-actions" style={{ marginTop: "0" }}>
+              <button
+                onClick={() => setAlertOpen(false)}
+                className="btn btn-primary"
+                style={{ width: "100%", padding: "0.65rem 1.25rem", fontSize: "0.88rem" }}
+              >
+                {t("common.understand") || "Got It"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
