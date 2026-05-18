@@ -29,6 +29,7 @@ type Project struct {
 	UserID         uint           `gorm:"not null" json:"userId"`
 	User           *User          `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	ResearchDesign ResearchDesign `gorm:"foreignKey:ProjectID;constraint:OnDelete:CASCADE" json:"researchDesign"`
+	IsArchived     bool           `gorm:"default:false;not null" json:"isArchived"`
 	CreatedAt      time.Time      `json:"createdAt"`
 	UpdatedAt      time.Time      `json:"updatedAt"`
 }

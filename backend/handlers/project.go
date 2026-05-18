@@ -13,6 +13,7 @@ import (
 type ProjectInput struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	IsArchived  *bool  `json:"isArchived"`
 }
 
 // ResearchDesignInput models parameters for saving the research methodology wizard choices
@@ -135,7 +136,13 @@ func UpdateProject(c *fiber.Ctx) error {
 	if input.Title != "" {
 		project.Title = input.Title
 	}
-	project.Description = input.Description
+	if input.Description != "" {
+		project.Description = input.Description
+	}
+
+	if input.IsArchived != nil {
+		project.IsArchived = *input.IsArchived
+	}
 
 	if err := config.DB.Save(&project).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
