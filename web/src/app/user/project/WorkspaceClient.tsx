@@ -541,6 +541,49 @@ Aligned with the scale of measurements and variable distribution, statistical hy
     return html;
   };
 
+  const renderDesignExplanation = (designName: string, isId: boolean) => {
+    switch (designName) {
+      case "Experimental":
+        return isId
+          ? "Membangun hubungan sebab-akibat dengan memanipulasi variabel bebas untuk mengamati dampaknya terhadap variabel terikat di bawah kondisi yang dikendalikan secara ketat (Pre, True, atau Quasi-eksperimental)."
+          : "Establishes causal relationships by manipulating an independent variable to observe its effect on a dependent variable under highly controlled conditions (Pre, True, or Quasi-experimental).";
+      case "Correlational":
+        return isId
+          ? "Menyelidiki hubungan statistik, pola, serta tingkat asosiasi antara dua atau lebih variabel tanpa adanya manipulasi aktif atau pengendalian variabel."
+          : "Investigates statistical relationships, patterns, and degree of association between two or more variables without active manipulation or control.";
+      case "Survey / Descriptive":
+        return isId
+          ? "Memetakan karakteristik, tren, atau perilaku populasi tertentu secara kuantitatif dengan mengumpulkan data primer melalui kuesioner terstandardisasi."
+          : "Profiles characteristics, trends, or behaviors of a specific population by gathering primary quantitative data through standardized questionnaires.";
+      case "Case Study":
+        return isId
+          ? "Melakukan eksplorasi mendalam dan multifaset terhadap fenomena, organisasi, atau peristiwa kompleks dalam konteks dunia nyata menggunakan berbagai sumber data yang kaya."
+          : "Conducts a deep, multi-faceted exploration of a complex phenomenon, organization, or event within its real-world context using multiple rich data sources.";
+      case "Phenomenology":
+        return isId
+          ? "Mengeksplorasi pengalaman langsung (lived experiences) individu terkait suatu fenomena untuk mengungkap esensi universal yang dirasakan bersama."
+          : "Explores the lived experiences of individuals regarding a specific phenomenon to uncover the core, shared universal essence of their perceptions.";
+      case "Grounded Theory":
+        return isId
+          ? "Membangun teori atau kerangka konseptual baru secara sistematis dan induktif yang berakar langsung pada data empiris yang diperoleh dari partisipan."
+          : "Develops a systematic, inductive theory or conceptual framework directly 'grounded' in empirical data gathered from research participants.";
+      case "Convergent Parallel":
+        return isId
+          ? "Mengumpulkan dan menganalisis data kuantitatif dan kualitatif secara bersamaan, lalu menggabungkan hasilnya untuk membandingkan, memvalidasi, atau memperkaya temuan."
+          : "Collects and analyzes quantitative and qualitative data simultaneously, then merges the results to compare, validate, or cross-reference findings.";
+      case "Explanatory Sequential":
+        return isId
+          ? "Dimulai dengan studi kuantitatif untuk mengidentifikasi tren umum, dilanjutkan dengan fase kualitatif untuk memperjelas dan memberikan konteks pada hasil statistik tersebut."
+          : "Starts with a quantitative study to establish general trends, followed by a qualitative phase to explain and contextualize those statistical results.";
+      case "Exploratory Sequential":
+        return isId
+          ? "Dimulai dengan eksplorasi kualitatif untuk menemukan variabel, tema, atau instrumen, yang kemudian diuji dan diukur secara kuantitatif pada fase berikutnya."
+          : "Begins with qualitative exploration to discover variables, themes, or instruments, which are then tested and measured in a subsequent quantitative phase.";
+      default:
+        return "";
+    }
+  };
+
   const renderEducationalPanel = () => {
     const isId = i18n.language === "id";
     
@@ -606,6 +649,29 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   : "Choose Quantitative to generalize findings across large cohorts. Choose Qualitative to explore social contexts deeply."}
               </p>
             </div>
+
+            {design !== "Undetermined" && (
+              <div style={{
+                ...styles.eduCard,
+                background: "rgba(168, 85, 247, 0.04)",
+                border: "1px solid rgba(168, 85, 247, 0.25)",
+                boxShadow: "0 0 10px rgba(168, 85, 247, 0.1)",
+                marginTop: "0.5rem"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <IconWrench size={16} style={{ color: "#c084fc" }} />
+                  <span style={{ fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#c084fc" }}>
+                    {isId ? "DESAIN PENELITIAN AKTIF" : "ACTIVE RESEARCH DESIGN"}
+                  </span>
+                </div>
+                <h4 style={{ ...styles.eduCardTitle, color: "white", marginTop: "0.25rem" }}>
+                  {design}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {renderDesignExplanation(design, isId)}
+                </p>
+              </div>
+            )}
           </div>
         );
       case 2:
