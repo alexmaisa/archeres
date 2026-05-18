@@ -27,6 +27,7 @@ interface ResearchDesign {
   variables?: string;
   sampleSize?: number;
   samplingTechnique?: string;
+  isPopulationKnown?: boolean;
 }
 
 interface WorkspaceProject {
@@ -61,6 +62,7 @@ export default function WorkspaceClient() {
   const [variables, setVariables] = useState<VariableDefinition[]>([]);
   const [analysisMethod, setAnalysisMethod] = useState<string>("Multiple Linear Regression");
   const [samplingTechnique, setSamplingTechnique] = useState<string>("Simple Random Sampling");
+  const [isPopKnown, setIsPopKnown] = useState<boolean>(true);
   
   // Real-time calculated sample size
   const [sampleSize, setSampleSize] = useState<number>(286);
@@ -90,6 +92,7 @@ export default function WorkspaceClient() {
       setFormula("slovin");
       setSamplingTechnique("Simple Random Sampling");
       setDesign("Experimental");
+      setIsPopKnown(true);
     } else if (apId === "qual") {
       setFormula("saturation");
       setSamplingTechnique("Purposive Sampling");
@@ -99,6 +102,15 @@ export default function WorkspaceClient() {
       setFormula("slovin");
       setSamplingTechnique("Sequential Mixed Sampling");
       setDesign("Convergent Parallel");
+      setIsPopKnown(true);
+    }
+  };
+  const handlePopKnownChange = (known: boolean) => {
+    setIsPopKnown(known);
+    if (known) {
+      setFormula("slovin");
+    } else {
+      setFormula("cochran");
     }
   };
   const fetchProjectDetails = async () => {
@@ -138,6 +150,7 @@ export default function WorkspaceClient() {
         if (rd.estimatedProportion !== undefined) setProportion(rd.estimatedProportion);
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
         if (rd.samplingTechnique) setSamplingTechnique(rd.samplingTechnique);
+        if (rd.isPopulationKnown !== undefined) setIsPopKnown(rd.isPopulationKnown);
         if (rd.variables) {
           try {
             setVariables(JSON.parse(rd.variables));
@@ -303,7 +316,8 @@ export default function WorkspaceClient() {
             analysisMethod: payloadAnalysis,
             variables: payloadVariables,
             sampleSize: Number(sampleSize),
-            samplingTechnique
+            samplingTechnique,
+            isPopulationKnown: isPopKnown
           }
         }),
       });
@@ -1056,6 +1070,70 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             {/* STEP 2: Mathematical Sample Size & Sampling Technique */}
             {activeStep === 2 && (
               <div style={styles.stepForm} className="animate-fade-in">
+                {/* Guided Target Population Status Question */}
+                {approach !== "qual" && (
+                  <div className="form-group" style={{ marginBottom: "0.5rem" }}>
+                    <label className="form-label">{t("wizard.popKnownLabel")}</label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
+                      <div
+                        onClick={() => handlePopKnownChange(true)}
+                        style={{
+                          padding: "1rem",
+                          borderRadius: "10px",
+                          cursor: "pointer",
+                          background: isPopKnown ? "rgba(167, 139, 250, 0.08)" : "rgba(255, 255, 255, 0.02)",
+                          border: isPopKnown ? "1px solid #a78bfa" : "1px solid rgba(255, 255, 255, 0.08)",
+                          boxShadow: isPopKnown ? "0 4px 15px rgba(167, 139, 250, 0.1)" : "none",
+                          transition: "all 0.25s ease",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "0.25rem" }}>
+                          <input
+                            type="radio"
+                            checked={isPopKnown}
+                            onChange={() => {}}
+                            style={{ marginRight: "0.5rem", accentColor: "#a78bfa" }}
+                          />
+                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: isPopKnown ? "#c084fc" : "rgba(255, 255, 255, 0.9)" }}>
+                            {t("wizard.popKnownYes")}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: "0.74rem", color: "rgba(255, 255, 255, 0.45)", margin: 0, lineHeight: 1.35 }}>
+                          {t("wizard.popKnownYesDesc")}
+                        </p>
+                      </div>
+
+                      <div
+                        onClick={() => handlePopKnownChange(false)}
+                        style={{
+                          padding: "1rem",
+                          borderRadius: "10px",
+                          cursor: "pointer",
+                          background: !isPopKnown ? "rgba(167, 139, 250, 0.08)" : "rgba(255, 255, 255, 0.02)",
+                          border: !isPopKnown ? "1px solid #a78bfa" : "1px solid rgba(255, 255, 255, 0.08)",
+                          boxShadow: !isPopKnown ? "0 4px 15px rgba(167, 139, 250, 0.1)" : "none",
+                          transition: "all 0.25s ease",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "0.25rem" }}>
+                          <input
+                            type="radio"
+                            checked={!isPopKnown}
+                            onChange={() => {}}
+                            style={{ marginRight: "0.5rem", accentColor: "#a78bfa" }}
+                          />
+                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: !isPopKnown ? "#c084fc" : "rgba(255, 255, 255, 0.9)" }}>
+                            {t("wizard.popKnownNo")}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: "0.74rem", color: "rgba(255, 255, 255, 0.45)", margin: 0, lineHeight: 1.35 }}>
+                          {t("wizard.popKnownNoDesc")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-group">
                   <label className="form-label">{t("wizard.formulaLabel")}</label>
                   <p style={styles.inputHelp}>{t("wizard.formulaDesc")}</p>
@@ -1068,13 +1146,16 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   >
                     {approach === "qual" ? (
                       <option value="saturation">{t("wizard.formulaSaturation")}</option>
-                    ) : (
+                    ) : isPopKnown ? (
                       <>
                         <option value="slovin">{t("wizard.formulaSlovin")}</option>
-                        <option value="cochran">{t("wizard.formulaCochran")}</option>
                         <option value="lemeshow">{t("wizard.formulaLemeshow")}</option>
                         <option value="krejcie_morgan">{t("wizard.formulaKrejcieMorgan")}</option>
                         <option value="yamane">{t("wizard.formulaYamane")}</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="cochran">{t("wizard.formulaCochran")}</option>
                         <option value="daniel">{t("wizard.formulaDaniel")}</option>
                       </>
                     )}
