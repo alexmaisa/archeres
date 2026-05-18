@@ -63,7 +63,7 @@ const resources = {
         emptyDesc: "You don't have any research projects yet. Create one to begin your methodology wizard.",
         created: "Created on",
         openWorkspace: "Open Workspace",
-        deleteBtn: "Archive Study",
+        deleteBtn: "Delete Project",
         deleteConfirm: "Are you sure you want to delete this project?",
         projectTitleColumn: "Project Title",
         projectDescColumn: "Description",
