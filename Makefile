@@ -1,4 +1,4 @@
-.PHONY: install run-backend run-frontend dev test stop clean help
+.PHONY: install run-backend run-web dev test stop clean help
 
 # Colors for terminal styling
 BLUE   := \033[36m
@@ -8,10 +8,10 @@ RESET  := \033[0m
 help:
 	@echo "$(BLUE)Available commands in this Makefile:$(RESET)"
 	@echo "---------------------------------------------------------------------------------"
-	@echo "  $(YELLOW)make install$(RESET)        Install all backend and frontend dependencies"
-	@echo "  $(YELLOW)make dev$(RESET)            Run both backend and frontend concurrently in development mode"
+	@echo "  $(YELLOW)make install$(RESET)        Install all backend and web dependencies"
+	@echo "  $(YELLOW)make dev$(RESET)            Run both backend and web concurrently in development mode"
 	@echo "  $(YELLOW)make run-backend$(RESET)    Start only the backend local development server on port 8080"
-	@echo "  $(YELLOW)make run-frontend$(RESET)   Start only the frontend local development server on port 3000"
+	@echo "  $(YELLOW)make run-web$(RESET)        Start only the web local development server on port 3000"
 	@echo "  $(YELLOW)make test$(RESET)           Run all backend mathematical precision unit tests"
 	@echo "  $(YELLOW)make stop$(RESET)           Kill all local server processes occupying ports 3000 and 8080"
 	@echo "  $(YELLOW)make clean$(RESET)          Clean temporary local databases and Next.js build outputs"
@@ -21,22 +21,22 @@ help:
 install:
 	@echo "Installing backend dependencies..."
 	cd backend && go mod tidy
-	@echo "Installing frontend dependencies..."
-	cd frontend && pnpm install
+	@echo "Installing web dependencies..."
+	cd web && pnpm install
 
 run-backend:
 	@echo "Starting backend local development server on port 8080..."
 	cd backend && PORT=8080 DATABASE_PATH=arche.db JWT_SECRET=supersecretjwtkeyforarche2026 go run main.go
 
-run-frontend:
-	@echo "Starting frontend local development server on port 3000..."
-	cd frontend && pnpm run dev
+run-web:
+	@echo "Starting web local development server on port 3000..."
+	cd web && pnpm run dev
 
 dev:
-	@echo "Starting both backend and frontend concurrently..."
+	@echo "Starting both backend and web concurrently..."
 	@echo "Please make sure ports 8080 and 3000 are unoccupied."
 	@(cd backend && PORT=8080 DATABASE_PATH=arche.db JWT_SECRET=supersecretjwtkeyforarche2026 go run main.go) & \
-	(cd frontend && pnpm run dev)
+	(cd web && pnpm run dev)
 
 test:
 	@echo "Running backend mathematical tests..."
@@ -51,4 +51,4 @@ stop:
 clean:
 	@echo "Cleaning temporary local database and build folders..."
 	rm -f backend/arche.db
-	rm -rf frontend/.next frontend/out
+	rm -rf web/.next web/out

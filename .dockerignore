@@ -1,14 +1,14 @@
 # Ignore local package manager folders
 node_modules
 **/node_modules
-frontend/node_modules
+web/node_modules
 backend/vendor
 
 # Ignore local builds
 .next
 **/out
-frontend/.next
-frontend/out
+web/.next
+web/out
 
 # Ignore Git versioning
 .git

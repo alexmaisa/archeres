@@ -2,7 +2,9 @@ name: arche
 
 services:
   backend:
-    image: repo.alexmaisa.my.id/alexmaisa/arche-backend:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: arche-backend
     ports:
       - "8080:8080"
@@ -15,7 +17,9 @@ services:
     restart: unless-stopped
 
   web:
-    image: repo.alexmaisa.my.id/alexmaisa/arche-web:${VERSION:-latest}
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     container_name: arche-web
     ports:
       - "3000:3000"
