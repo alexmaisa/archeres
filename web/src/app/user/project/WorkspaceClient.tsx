@@ -2259,23 +2259,6 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 {/* Bilingual Language Switcher Inside Modal */}
                 <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
                   <button
-                    onClick={() => handleLanguageToggle("id")}
-                    style={{
-                      background: i18n.language === "id" ? "rgba(168, 85, 247, 0.25)" : "transparent",
-                      border: "none",
-                      color: i18n.language === "id" ? "#c084fc" : "rgba(255, 255, 255, 0.4)",
-                      boxShadow: i18n.language === "id" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
-                      borderRadius: "6px",
-                      padding: "0.3rem 0.6rem",
-                      fontSize: "0.72rem",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease"
-                    }}
-                  >
-                    ID
-                  </button>
-                  <button
                     onClick={() => handleLanguageToggle("en")}
                     style={{
                       background: i18n.language === "en" ? "rgba(168, 85, 247, 0.25)" : "transparent",
@@ -2291,6 +2274,23 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     }}
                   >
                     EN
+                  </button>
+                  <button
+                    onClick={() => handleLanguageToggle("id")}
+                    style={{
+                      background: i18n.language === "id" ? "rgba(168, 85, 247, 0.25)" : "transparent",
+                      border: "none",
+                      color: i18n.language === "id" ? "#c084fc" : "rgba(255, 255, 255, 0.4)",
+                      boxShadow: i18n.language === "id" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+                      borderRadius: "6px",
+                      padding: "0.3rem 0.6rem",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    ID
                   </button>
                 </div>
 
