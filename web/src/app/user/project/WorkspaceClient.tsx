@@ -48,9 +48,20 @@ export default function WorkspaceClient() {
   const [loading, setLoading] = useState<boolean>(true);
   const [saveLoading, setSaveLoading] = useState<boolean>(false);
 
-  // Wizard active step (1: Paradigm, 2: Sample Size, 3: Variables, 4: Export)
   const [activeStep, setActiveStep] = useState<number>(1);
   const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
+  const [lastSavedState, setLastSavedState] = useState<{
+    approach: string;
+    design: string;
+    formula: string;
+    popSize: number;
+    confLevel: number;
+    marginError: number;
+    samplingTechnique: string;
+    isPopKnown: boolean;
+    analysisMethod: string;
+    variablesJson: string;
+  } | null>(null);
 
   // Premium Custom Alert Dialog States
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -150,6 +161,43 @@ export default function WorkspaceClient() {
   const isStepUnlocked = (stepNum: number): boolean => {
     return stepNum <= maxUnlockedStep;
   };
+  const isStepCompleted = (stepNum: number): boolean => {
+    if (!lastSavedState) return false;
+
+    if (stepNum === 1) {
+      return (
+        lastSavedState.approach === approach &&
+        lastSavedState.design === design &&
+        design !== "Undetermined"
+      );
+    }
+
+    if (stepNum === 2) {
+      return (
+        lastSavedState.formula === formula &&
+        lastSavedState.popSize === popSize &&
+        lastSavedState.confLevel === confLevel &&
+        lastSavedState.marginError === marginError &&
+        lastSavedState.samplingTechnique === samplingTechnique &&
+        lastSavedState.isPopKnown === isPopKnown &&
+        !!lastSavedState.samplingTechnique
+      );
+    }
+
+    if (stepNum === 3) {
+      return (
+        lastSavedState.analysisMethod === analysisMethod &&
+        lastSavedState.variablesJson === JSON.stringify(variables) &&
+        variables.length > 0
+      );
+    }
+
+    if (stepNum === 4) {
+      return isStepCompleted(3);
+    }
+
+    return false;
+  };
   const fetchProjectDetails = async () => {
     setLoading(true);
     try {
@@ -212,6 +260,23 @@ export default function WorkspaceClient() {
           }
         }
         setMaxUnlockedStep(initialMaxStep);
+
+        if (rd.designType && rd.designType !== "Undetermined") {
+          setLastSavedState({
+            approach: rd.approach || "quant",
+            design: rd.designType || "Experimental",
+            formula: rd.formulaType || "slovin",
+            popSize: rd.populationSize !== undefined ? rd.populationSize : 1000,
+            confLevel: rd.confidenceLevel !== undefined ? rd.confidenceLevel : 0.95,
+            marginError: rd.marginOfError !== undefined ? rd.marginOfError : 0.05,
+            samplingTechnique: rd.samplingTechnique || "Simple Random Sampling",
+            isPopKnown: rd.isPopulationKnown !== undefined ? rd.isPopulationKnown : true,
+            analysisMethod: rd.analysisMethod || "Multiple Linear Regression",
+            variablesJson: rd.variables || "[]",
+          });
+        } else {
+          setLastSavedState(null);
+        }
       }
     } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
@@ -364,6 +429,18 @@ export default function WorkspaceClient() {
           samplingTechnique,
           isPopulationKnown: isPopKnown
         }),
+      });
+      setLastSavedState({
+        approach,
+        design,
+        formula,
+        popSize,
+        confLevel,
+        marginError,
+        samplingTechnique,
+        isPopKnown,
+        analysisMethod,
+        variablesJson: JSON.stringify(variables),
       });
       triggerAlert(t("common.saved"), t("common.notification"), "success");
     } catch (err: any) {
@@ -1973,7 +2050,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     <span style={styles.stepNum}>Step {s.step}</span>
                     <span style={styles.stepLabel}>{s.label}</span>
                   </div>
-                  {activeStep > s.step && <span style={styles.stepCheck}>✓</span>}
+                  {(isStepCompleted(s.step) || activeStep > s.step) && <span style={styles.stepCheck}>✓</span>}
                 </button>
               );
             })}
