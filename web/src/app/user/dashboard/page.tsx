@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix, IconRefresh } from "../../components/Icons";
+import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix, IconRefresh, IconSearch, IconFilter } from "../../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
@@ -31,11 +31,73 @@ export default function DashboardPage() {
 
   const [activeTab, setActiveTab] = useState<"active" | "archived">("active");
 
+  // Search, Filter, Sort States
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [approachFilter, setApproachFilter] = useState<string>("All");
+  const [sortBy, setSortBy] = useState<"title" | "approach" | "createdAt" | "updatedAt">("updatedAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
   const activeProjects = projects.filter((p) => !p.isArchived);
   const archivedProjects = projects.filter((p) => p.isArchived);
 
   const projectToDelete = projects.find((p) => p.id === projectIdToDelete);
   const isTargetAlreadyArchived = projectToDelete ? projectToDelete.isArchived : false;
+
+  // Real-time Filtering & Sorting dynamic pipeline
+  const processProjects = (list: Project[]) => {
+    // 1. Filter by Search Query
+    let result = list.filter((p) => {
+      const titleMatch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const descMatch = (p.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+      return titleMatch || descMatch;
+    });
+
+    // 2. Filter by Research Approach
+    if (approachFilter !== "All") {
+      result = result.filter((p) => p.approach === approachFilter);
+    }
+
+    // 3. Sort Results dynamically
+    result.sort((a, b) => {
+      let valA: any = a[sortBy] || "";
+      let valB: any = b[sortBy] || "";
+
+      if (sortBy === "createdAt" || sortBy === "updatedAt") {
+        valA = new Date(valA).getTime();
+        valB = new Date(valB).getTime();
+      } else {
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+      }
+
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  };
+
+  const displayedActive = processProjects(activeProjects);
+  const displayedArchived = processProjects(archivedProjects);
+
+  const handleHeaderClick = (field: "title" | "approach" | "createdAt" | "updatedAt") => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const renderSortIndicator = (field: "title" | "approach" | "createdAt" | "updatedAt") => {
+    if (sortBy !== field) return null;
+    return (
+      <span style={{ marginLeft: "6px", fontSize: "0.75rem", color: "#c084fc", display: "inline-block", verticalAlign: "middle" }}>
+        {sortOrder === "asc" ? "▲" : "▼"}
+      </span>
+    );
+  };
 
   useEffect(() => {
     // Authenticate session locally
@@ -306,15 +368,142 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            {/* Dynamic Search, Filter, and Sorting Controls */}
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1rem",
+              marginBottom: "1.25rem",
+              background: "rgba(255, 255, 255, 0.01)",
+              border: "1px solid rgba(255, 255, 255, 0.04)",
+              padding: "0.85rem 1.25rem",
+              borderRadius: "12px"
+            }}>
+              {/* Search Box */}
+              <div style={{ position: "relative", flex: "1 1 280px" }}>
+                <span style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255, 255, 255, 0.35)", pointerEvents: "none", display: "flex", alignItems: "center" }}>
+                  <IconSearch size={16} />
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("dashboard.searchPlaceholder")}
+                  className="form-input"
+                  style={{
+                    paddingLeft: "2.4rem",
+                    margin: 0,
+                    fontSize: "0.88rem",
+                    height: "38px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.02)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    color: "rgba(255, 255, 255, 0.9)"
+                  }}
+                />
+              </div>
+
+              {/* Filters and Sorting dropdowns */}
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem" }}>
+                {/* Approach Filter */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
+                    {t("dashboard.filterLabel")}:
+                  </span>
+                  <select
+                    value={approachFilter}
+                    onChange={(e) => setApproachFilter(e.target.value)}
+                    className="form-input"
+                    style={{
+                      width: "160px",
+                      height: "38px",
+                      margin: 0,
+                      padding: "0 0.75rem",
+                      fontSize: "0.85rem",
+                      borderRadius: "8px",
+                      background: "rgba(3, 7, 18, 0.6)",
+                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      color: "rgba(255, 255, 255, 0.8)",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <option value="All">{t("dashboard.filterAll")}</option>
+                    <option value="Kuantitatif">Kuantitatif</option>
+                    <option value="Kualitatif">Kualitatif</option>
+                    <option value="R&D">R&D</option>
+                  </select>
+                </div>
+
+                {/* Explicit Sorting Dropdown */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
+                    {t("dashboard.sortLabel")}:
+                  </span>
+                  <select
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => {
+                      const [field, order] = e.target.value.split("-") as [any, any];
+                      setSortBy(field);
+                      setSortOrder(order);
+                    }}
+                    className="form-input"
+                    style={{
+                      width: "210px",
+                      height: "38px",
+                      margin: 0,
+                      padding: "0 0.75rem",
+                      fontSize: "0.85rem",
+                      borderRadius: "8px",
+                      background: "rgba(3, 7, 18, 0.6)",
+                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      color: "rgba(255, 255, 255, 0.8)",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <option value="title-asc">{t("dashboard.sortTitleAsc")}</option>
+                    <option value="title-desc">{t("dashboard.sortTitleDesc")}</option>
+                    <option value="approach-asc">{t("dashboard.sortApproachAsc")}</option>
+                    <option value="approach-desc">{t("dashboard.sortApproachDesc")}</option>
+                    <option value="createdAt-asc">{t("dashboard.sortCreatedAsc")}</option>
+                    <option value="createdAt-desc">{t("dashboard.sortCreatedDesc")}</option>
+                    <option value="updatedAt-asc">{t("dashboard.sortUpdatedAsc")}</option>
+                    <option value="updatedAt-desc">{t("dashboard.sortUpdatedDesc")}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
               <table className="arche-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "25%" }}>{t("dashboard.projectTitleColumn")}</th>
+                    <th style={{ width: "25%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("title")}>
+                      <span style={{ display: "inline-flex", alignItems: "center" }}>
+                        {t("dashboard.projectTitleColumn")}
+                        {renderSortIndicator("title")}
+                      </span>
+                    </th>
                     <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
-                    <th style={{ width: "15%" }}>{t("dashboard.projectApproachColumn")}</th>
-                    <th style={{ width: "15%" }}>{t("dashboard.createdAtColumn")}</th>
-                    <th style={{ width: "15%" }}>{t("dashboard.updatedAtColumn")}</th>
+                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("approach")}>
+                      <span style={{ display: "inline-flex", alignItems: "center" }}>
+                        {t("dashboard.projectApproachColumn")}
+                        {renderSortIndicator("approach")}
+                      </span>
+                    </th>
+                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("createdAt")}>
+                      <span style={{ display: "inline-flex", alignItems: "center" }}>
+                        {t("dashboard.createdAtColumn")}
+                        {renderSortIndicator("createdAt")}
+                      </span>
+                    </th>
+                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("updatedAt")}>
+                      <span style={{ display: "inline-flex", alignItems: "center" }}>
+                        {t("dashboard.updatedAtColumn")}
+                        {renderSortIndicator("updatedAt")}
+                      </span>
+                    </th>
                     <th style={{ width: "5%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
                   </tr>
                 </thead>
@@ -333,8 +522,19 @@ export default function DashboardPage() {
                           </div>
                         </td>
                       </tr>
+                    ) : displayedActive.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                            <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                            <span style={{ fontSize: "0.95rem" }}>
+                              {t("dashboard.noMatchFound")}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
                     ) : (
-                      activeProjects.map((proj) => (
+                      displayedActive.map((proj) => (
                         <tr key={proj.id}>
                           <td style={{ verticalAlign: "middle" }}>
                             <div
@@ -402,8 +602,19 @@ export default function DashboardPage() {
                           </div>
                         </td>
                       </tr>
+                    ) : displayedArchived.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                            <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                            <span style={{ fontSize: "0.95rem" }}>
+                              {t("dashboard.noMatchFound")}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
                     ) : (
-                      archivedProjects.map((proj) => (
+                      displayedArchived.map((proj) => (
                         <tr key={proj.id} style={{ opacity: 0.8 }}>
                           <td style={{ verticalAlign: "middle" }}>
                             <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
