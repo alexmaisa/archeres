@@ -40,10 +40,23 @@ interface MathFormula {
   reference: string;
 }
 
-interface ScaleAdvice {
-  scale: string;
-  tests: string;
-  context: string;
+interface ScaleDetail {
+  name: string;
+  definition: string;
+  example: string;
+}
+
+interface TestDetail {
+  testName: string;
+  purpose: string;
+}
+
+interface ScaleAdviceGroup {
+  title: string;
+  testType: string;
+  assumption: string;
+  scales: ScaleDetail[];
+  tests: TestDetail[];
 }
 
 interface ChapterSection {
@@ -65,7 +78,11 @@ interface AboutContent {
   mathFormulas: MathFormula[];
   scaleSectionTitle: string;
   scaleSectionDesc: string;
-  scaleAdvices: ScaleAdvice[];
+  scaleSectionDefHeader: string;
+  scaleSectionExampleHeader: string;
+  scaleSectionAssumptionHeader: string;
+  scaleSectionTestHeader: string;
+  scaleAdvices: ScaleAdviceGroup[];
   chapterSectionTitle: string;
   chapterSectionDesc: string;
   chapterSections: ChapterSection[];
@@ -212,11 +229,61 @@ export default function AboutPage() {
           ]
         }
       ],
-      scaleSectionTitle: "Stevens' Scales & Statistical Advice",
-      scaleSectionDesc: "Classifying study variables using Stevens' taxonomy of scales automatically triggers the appropriate statistical test recommendations.",
+      scaleSectionTitle: "Stevens' Measurement Scales & Statistical Advice",
+      scaleSectionDesc: "Understanding the properties of Stevens' measurement scales helps you choose between parametric and non-parametric statistical tests.",
+      scaleSectionDefHeader: "Scale Definition",
+      scaleSectionExampleHeader: "Research Example",
+      scaleSectionAssumptionHeader: "Mathematical Assumption",
+      scaleSectionTestHeader: "Applicable Statistical Tests",
       scaleAdvices: [
-        { scale: "Nominal & Ordinal Scales", tests: "Non-Parametric Tests", context: "Chi-Square, Wilcoxon, Mann-Whitney U, Spearman Rho correlation, and Kruskal-Wallis analysis." },
-        { scale: "Interval & Ratio Scales", tests: "Parametric Tests", context: "Pearson Correlation, Independent/Paired t-Test, ANOVA, and Simple/Multiple Linear Regression models." }
+        {
+          title: "Nominal & Ordinal Scales",
+          testType: "Non-Parametric Statistical Analysis",
+          assumption: "Does not assume normal distribution. Highly resilient for categorical, ranked, or qualitative research designs where sample distributions are skewed.",
+          scales: [
+            {
+              name: "Nominal Scale",
+              definition: "Categorical labels used purely for identification with no inherent order, sequence, or ranking.",
+              example: "Gender, blood type, religious affiliation, field of study."
+            },
+            {
+              name: "Ordinal Scale",
+              definition: "Categorical data with a natural, logical ranking, but the mathematical intervals between ranks are unequal.",
+              example: "Education levels (High School < Bachelor < PhD), satisfaction ratings (Likert scale: 1 to 5)."
+            }
+          ],
+          tests: [
+            { testName: "Chi-Square Test of Independence", purpose: "Determines if there is a significant association between two categorical variables." },
+            { testName: "Mann-Whitney U Test", purpose: "Compares differences between two independent ranked groups (ordinal alternative to independent t-Test)." },
+            { testName: "Wilcoxon Signed-Rank Test", purpose: "Compares differences between two related/paired ranked groups (pre/post-test ordinal alternative)." },
+            { testName: "Spearman's Rank Correlation", purpose: "Measures the strength and direction of monotonic association between two ranked variables." },
+            { testName: "Kruskal-Wallis Test", purpose: "Compares differences among three or more independent ranked groups (ordinal alternative to ANOVA)." }
+          ]
+        },
+        {
+          title: "Interval & Ratio Scales",
+          testType: "Parametric Statistical Analysis",
+          assumption: "Assumes continuous numerical metrics, normal data distribution, and equal variance across groups.",
+          scales: [
+            {
+              name: "Interval Scale",
+              definition: "Numeric metrics with equal intervals between values, but has no true absolute zero (zero is arbitrary).",
+              example: "Temperature in Celsius or Fahrenheit (0°C doesn't mean absence of heat), IQ scores."
+            },
+            {
+              name: "Ratio Scale",
+              definition: "Numeric metrics with equal intervals and a true absolute zero point representing total absence of the variable.",
+              example: "Age, height, weight, distance, income, duration (0 years represents total absence of time elapsed)."
+            }
+          ],
+          tests: [
+            { testName: "Pearson's Correlation Coefficient", purpose: "Measures the strength and direction of a linear relationship between two continuous variables." },
+            { testName: "Independent Samples t-Test", purpose: "Compares the means of two independent quantitative/numerical groups." },
+            { testName: "Paired Samples t-Test", purpose: "Compares the means of two related/paired quantitative groups (pre/post-test repeated measurements)." },
+            { testName: "One-Way ANOVA (F-Test)", purpose: "Compares the means of three or more independent quantitative groups." },
+            { testName: "Simple & Multiple Linear Regression", purpose: "Predicts the value of a dependent variable based on one or more independent variables." }
+          ]
+        }
       ],
       chapterSectionTitle: "Chapter III Thesis Blueprint Framework",
       chapterSectionDesc: "The generated Chapter 3 markdown draft is structured to conform strictly with international peer-reviewed thesis guidelines.",
@@ -346,10 +413,60 @@ export default function AboutPage() {
         }
       ],
       scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
-      scaleSectionDesc: "Pengelompokan variabel berdasarkan taksonomi Stevens secara otomatis mengarahkan peneliti pada rekomendasi uji hipotesis yang valid.",
+      scaleSectionDesc: "Memahami karakteristik masing-masing skala pengukuran Stevens membantu Anda memilih antara uji statistik parametris dan non-parametris secara tepat.",
+      scaleSectionDefHeader: "Definisi Skala",
+      scaleSectionExampleHeader: "Contoh Riset",
+      scaleSectionAssumptionHeader: "Asumsi Matematis",
+      scaleSectionTestHeader: "Uji Statistik yang Berlaku",
       scaleAdvices: [
-        { scale: "Skala Nominal & Ordinal", tests: "Uji Non-Parametris", context: "Uji Chi-Square, Wilcoxon Sign-Rank, Mann-Whitney U, korelasi Spearman Rank, dan Kruskal-Wallis." },
-        { scale: "Skala Interval & Rasio", tests: "Uji Parametris", context: "Korelasi Pearson Product-Moment, t-Test (Independen/Berpasangan), ANOVA, dan Regresi Linear Sederhana/Berganda." }
+        {
+          title: "Skala Nominal & Ordinal",
+          testType: "Analisis Statistik Non-Parametris",
+          assumption: "Bebas distribusi (tidak mengasumsikan distribusi data normal). Sangat tangguh untuk data kategori, peringkat/ranking, atau riset kualitatif dengan ukuran sampel kecil/skala skewed.",
+          scales: [
+            {
+              name: "Skala Nominal",
+              definition: "Label kategori yang murni digunakan untuk identifikasi data, tanpa tingkatan, urutan, atau nilai matematika di dalamnya.",
+              example: "Jenis kelamin, golongan darah, agama, suku, bidang ilmu/jurusan."
+            },
+            {
+              name: "Skala Ordinal",
+              definition: "Label kategori yang memiliki urutan atau tingkatan logis, namun jarak matematika antar tingkatan tidak sama/terukur secara numerik konstan.",
+              example: "Tingkat pendidikan (SD < SMP < SMA < S1), skala kepuasan Likert (1: Sangat Tidak Puas s/d 5: Sangat Puas)."
+            }
+          ],
+          tests: [
+            { testName: "Uji Chi-Square (Uji Asosiasi)", purpose: "Menentukan ada tidaknya hubungan signifikan antara dua variabel kategorik." },
+            { testName: "Uji Mann-Whitney U", purpose: "Membandingkan perbedaan skor ordinal antara dua kelompok independen (alternatif non-parametrik t-Test independen)." },
+            { testName: "Uji Wilcoxon Signed-Rank", purpose: "Membandingkan perbedaan skor ordinal dua kelompok berpasangan (alternatif non-parametrik paired t-Test/sebelum-sesudah)." },
+            { testName: "Korelasi Spearman Rank (Rho)", purpose: "Mengukur kekuatan dan arah hubungan monotonik antara dua variabel bertingkat/ordinal." },
+            { testName: "Uji Kruskal-Wallis ANOVA", purpose: "Membandingkan perbedaan skor ordinal antara tiga kelompok independen atau lebih (alternatif non-parametrik ANOVA)." }
+          ]
+        },
+        {
+          title: "Skala Interval & Rasio",
+          testType: "Analisis Statistik Parametris",
+          assumption: "Mengasumsikan data berupa nilai numerik kontinu, data berdistribusi normal, dan varians kelompok homogen.",
+          scales: [
+            {
+              name: "Skala Interval",
+              definition: "Data numerik dengan jarak konstan yang sama antar nilai, namun tidak memiliki nilai nol mutlak (nilai nol bersifat arbitrer).",
+              example: "Suhu Celsius/Fahrenheit (0°C tidak berarti tidak ada panas), skor tes IQ (0 IQ tidak berarti tidak memiliki kecerdasan)."
+            },
+            {
+              name: "Skala Rasio",
+              definition: "Data numerik kontinu dengan jarak konstan antar nilai serta memiliki titik nol mutlak yang melambangkan ketiadaan mutlak variabel tersebut.",
+              example: "Usia, tinggi badan, berat badan, pendapatan, jarak tempuh (0 meter melambangkan ketiadaan jarak sama sekali)."
+            }
+          ],
+          tests: [
+            { testName: "Korelasi Pearson Product-Moment", purpose: "Mengukur kekuatan dan arah hubungan linear antara dua variabel numerik kontinu." },
+            { testName: "Independent Samples t-Test", purpose: "Membandingkan perbedaan rata-rata (mean) numerik antara dua kelompok independen." },
+            { testName: "Paired Samples t-Test", purpose: "Membandingkan perbedaan rata-rata numerik dua kelompok berpasangan (pengukuran berulang/sebelum-sesudah)." },
+            { testName: "One-Way ANOVA (F-Test)", purpose: "Membandingkan perbedaan rata-rata numerik antara tiga kelompok independen atau lebih." },
+            { testName: "Regresi Linear Sederhana & Berganda", purpose: "Memprediksi nilai variabel dependen numerik berdasarkan pengaruh satu atau lebih variabel independen." }
+          ]
+        }
       ],
       chapterSectionTitle: "Kerangka Blueprint Dokumen BAB III",
       chapterSectionDesc: "Draf berkas markdown BAB III yang dihasilkan disusun secara sistematis agar selaras dengan pedoman penulisan karya ilmiah universitas.",
@@ -637,23 +754,61 @@ export default function AboutPage() {
             {copy.scaleSectionDesc}
           </p>
           <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: "1.5rem"
+            display: "flex",
+            flexDirection: "column",
+            gap: "2.5rem"
           }}>
-            {copy.scaleAdvices.map((sa, idx) => (
-              <div key={idx} className="glass-panel" style={{ padding: "1.5rem", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "0.75rem", borderLeft: idx === 0 ? "3px solid #38bdf8" : "3px solid #34d399" }}>
-                <div>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "white" }}>{sa.scale}</h3>
-                  <span style={{ fontSize: "0.75rem", color: idx === 0 ? "#38bdf8" : "#34d399", fontWeight: 700 }}>
-                    {sa.tests}
-                  </span>
+            {copy.scaleAdvices.map((group, idx) => (
+              <div key={idx} className="glass-panel animate-fade-in" style={{ padding: "2rem", borderRadius: "18px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                
+                {/* Header panel */}
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", gap: "1rem", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "1rem" }}>
+                  <div>
+                    <h3 style={{ fontSize: "1.25rem", fontWeight: 900, color: "white", fontFamily: "'Outfit', sans-serif" }}>{group.title}</h3>
+                    <span style={{ fontSize: "0.8rem", color: idx === 0 ? "#38bdf8" : "#34d399", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      {group.testType}
+                    </span>
+                  </div>
+                  <div style={{ background: "rgba(255,255,255,0.02)", border: idx === 0 ? "1px solid rgba(56,189,248,0.2)" : "1px solid rgba(52,211,153,0.2)", padding: "0.75rem 1rem", borderRadius: "10px", maxWidth: "480px" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 800, color: idx === 0 ? "#38bdf8" : "#34d399", textTransform: "uppercase", display: "block", marginBottom: "0.2rem" }}>
+                      {copy.scaleSectionAssumptionHeader}
+                    </span>
+                    <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.35 }}>{group.assumption}</p>
+                  </div>
                 </div>
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                  <p style={{ fontSize: "0.85rem", color: "white", fontWeight: 600, lineHeight: 1.4 }}>
-                    {sa.context}
-                  </p>
+
+                {/* Sub-grid of Scales */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1.5rem" }}>
+                  {group.scales.map((sc, scIdx) => (
+                    <div key={scIdx} style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "1.25rem", borderRadius: "12px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                      <h4 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#c084fc", fontFamily: "'Outfit', sans-serif" }}>{sc.name}</h4>
+                      <div>
+                        <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.35)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>{copy.scaleSectionDefHeader}</span>
+                        <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.45 }}>{sc.definition}</p>
+                      </div>
+                      <div style={{ background: "rgba(0,0,0,0.1)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                        <span style={{ fontSize: "0.72rem", color: idx === 0 ? "#38bdf8" : "#34d399", textTransform: "uppercase", fontWeight: 800, display: "block" }}>{copy.scaleSectionExampleHeader}</span>
+                        <p style={{ fontSize: "0.8rem", color: "white", fontWeight: 600 }}>{sc.example}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+
+                {/* Statistical test mapping listing */}
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", padding: "1.25rem", borderRadius: "12px" }}>
+                  <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#fb7185", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.04)", paddingBottom: "0.4rem" }}>
+                    {copy.scaleSectionTestHeader}
+                  </h4>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {group.tests.map((test, tIdx) => (
+                      <div key={tIdx} style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? "0.25rem" : "1.5rem" }}>
+                        <span style={{ fontSize: "0.86rem", fontWeight: 800, color: "white", width: isMobile ? "100%" : "260px", flexShrink: 0 }}>{test.testName}</span>
+                        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.4 }}>{test.purpose}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
               </div>
             ))}
           </div>
