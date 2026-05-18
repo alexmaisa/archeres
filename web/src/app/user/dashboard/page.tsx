@@ -99,7 +99,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteProject = async (id: number) => {
+  const handleDeleteProject = async (id: string) => {
     if (!confirm(t("dashboard.deleteConfirm"))) return;
 
     try {

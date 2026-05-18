@@ -2,6 +2,9 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // User represents a registered researcher or administrator in the system
@@ -20,7 +23,7 @@ type User struct {
 
 // Project represents a research draft created by a User
 type Project struct {
-	ID             uint           `gorm:"primaryKey" json:"id"`
+	ID             string         `gorm:"primaryKey;type:varchar(36)" json:"id"`
 	Title          string         `gorm:"not null" json:"title"`
 	Description    string         `json:"description"`
 	UserID         uint           `gorm:"not null" json:"userId"`
@@ -30,11 +33,17 @@ type Project struct {
 	UpdatedAt      time.Time      `json:"updatedAt"`
 }
 
+// BeforeCreate is a GORM hook that auto-generates a cryptographically secure random UUID string for the Project before saving it to the database.
+func (p *Project) BeforeCreate(tx *gorm.DB) (err error) {
+	p.ID = uuid.New().String()
+	return
+}
+
 // ResearchDesign stores all methodology decisions, sample size calculation outputs,
 // variable mappings, and analytical recommendations for a specific Project
 type ResearchDesign struct {
 	ID               uint    `gorm:"primaryKey" json:"id"`
-	ProjectID        uint    `gorm:"unique;not null" json:"projectId"`
+	ProjectID        string  `gorm:"unique;not null;type:varchar(36)" json:"projectId"`
 	Approach         string  `json:"approach"`         // Quantitative, Qualitative, Mixed
 	DesignType       string  `json:"designType"`       // e.g. Experimental, Quasi-Experimental, Case Study, Phenomenology
 	FormulaType      string  `json:"formulaType"`      // e.g. Slovin, Cochran, Lemeshow, Krejcie-Morgan, Yamane, Daniel

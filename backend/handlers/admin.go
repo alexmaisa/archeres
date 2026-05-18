@@ -233,7 +233,7 @@ func DeleteUserByAdmin(c *fiber.Ctx) error {
 	tx := config.DB.Begin()
 
 	// 1. Delete all research designs belonging to user's projects
-	var projectIds []uint
+	var projectIds []string
 	tx.Model(&models.Project{}).Where("user_id = ?", user.ID).Pluck("id", &projectIds)
 	if len(projectIds) > 0 {
 		if err := tx.Where("project_id IN ?", projectIds).Delete(&models.ResearchDesign{}).Error; err != nil {

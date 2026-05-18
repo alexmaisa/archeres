@@ -28,7 +28,7 @@ interface ResearchDesign {
 }
 
 interface WorkspaceProject {
-  id: number;
+  id: string;
   title: string;
   description: string;
   researchDesign?: ResearchDesign;

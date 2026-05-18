@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"archeres/backend/config"
 	"archeres/backend/models"
@@ -102,12 +101,7 @@ func CreateProject(c *fiber.Ctx) error {
 // GetProject loads a specific project with preloaded research design details
 func GetProject(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
-	projectID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID Proyek tidak valid.",
-		})
-	}
+	projectID := c.Params("id")
 
 	var project models.Project
 	if err := config.DB.Where("id = ? AND user_id = ?", projectID, userID).Preload("ResearchDesign").First(&project).Error; err != nil {
@@ -122,12 +116,7 @@ func GetProject(c *fiber.Ctx) error {
 // UpdateProject updates the title and description of a project
 func UpdateProject(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
-	projectID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID Proyek tidak valid.",
-		})
-	}
+	projectID := c.Params("id")
 
 	var project models.Project
 	if err := config.DB.Where("id = ? AND user_id = ?", projectID, userID).First(&project).Error; err != nil {
@@ -160,12 +149,7 @@ func UpdateProject(c *fiber.Ctx) error {
 // DeleteProject deletes a project (cascades associated ResearchDesign)
 func DeleteProject(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
-	projectID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID Proyek tidak valid.",
-		})
-	}
+	projectID := c.Params("id")
 
 	var project models.Project
 	if err := config.DB.Where("id = ? AND user_id = ?", projectID, userID).First(&project).Error; err != nil {
@@ -188,12 +172,7 @@ func DeleteProject(c *fiber.Ctx) error {
 // UpdateResearchDesign updates the step-by-step wizard details for a project
 func UpdateResearchDesign(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
-	projectID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID Proyek tidak valid.",
-		})
-	}
+	projectID := c.Params("id")
 
 	// Verify project ownership
 	var project models.Project
@@ -248,12 +227,7 @@ type VariableStruct struct {
 // ExportChapter3 generates a styled, academic-grade Indonesian "Bab III: Metodologi Penelitian" draft
 func ExportChapter3(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(uint)
-	projectID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID Proyek tidak valid.",
-		})
-	}
+	projectID := c.Params("id")
 
 	var project models.Project
 	if err := config.DB.Where("id = ? AND user_id = ?", projectID, userID).Preload("ResearchDesign").First(&project).Error; err != nil {
