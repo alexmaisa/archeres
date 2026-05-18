@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { deriveKey, exportKeyToBase64 } from "../../utils/crypto";
+import { deriveWrappingKey, unwrapMasterKey } from "../../lib/crypto";
+import { storeMEK } from "../../lib/session";
 
 interface LoginResponse {
   user: {
@@ -14,6 +15,8 @@ interface LoginResponse {
     role: string;
     createdAt: string;
   };
+  passwordVault: string;
+  vaultSalt: string;
 }
 
 export default function LoginPage() {
@@ -47,14 +50,16 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      // Derive the Zero-Knowledge E2EE cryptographic key locally
+      // --- E2EE: Unwrap MEK from password vault and store in sessionStorage ---
       try {
-        const vaultKey = await deriveKey(password, email);
-        const base64Key = await exportKeyToBase64(vaultKey);
-        sessionStorage.setItem("user_vault_key", base64Key);
+        const wrappingKey = await deriveWrappingKey(password, data.vaultSalt);
+        const mek = await unwrapMasterKey(data.passwordVault, wrappingKey);
+        await storeMEK(mek);
       } catch (cryptoErr) {
-        console.error("Cryptography derivation failed", cryptoErr);
+        console.error("Failed to unwrap MEK", cryptoErr);
+        // Continue login — user can still access non-encrypted data
       }
+      // -----------------------------------------------------------------------
 
       // Save user session details locally
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -118,7 +123,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-input"
-              placeholder="e.g., researcher@arche.com"
+              placeholder="e.g., username@example.com"
               required
               disabled={loading}
             />

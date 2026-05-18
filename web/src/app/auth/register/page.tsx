@@ -4,15 +4,23 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
+import {
+  generateSalt,
+  generateMasterKey,
+  generateRecoveryKey,
+  deriveWrappingKey,
+  wrapMasterKey,
+} from "../../lib/crypto";
 
 interface RegisterResponse {
   message?: string;
+  emailWarning?: string;
   error?: string;
 }
 
 const getPasswordStrength = (pwd: string) => {
   if (!pwd) return { score: 0, textKey: "auth.strengthEmpty", color: "#6b7280", width: "0%" };
-  
+
   let score = 0;
   if (pwd.length >= 8) score++;
   if (/[A-Z]/.test(pwd)) score++;
@@ -59,34 +67,40 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await apiFetch<RegisterResponse>("/api/auth/register", {
+      // --- E2EE Key Generation (client-side only, before API call) ---
+      const salt = generateSalt();
+      const recoveryKey = generateRecoveryKey();
+      const mek = await generateMasterKey();
+
+      const passwordWrappingKey = await deriveWrappingKey(password, salt);
+      const recoveryWrappingKey = await deriveWrappingKey(recoveryKey, salt);
+
+      const passwordVault = await wrapMasterKey(mek, passwordWrappingKey);
+      const recoveryVault = await wrapMasterKey(mek, recoveryWrappingKey);
+      // ----------------------------------------------------------------
+
+      const res = await apiFetch<RegisterResponse>("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          passwordVault,
+          recoveryVault,
+          vaultSalt: salt,
+          recoveryKey,
+        }),
       });
 
-      // Generate downloadable Master Recovery Key for Zero-Knowledge E2EE
-      try {
-        const randomBytes = window.crypto.getRandomValues(new Uint8Array(32));
-        const recoveryKeyBase64 = btoa(String.fromCharCode(...randomBytes));
-        const fileContent = `ARCHERES ZERO-KNOWLEDGE MASTER RECOVERY KEY\n=========================================\n\nOwner: ${name} (${email})\nGenerated: ${new Date().toLocaleString()}\n\nThis file is highly confidential. If you lose your password, you can use this Master Recovery Key to restore access to your research vault.\n\nMaster Recovery Key:\n${recoveryKeyBase64}\n`;
-        
-        const blob = new Blob([fileContent], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `archeres_recovery_key_${email.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } catch (cryptoErr) {
-        console.error("Failed to generate recovery key", cryptoErr);
+      if (res.emailWarning) {
+        setSuccess(t("auth.successRegister"));
+      } else {
+        setSuccess(t("auth.successRegisterWithEmail"));
       }
 
-      setSuccess(t("auth.successRegister"));
       setTimeout(() => {
         router.push("/auth/login");
-      }, 1500);
+      }, 2000);
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
@@ -141,7 +155,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="form-input"
-              placeholder="e.g., Prof. Alex Maisa"
+              placeholder="enter your name here"
               required
               disabled={loading}
             />
@@ -154,7 +168,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-input"
-              placeholder="e.g., researcher@arche.com"
+              placeholder="e.g., username@example.com"
               required
               disabled={loading}
             />
