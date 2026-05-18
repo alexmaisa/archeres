@@ -68,8 +68,8 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("Server API Archeres berjalan aktif pada port %s...", port)
+	log.Printf("Archeres API server is running on port %s...", port)
 	if err := app.Listen(":" + port); err != nil {
-		log.Fatalf("Gagal menjalankan server API: %v", err)
+		log.Fatalf("Failed to run API server: %v", err)
 	}
 }

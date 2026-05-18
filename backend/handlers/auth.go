@@ -323,18 +323,18 @@ func ForgotPassword(c *fiber.Ctx) error {
 		
 		if os.Getenv("SMTP_HOST") == "" {
 			return c.JSON(fiber.Map{
-				"message": "Instruksi pemulihan kata sandi telah dibuat (mode development). Silakan periksa log server untuk token Anda.",
+				"message": "Password recovery instructions created (development mode). Please check server logs for your token.",
 				"devToken": token,
 			})
 		}
 		
 		return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
-			"error": "Layanan pengiriman email saat ini tidak tersedia. Silakan hubungi admin atau coba lagi nanti.",
+			"error": "Email delivery service is currently unavailable. Please contact an administrator or try again later.",
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Instruksi pemulihan kata sandi telah dikirim ke email Anda.",
+		"message": "Password recovery instructions have been sent to your email.",
 	})
 }
 
@@ -356,13 +356,13 @@ func ResetPassword(c *fiber.Ctx) error {
 	var user models.User
 	if err := config.DB.Where("email = ? AND reset_token = ?", input.Email, input.Token).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Tautan reset tidak valid atau telah kedaluwarsa.",
+			"error": "Invalid or expired reset link.",
 		})
 	}
 
 	if user.ResetTokenExpiry == nil || time.Now().After(*user.ResetTokenExpiry) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Tautan reset telah kedaluwarsa (berlaku 15 menit). Silakan ajukan ulang.",
+			"error": "Reset link has expired (valid for 15 minutes). Please request a new one.",
 		})
 	}
 
@@ -386,7 +386,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message":       "Kata sandi Anda telah berhasil diperbarui.",
+		"message":       "Your password has been successfully updated.",
 		"recoveryVault": user.RecoveryVault,
 		"vaultSalt":     user.VaultSalt,
 	})

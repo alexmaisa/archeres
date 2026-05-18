@@ -74,7 +74,7 @@ func TestCalculateLemeshow(t *testing.T) {
 	// z = 1.96, P = 0.5, d = 0.05 -> Should be equal to Cochran (385)
 	infResult := CalculateLemeshow(1.96, 0.5, 0.05, 0)
 	if infResult != 385 {
-		t.Errorf("Lemeshow populasi tidak diketahui = %d; ingin 385", infResult)
+		t.Errorf("Lemeshow unknown population = %d; want 385", infResult)
 	}
 
 	// Finite population Lemeshow correction:
@@ -83,6 +83,6 @@ func TestCalculateLemeshow(t *testing.T) {
 	// n = 385 / (1 + (384/1000)) = 385 / 1.384 = 278.18 -> 279
 	finResult := CalculateLemeshow(1.96, 0.5, 0.05, 1000)
 	if finResult != 279 {
-		t.Errorf("Lemeshow populasi diketahui (N=1000) = %d; ingin 279", finResult)
+		t.Errorf("Lemeshow known population (N=1000) = %d; want 279", finResult)
 	}
 }

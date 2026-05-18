@@ -163,14 +163,14 @@ func GetStats(c *fiber.Ctx) error {
 // ListUsers is deactivated to guarantee user privacy. Returns 403 Forbidden.
 func ListUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-		"error": "Pemberitahuan: Akses daftar detail seluruh akun pengguna dinonaktifkan secara permanen demi menjaga privasi dan keamanan platform.",
+		"error": "Notice: Access to full user details is permanently disabled for privacy and security.",
 	})
 }
 
 // ListAllProjects is deactivated to guarantee user privacy. Returns 403 Forbidden.
 func ListAllProjects(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-		"error": "Pemberitahuan: Akses daftar detail draf penelitian pengguna dinonaktifkan secara permanen demi menjaga privasi dan keamanan platform.",
+		"error": "Notice: Access to full research drafts is permanently disabled for privacy and security.",
 	})
 }
 
@@ -179,14 +179,14 @@ func SecureLookupUser(c *fiber.Ctx) error {
 	email := c.Query("email")
 	if email == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Email pencarian wajib diisi.",
+			"error": "Search email is required.",
 		})
 	}
 
 	var user models.User
 	if err := config.DB.Where("email = ?", email).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Peneliti dengan alamat email tersebut tidak ditemukan.",
+			"error": "Researcher with that email address was not found.",
 		})
 	}
 
@@ -210,22 +210,22 @@ func DeleteUserByAdmin(c *fiber.Ctx) error {
 	}
 	if err := c.BodyParser(&body); err != nil || body.Email == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Email pengguna wajib diisi.",
+			"error": "User email is required.",
 		})
 	}
 
 	var user models.User
 	if err := config.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Akun pengguna tidak ditemukan.",
+			"error": "User account was not found.",
 		})
 	}
 
-	// Prevent admin from deleting themselves
-	currentUser := c.Locals("user").(models.User)
-	if currentUser.ID == user.ID {
+	// Prevent admin from deleting themselves using type-safe userID from c.Locals
+	currentUserID := c.Locals("userID").(uint)
+	if currentUserID == user.ID {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Anda tidak dapat menghapus akun admin Anda sendiri.",
+			"error": "You cannot delete your own administrator account.",
 		})
 	}
 
@@ -239,7 +239,7 @@ func DeleteUserByAdmin(c *fiber.Ctx) error {
 		if err := tx.Where("project_id IN ?", projectIds).Delete(&models.ResearchDesign{}).Error; err != nil {
 			tx.Rollback()
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": "Gagal menghapus detail desain penelitian proyek.",
+				"error": "Failed to delete project research design details.",
 			})
 		}
 	}
@@ -248,7 +248,7 @@ func DeleteUserByAdmin(c *fiber.Ctx) error {
 	if err := tx.Where("user_id = ?", user.ID).Delete(&models.Project{}).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal menghapus proyek penelitian milik pengguna.",
+			"error": "Failed to delete user's research projects.",
 		})
 	}
 
@@ -256,14 +256,14 @@ func DeleteUserByAdmin(c *fiber.Ctx) error {
 	if err := tx.Delete(&user).Error; err != nil {
 		tx.Rollback()
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal menghapus akun pengguna dari database.",
+			"error": "Failed to delete user account from database.",
 		})
 	}
 
 	tx.Commit()
 
 	return c.JSON(fiber.Map{
-		"message": "Akun pengguna dan seluruh draf penelitian terkait berhasil dihapus secara bersih.",
+		"message": "User account and all associated research drafts successfully deleted.",
 	})
 }
 
@@ -275,40 +275,40 @@ func UpdateUserRoleByAdmin(c *fiber.Ctx) error {
 	}
 	if err := c.BodyParser(&body); err != nil || body.Email == "" || body.Role == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Email dan peran baru wajib diisi.",
+			"error": "Email and new role are required.",
 		})
 	}
 
 	if body.Role != "admin" && body.Role != "user" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Peran baru tidak valid. Gunakan 'admin' or 'user'.",
+			"error": "Invalid role. Use 'admin' or 'user'.",
 		})
 	}
 
 	var user models.User
 	if err := config.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Akun pengguna tidak ditemukan.",
+			"error": "User account was not found.",
 		})
 	}
 
-	// Prevent admin from changing their own role
-	currentUser := c.Locals("user").(models.User)
-	if currentUser.ID == user.ID {
+	// Prevent admin from changing their own role using type-safe userID from c.Locals
+	currentUserID := c.Locals("userID").(uint)
+	if currentUserID == user.ID {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Anda tidak dapat mengubah peran administratif Anda sendiri.",
+			"error": "You cannot modify your own administrative role.",
 		})
 	}
 
 	user.Role = body.Role
 	if err := config.DB.Save(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal memperbarui peran pengguna di basis data.",
+			"error": "Failed to update user role in database.",
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Peran sistem pengguna berhasil diperbarui.",
+		"message": "User system role successfully updated.",
 		"role":    user.Role,
 	})
 }
@@ -317,7 +317,7 @@ func UpdateUserRoleByAdmin(c *fiber.Ctx) error {
 func VacuumDatabase(c *fiber.Ctx) error {
 	if err := config.DB.Exec("VACUUM").Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Gagal merapikan (VACUUM) alokasi basis data SQLite.",
+			"error": "Failed to vacuum SQLite database allocation.",
 		})
 	}
 
@@ -333,7 +333,7 @@ func VacuumDatabase(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message":     "Basis data SQLite berhasil dirapikan fisik (VACUUM) secara optimal.",
+		"message":     "SQLite database successfully vacuumed.",
 		"dbSizeBytes": dbSize,
 	})
 }
