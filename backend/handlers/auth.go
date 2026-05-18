@@ -3,6 +3,8 @@ package handlers
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
+	"os"
 	"time"
 
 	"archeres/backend/config"
@@ -316,7 +318,16 @@ func ForgotPassword(c *fiber.Ctx) error {
 
 	// Trigger email transmission
 	if err := utils.SendResetEmail(user.Email, token); err != nil {
-		// Log error but show a clear descriptive message
+		// Log error to console so developers can see the token in development
+		fmt.Printf("\n[DEVELOPMENT RESET TOKEN] Email: %s, Token: %s\n\n", user.Email, token)
+		
+		if os.Getenv("SMTP_HOST") == "" {
+			return c.JSON(fiber.Map{
+				"message": "Instruksi pemulihan kata sandi telah dibuat (mode development). Silakan periksa log server untuk token Anda.",
+				"devToken": token,
+			})
+		}
+		
 		return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
 			"error": "Layanan pengiriman email saat ini tidak tersedia. Silakan hubungi admin atau coba lagi nanti.",
 		})
@@ -375,6 +386,8 @@ func ResetPassword(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Kata sandi Anda telah berhasil diperbarui. Silakan masuk.",
+		"message":       "Kata sandi Anda telah berhasil diperbarui.",
+		"recoveryVault": user.RecoveryVault,
+		"vaultSalt":     user.VaultSalt,
 	})
 }

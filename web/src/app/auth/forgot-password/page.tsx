@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
 
 interface ForgotPasswordResponse {
-	message: string;
+  message: string;
+  devToken?: string;
 }
 
 export default function ForgotPasswordPage() {
@@ -17,6 +18,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const [devToken, setDevToken] = useState<string>("");
 
   const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -32,15 +34,19 @@ export default function ForgotPasswordPage() {
     setLoading(false);
     setError("");
     setSuccess("");
+    setDevToken("");
     setLoading(true);
 
     try {
-      await apiFetch<ForgotPasswordResponse>("/api/auth/forgot-password", {
+      const res = await apiFetch<ForgotPasswordResponse>("/api/auth/forgot-password", {
         method: "POST",
         body: JSON.stringify({ email }),
       });
 
-      setSuccess(t("auth.forgotSuccess"));
+      setSuccess(res.message);
+      if (res.devToken) {
+        setDevToken(res.devToken);
+      }
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
@@ -87,7 +93,32 @@ export default function ForgotPasswordPage() {
           <p style={styles.formDesc}>{t("auth.forgotDesc")}</p>
 
           {error && <div style={styles.errorAlert} className="badge-danger">{error}</div>}
-          {success && <div style={styles.successAlert} className="badge-success">{success}</div>}
+          {success && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={styles.successAlert} className="badge-success">{success}</div>
+              {devToken && (
+                <div style={{
+                  background: "rgba(167, 139, 250, 0.08)",
+                  border: "1px solid rgba(167, 139, 250, 0.25)",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  marginTop: "0.5rem",
+                  textAlign: "center"
+                }} className="animate-pulse">
+                  <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", margin: "0 0 0.5rem 0", fontWeight: 700 }}>
+                    🔧 [DEVELOPER RESET LINK]
+                  </p>
+                  <a
+                    href={`/auth/reset-password?token=${devToken}&email=${encodeURIComponent(email)}`}
+                    style={{ color: "#a78bfa", fontSize: "0.85rem", fontWeight: 700, textDecoration: "underline", wordBreak: "break-all" }}
+                    id="dev-reset-link"
+                  >
+                    Click Here to Reset Password
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
 
           {!success && (
             <>
@@ -98,7 +129,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="form-input"
-                  placeholder="e.g., researcher@arche.com"
+                  placeholder="e.g., username@example.com"
                   required
                   disabled={loading}
                 />
