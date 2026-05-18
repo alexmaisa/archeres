@@ -75,7 +75,7 @@ export default function WorkspaceClient() {
   }
 
   const [eduPopupOpen, setEduPopupOpen] = useState<boolean>(false);
-  const [eduPopupData, setEduPopupData] = useState<EduDetailContent | null>(null);
+  const [eduPopupItemId, setEduPopupItemId] = useState<string | null>(null);
 
   // Wizard states
   const [approach, setApproach] = useState<string>("quant");
@@ -1013,7 +1013,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               className="arche-edu-card"
               style={{ ...styles.eduCard, cursor: "pointer" }}
               onClick={() => {
-                setEduPopupData(getEduDetailContent("quant_approach", i18n.language));
+                setEduPopupItemId("quant_approach");
                 setEduPopupOpen(true);
               }}
             >
@@ -1026,19 +1026,13 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Menitikberatkan pada pengujian teori secara deduktif melalui pengukuran numerik, analisis statistik, dan pembuktian empiris yang objektif." 
                   : "Focuses on testing theories deductively using numerical measurements, statistical analysis, and objective evidence."}
               </p>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
-                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
-                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
-                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
-                </span>
-              </div>
             </div>
 
             <div
               className="arche-edu-card"
               style={{ ...styles.eduCard, cursor: "pointer" }}
               onClick={() => {
-                setEduPopupData(getEduDetailContent("qual_approach", i18n.language));
+                setEduPopupItemId("qual_approach");
                 setEduPopupOpen(true);
               }}
             >
@@ -1051,19 +1045,13 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Mengeksplorasi makna deskriptif, pola naratif, serta pengalaman hidup manusia secara mendalam menggunakan logika induktif." 
                   : "Explores descriptive meanings, narrative patterns, human experiences, semi-structured interviews, and inductive analysis."}
               </p>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
-                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
-                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
-                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
-                </span>
-              </div>
             </div>
 
             <div
               className="arche-edu-card"
               style={{ ...styles.eduCard, cursor: "pointer" }}
               onClick={() => {
-                setEduPopupData(getEduDetailContent("mixed_approach", i18n.language));
+                setEduPopupItemId("mixed_approach");
                 setEduPopupOpen(true);
               }}
             >
@@ -1076,12 +1064,6 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   ? "Mengintegrasikan presisi data kuantitatif dan kedalaman narasi kualitatif secara sinergis untuk memecahkan masalah penelitian yang kompleks." 
                   : "Synergistically combines numerical precision and narrative depth to address multi-layered research problems."}
               </p>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
-                <span style={{ fontSize: "0.62rem", color: "rgba(255, 255, 255, 0.3)", display: "flex", alignItems: "center", gap: "3px" }}>
-                  <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
-                  {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
-                </span>
-              </div>
             </div>
             
             <div style={styles.eduTip}>
@@ -1108,7 +1090,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   cursor: "pointer"
                 }}
                 onClick={() => {
-                  setEduPopupData(getEduDetailContent(design, i18n.language));
+                  setEduPopupItemId(design);
                   setEduPopupOpen(true);
                 }}
               >
@@ -1124,12 +1106,6 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 <p style={styles.eduCardBody}>
                   {renderDesignExplanation(design, isId)}
                 </p>
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.25rem" }}>
-                  <span style={{ fontSize: "0.62rem", color: "rgba(168, 85, 247, 0.5)", display: "flex", alignItems: "center", gap: "3px" }}>
-                    <IconLightbulb size={10} style={{ color: "#fbbf24" }} />
-                    {isId ? "Klik untuk detail & contoh" : "Click for details & examples"}
-                  </span>
-                </div>
               </div>
             )}
           </div>
@@ -1396,6 +1372,8 @@ Aligned with the scale of measurements and variable distribution, statistical hy
       </div>
     );
   }
+
+  const eduPopupData = eduPopupItemId ? getEduDetailContent(eduPopupItemId, i18n.language) : null;
 
   return (
     <div style={styles.container}>
@@ -2248,12 +2226,12 @@ Aligned with the scale of measurements and variable distribution, statistical hy
       )}
 
       {/* Interactive Educational Popup Modal */}
-      {eduPopupOpen && eduPopupData && (
-        <div className="arche-modal-overlay animate-fade-in" onClick={() => setEduPopupOpen(false)}>
+      {eduPopupOpen && eduPopupItemId && eduPopupData && (
+        <div className="arche-modal-overlay animate-fade-in" onClick={() => { setEduPopupOpen(false); setEduPopupItemId(null); }}>
           <div
             className="arche-modal-card glass-panel"
             style={{
-              maxWidth: "600px",
+              maxWidth: "760px",
               padding: "2rem",
               borderRadius: "16px",
               maxHeight: "85vh",
@@ -2272,11 +2250,68 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 <span style={{ fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#c084fc", background: "rgba(168, 85, 247, 0.12)", padding: "0.3rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(168, 85, 247, 0.2)" }}>
                   {eduPopupData.badge}
                 </span>
-                <h2 className="arche-modal-title" style={{ fontSize: "1.4rem", marginTop: "0.6rem", color: "white", fontWeight: 800 }}>
+                <h2 className="arche-modal-title" style={{ fontSize: "1.45rem", marginTop: "0.6rem", color: "white", fontWeight: 800 }}>
                   {eduPopupData.title}
                 </h2>
               </div>
-              <button onClick={() => setEduPopupOpen(false)} className="arche-modal-close" style={{ background: "transparent", border: "none", color: "rgba(255, 255, 255, 0.5)", fontSize: "1.1rem", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "white"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)"}>✕</button>
+              
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                {/* Bilingual Language Switcher Inside Modal */}
+                <div style={{ display: "flex", background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "2px", borderRadius: "8px", gap: "2px" }}>
+                  <button
+                    onClick={() => handleLanguageToggle("id")}
+                    style={{
+                      background: i18n.language === "id" ? "rgba(168, 85, 247, 0.25)" : "transparent",
+                      border: "none",
+                      color: i18n.language === "id" ? "#c084fc" : "rgba(255, 255, 255, 0.4)",
+                      boxShadow: i18n.language === "id" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+                      borderRadius: "6px",
+                      padding: "0.3rem 0.6rem",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    ID
+                  </button>
+                  <button
+                    onClick={() => handleLanguageToggle("en")}
+                    style={{
+                      background: i18n.language === "en" ? "rgba(168, 85, 247, 0.25)" : "transparent",
+                      border: "none",
+                      color: i18n.language === "en" ? "#c084fc" : "rgba(255, 255, 255, 0.4)",
+                      boxShadow: i18n.language === "en" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+                      borderRadius: "6px",
+                      padding: "0.3rem 0.6rem",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    EN
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => { setEduPopupOpen(false); setEduPopupItemId(null); }}
+                  className="arche-modal-close"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255, 255, 255, 0.5)",
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    transition: "color 0.2s",
+                    lineHeight: "1"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "white"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)"}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* Content Body */}
