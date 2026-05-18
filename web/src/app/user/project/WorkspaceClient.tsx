@@ -1078,6 +1078,105 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? "Jika menggunakan Snowball Sampling, jelaskan langkah mitigasi terhadap bias jaringan sosial yang homogen. Nyatakan secara transparan bagaimana mata rantai rujukan awal dibentuk."
             : "If employing Snowball Sampling, detail your mitigation steps against social network homogeneity bias. Transparently describe how the initial seed participants were selected."
         };
+      case "quant_population":
+        return {
+          title: isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs. Sample (n)",
+          badge: isId ? "Batasan Populasi" : "Population Bounds",
+          definition: isId
+            ? "Berdasarkan pedoman teoretis dari Creswell & Creswell (2018) dan William M. K. Trochim (2020), Populasi Sasaran (N) mencakup seluruh kelompok subjek yang memiliki kriteria homogen dan menjadi target utama generalisasi kesimpulan riset Anda. Sementara Sampel Penelitian (n) adalah himpunan bagian (subset) representatif dari populasi sasaran tersebut yang direkrut secara empiris melalui prosedur sistematis guna mewakili karakteristik keseluruhan populasi."
+            : "Grounded in the research methodologies of John W. Creswell (2018) and William M. K. Trochim (2020), the Target Population (N) represents the entire collective pool of subjects who meet specific criteria and to whom the final research conclusions are generalized. Conversely, the Sample (n) is a scientifically chosen, representative subset of this target population, selected through strict sampling methods to mirror the key characteristics of the whole group.",
+          characteristics: isId
+            ? [
+                "Sifat Keterwakilan (Representativeness): Sampel harus mencerminkan struktur keragaman populasi sasaran (seperti gender, demografi, lokasi).",
+                "Batas Populasi (Population Boundary): Populasi Terbatas (Finite) memiliki jumlah N yang tercatat jelas, sedangkan Populasi Tidak Terbatas (Infinite) tidak diketahui pasti jumlah anggotanya.",
+                "Kerangka Sampel (Sampling Frame): Daftar fisik riil dari seluruh anggota populasi sasaran yang menjadi acuan pengundian acak.",
+                "Generalisasi Statistik: Hasil temuan pada tingkat sampel (n) dapat dianggap valid untuk diterapkan pada tingkat populasi (N)."
+              ]
+            : [
+                "Representativeness: The sample must accurately reflect the target population's diversity (e.g., demographics, socio-economic factors).",
+                "Population Boundaries: Finite Populations have a known, precise pool size (N), whereas Infinite Populations are boundless or mathematically unquantifiable.",
+                "Sampling Frame: A physical, comprehensive list of all members of the target population from which the random sample is drawn.",
+                "Statistical Generalization: Statistical findings derived at the sample level (n) can be logically and mathematically inferred to the population level (N)."
+              ],
+          examples: isId
+            ? [
+                "Populasi Sasaran (N): 1.500 karyawan tetap di PT Telkom Jakarta. Sampel Penelitian (n): 316 karyawan yang dipilih secara acak menggunakan tabel acak.",
+                "Populasi Sasaran (N): Seluruh ibu menyusui di Kota Bandung (Populasi Tak Terhingga / Infinite). Sampel Penelitian (n): 384 responden."
+              ]
+            : [
+                "Example: Target Population (N): 1,500 permanent corporate employees at PT Telkom Jakarta. Sample (n): 316 employees selected via computerized random number generation.",
+                "Example: Target Population (N): All nursing mothers currently living in Bandung City (Infinite Population). Sample (n): 384 respondents selected systematically."
+              ],
+          tips: isId
+            ? "Pastikan Anda secara transparan membatasi populasi sasaran Anda di Bab III dengan kriteria inklusi (seperti domisili, usia, atau lama kerja) untuk mencegah ancaman validitas eksternal."
+            : "Ensure you transparently outline your target population in your Methodology chapter using clear inclusion criteria (e.g., geography, age, or tenure) to safeguard external validity."
+        };
+      case "quant_moe":
+        return {
+          title: isId ? "Margin of Error & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level",
+          badge: isId ? "Validitas Statistik" : "Statistical Validity",
+          definition: isId
+            ? "Merupakan fondasi teoretis statistik inferensial untuk membatasi risiko kesalahan estimasi populasi dari data sampel. Margin of Error (e) mencerminkan rentang presisi toleransi kesalahan antara rata-rata sampel dan parameter populasi riil. Tingkat Kepercayaan (Confidence Level) mencerminkan probabilitas kebenaran parameter populasi berada dalam rentang estimasi tersebut (standar riset sosial adalah tingkat kepercayaan 95% dengan nilai z = 1,96)."
+            : "These parameters form the mathematical core of inferential statistics to quantify sampling error. The Margin of Error (e) is the precision interval reflecting the maximum expected difference between the sample statistic and the true population parameter. The Confidence Level is the probability that the true population parameter falls within the confidence interval (the standard in social science is a 95% confidence level with a z-score of 1.96).",
+          characteristics: isId
+            ? [
+                "Derajat Kesalahan (Margin of Error): Semakin kecil nilai e (misal 1% dibanding 5%), semakin besar sampel minimal yang diwajibkan.",
+                "Derajat Keyakinan (Confidence Level): Standar riset ilmiah umumnya menggunakan 95% (kesalahan 5%) atau 99% (kesalahan 1% untuk medis).",
+                "Distribusi Z-Score: Tingkat kepercayaan 95% bernilai z = 1,96; tingkat kepercayaan 99% bernilai z = 2,58.",
+                "Trade-off Presisi: Presisi yang lebih tinggi membutuhkan jumlah sampel yang lebih besar untuk meminimalkan fluktuasi acak."
+              ]
+            : [
+                "Margin of Error (e): A tighter error margin (e.g., 1% vs. 5%) dramatically increases the required minimum sample size.",
+                "Confidence Levels: Social science defaults to 95% (5% significance), while medical research often demands 99% (1% significance) to ensure safety.",
+                "Z-Score Distribution: A 95% confidence level corresponds to a z-score of 1.96; a 99% confidence level corresponds to a z-score of 2.58.",
+                "Precision Trade-off: Achieving higher confidence and tighter error margins strictly demands larger sample sizes to minimize random sampling variance."
+              ],
+          examples: isId
+            ? [
+                "Pada tingkat kepercayaan 95% dengan e = 5% (z = 1,96), sampel minimal populasi 1.000 adalah 286 responden.",
+                "Pada tingkat kepercayaan 99% dengan e = 1% (z = 2,58) dalam uji klinis obat baru, ukuran sampel minimal melonjak menjadi ribuan partisipan."
+              ]
+            : [
+                "Example: At a 95% confidence level with e = 5% (z = 1.96), the minimum sample size for a population of 1,000 is 286 respondents.",
+                "Example: At a 99% confidence level with e = 1% (z = 2.58) in clinical drug testing trials, the minimum sample size surges to thousands of participants."
+              ],
+          tips: isId
+            ? "Untuk riset bisnis dan sosial umum, tingkat kepercayaan 95% dan margin of error 5% adalah batas ambang yang paling diterima dan dapat dipertahankan secara akademis."
+            : "For general business and social sciences, a 95% confidence level paired with a 5% margin of error is the most universally accepted academic threshold."
+        };
+      case "quant_formula":
+        return {
+          title: isId ? "Formulasi & Teknik Pengambilan Sampel" : "Formulas & Sampling Techniques",
+          badge: isId ? "Rumus Matematika" : "Mathematical Formula",
+          definition: isId
+            ? `Prosedur perhitungan matematis untuk menentukan ukuran sampel minimal yang sah secara akademis. Di aplikasi Archeres, sistem merekomendasikan Formula ${formula === "slovin" ? "Slovin" : "Lemeshow"} karena Anda memilih populasi ${formula === "slovin" ? "terbatas (finite)" : "tidak terbatas (infinite)"}.`
+            : `The mathematical calculation procedures employed to establish a scientifically defensible minimum sample size. In Archeres, the system recommends the ${formula === "slovin" ? "Slovin Formula" : "Lemeshow Formula"} because you selected a ${formula === "slovin" ? "finite" : "infinite"} population type.`,
+          characteristics: isId
+            ? [
+                formula === "slovin" ? "Rumus Slovin: n = N / (1 + N(e²)). Sangat sederhana dan praktis untuk populasi terbatas (finite) yang terdata rapi." : "Rumus Lemeshow: n = (z² * p * q) / d². Ideal untuk populasi tidak terbatas (infinite), sering digunakan dalam riset kesehatan masyarakat dengan estimasi proporsi p = 0.5.",
+                "Probability Sampling: Perhitungan ini wajib dipadukan dengan pengambilan sampel probabilitas agar asas acak (randomness) terpenuhi.",
+                "Simple Random Sampling: Setiap anggota populasi memiliki peluang acak yang sama persis untuk terpilih menjadi anggota sampel.",
+                "Stratified Random Sampling: Membagi populasi ke dalam sub-kelompok homogen (strata) sebelum pengundian dilakukan guna menjamin presisi."
+              ]
+            : [
+                formula === "slovin" ? "Slovin Formula: n = N / (1 + N(e²)). A widely accepted and simple equation specifically designed for finite populations." : "Lemeshow Formula: n = (z² * p * q) / d². Specially engineered for infinite or unknown populations, commonly adopting an estimated proportion p = 0.5.",
+                "Probability Sampling Requirement: These formulas must be combined with random selection methods to satisfy core probability assumptions.",
+                "Simple Random Sampling: Every single member of the population has an identical, non-zero probability of being selected.",
+                "Stratified Random Sampling: Divides the population into homogeneous sub-groups (strata) before drawing, securing high statistical precision."
+              ],
+          examples: isId
+            ? [
+                formula === "slovin" ? "Dengan populasi N = 500 dan toleransi kesalahan e = 5%, ukuran sampel minimal adalah n = 500 / (1 + 500 * 0.0025) = 222 responden." : "Dengan tingkat kepercayaan 95% (z = 1,96), estimasi proporsi p = 0,5, dan presisi d = 5%, sampel minimal Lemeshow adalah n = (1,96² * 0,5 * 0,5) / 0,05² = 384 responden.",
+                formula === "slovin" ? "Dengan populasi N = 10.000 dan e = 5%, ukuran sampel minimal adalah n = 10.000 / (1 + 10.000 * 0.0025) = 385 responden." : "Dengan tingkat kepercayaan 99% (z = 2,58), estimasi proporsi p = 0,5, dan presisi d = 5%, sampel minimal Lemeshow adalah n = (2,58² * 0,5 * 0,5) / 0,05² = 666 responden."
+              ]
+            : [
+                formula === "slovin" ? "Example: With finite population N = 500 and margin of error e = 5%, the minimum sample size is n = 500 / (1 + 500 * 0.0025) = 222 respondents." : "Example: With a 95% confidence level (z = 1.96), proportion estimate p = 0.5, and precision d = 5%, the Lemeshow minimum sample size is n = (1.96² * 0.5 * 0.5) / 0.05² = 384 respondents.",
+                formula === "slovin" ? "Example: With finite population N = 10,000 and margin of error e = 5%, the minimum sample size is n = 10,000 / (1 + 10,000 * 0.0025) = 385 respondents." : "Example: With a 99% confidence level (z = 2.58), proportion estimate p = 0.5, and precision d = 5%, the Lemeshow minimum sample size is n = (2.58² * 0.5 * 0.5) / 0.05² = 666 respondents."
+              ],
+          tips: isId
+            ? (formula === "slovin" ? "Tuliskan nilai N rujukan secara pasti di laporan Anda. Jangan membulatkan angka desimal ke bawah saat menghitung jumlah minimum sampel (selalu bulatkan ke atas, misal 222.22 menjadi 223)." : "Jika Anda tidak memiliki data awal porsi prevalensi, gunakan p = 0,5 karena nilai ini menghasilkan varians maksimal dan ukuran sampel paling aman (maksimum).")
+            : (formula === "slovin" ? "Ensure you declare a specific, verifiable value for N in your chapter. Never round down fractional sample calculations; always round up to the next integer (e.g., 222.12 rounds to 223)." : "If you have no prior data on the population proportion, adopt p = 0.5 as it maximizes mathematical variance and yields the most conservative (largest) minimum sample size.")
+        };
       default:
         return {
           title: "Research Concept",
@@ -1347,7 +1446,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   : "Calculating the mathematically sound minimum subject size required for your study to attain valid statistical confidence."}
               </p>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_population");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconUsers size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
                   {isId ? "Populasi Sasaran (N) vs. Sampel Penelitian (n)" : "Target Population (N) vs Sample (n)"}
@@ -1359,7 +1465,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_moe");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconTrendingDown size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#fca5a5" }} />
                   {isId ? "Toleransi Kesalahan (Margin of Error) & Tingkat Kepercayaan" : "Margin of Error (e) & Confidence Level"}
@@ -1371,7 +1484,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </p>
               </div>
 
-              <div style={styles.eduCard}>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_formula");
+                  setEduPopupOpen(true);
+                }}
+              >
                 <h4 style={styles.eduCardTitle}>
                   <IconMath size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
                   {isId ? "Formulasi & Teknik Pengambilan Sampel" : "Formulas & Sampling Techniques"}
