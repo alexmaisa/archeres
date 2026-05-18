@@ -37,21 +37,21 @@ Located under the [backend/](file:///Volumes/staDiff/GitHub/arche/backend/) dire
 
 ---
 
-## 🎨 2. Frontend Infrastructure (Next.js, TypeScript & Nginx)
+## 🎨 2. Web Client Infrastructure (Next.js, TypeScript & Nginx)
 
-Located under the [frontend/](file:///Volumes/staDiff/GitHub/arche/frontend/) directory, the user interface is fully typed with TypeScript and uses Next.js static rendering served on a lightweight web server:
+Located under the [web/](file:///Volumes/staDiff/GitHub/arche/web/) directory, the user interface is fully typed with TypeScript and uses Next.js static rendering served on a lightweight web server:
 
 * **Programming Framework:** **Next.js 16.2.6 (App Router)** fully written in **TypeScript** (`tsconfig.json`).
   * Enforces strict compile-time checks, type-safe API requests, and robust interfaces for user authentication and research project state mappings.
-  * Centralized type schemas are defined inside [types.ts](file:///Volumes/staDiff/GitHub/arche/frontend/src/app/types.ts) (e.g. `User`, `Project`).
+  * Centralized type schemas are defined inside [types.ts](file:///Volumes/staDiff/GitHub/arche/web/src/app/types.ts) (e.g. `User`, `Project`).
 * **Build Paradigm:** **Static HTML Export (`output: 'export'`)**.
   * Eliminates Node.js execution runtime in production.
-  * Compiled output generated inside `frontend/out/`.
+  * Compiled output generated inside `web/out/`.
   * Dynamic routing pages (like `/project/[id]`) implement `generateStaticParams()` exporting static parameter shell placeholders (e.g. `[{ id: "1" }]`) to pass compilation requirements successfully.
 * **Production Serving Engine:** **Nginx 1.25 Alpine**.
   * Dynamic static assets are served directly from `/usr/share/nginx/html`.
-  * Reverse-proxy routing configured inside [nginx.conf](file:///Volumes/staDiff/GitHub/arche/frontend/nginx.conf) to transparently redirect all API traffic (requests to `/api/*`) straight to the backend Go Docker service.
-* **Translation Core:** **i18next & react-i18next** initialized client-side inside [i18n.ts](file:///Volumes/staDiff/GitHub/arche/frontend/src/app/i18n.ts) to prevent SSR environment conflicts, allowing users to toggle entire UI contexts dynamically.
+  * Reverse-proxy routing configured inside [nginx.conf](file:///Volumes/staDiff/GitHub/arche/web/nginx.conf) to transparently redirect all API traffic (requests to `/api/*`) straight to the backend Go Docker service.
+* **Translation Core:** **i18next & react-i18next** initialized client-side inside [i18n.ts](file:///Volumes/staDiff/GitHub/arche/web/src/app/i18n.ts) to prevent SSR environment conflicts, allowing users to toggle entire UI contexts dynamically.
 
 ---
 
@@ -62,14 +62,14 @@ For robust staging and deployment, the entire system is encapsulated within a co
 * **Backend Stage Build ([backend/Dockerfile](file:///Volumes/staDiff/GitHub/arche/backend/Dockerfile)):**
   1. *Builder Stage:* Compiles the Go application using `golang:1.26-alpine` into a statically compiled single-binary build.
   2. *Runtime Stage:* Packages the binary inside a clean `alpine:3.19` runtime environment to keep the image size under **50MB**. Creates persistent directory `/app/data/` for SQLite.
-* **Frontend Stage Build ([frontend/Dockerfile](file:///Volumes/staDiff/GitHub/arche/frontend/Dockerfile)):**
+* **Web Stage Build ([web/Dockerfile](file:///Volumes/staDiff/GitHub/arche/web/Dockerfile)):**
   1. *Builder Stage:* Installs standard node modules using `node:22-alpine` and `pnpm`, then compiles the code into static files (`pnpm run build`).
   2. *Runtime Stage:* Copies `/app/out/` directly onto `nginx:1.25-alpine`.
 * **Service Orchestration ([compose.yaml](file:///Volumes/staDiff/GitHub/arche/compose.yaml)):**
-  * Spins up `arche-backend` and `arche-frontend` concurrently.
-  * Maps physical port `8080` for backend API routing and port `3000` for frontend web serving.
+  * Spins up `arche-backend` and `arche-web` concurrently.
+  * Maps physical port `8080` for backend API routing and port `3000` for web serving.
   * Maps a persistent Docker volume `sqlite_data` to `/app/data/` in the backend container to ensure database records persist across containers lifecycles.
-  * Sets up local `.dockerignore` filters in both backend and frontend directories to prevent heavy `node_modules` or local `arche.db` binary states from leaking into build contexts.
+  * Sets up local `.dockerignore` filters in both backend and web directories to prevent heavy `node_modules` or local `arche.db` binary states from leaking into build contexts.
 
 ---
 
