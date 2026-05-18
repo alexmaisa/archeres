@@ -3,9 +3,9 @@ package handlers
 import (
 	"time"
 
-	"arche/backend/config"
-	"arche/backend/middleware"
-	"arche/backend/models"
+	"archeres/backend/config"
+	"archeres/backend/middleware"
+	"archeres/backend/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"

@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"arche/backend/config"
-	"arche/backend/handlers"
-	"arche/backend/middleware"
+	"archeres/backend/config"
+	"archeres/backend/handlers"
+	"archeres/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -18,7 +18,7 @@ func main() {
 
 	// 2. Inisialisasi Fiber Application
 	app := fiber.New(fiber.Config{
-		AppName: "Arche Research Assistant API v1.0",
+		AppName: "Archeres Research Assistant API v1.0",
 	})
 
 	// 3. Registrasi Middleware Logging & CORS (Cross-Origin Resource Sharing)
@@ -30,7 +30,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// 4. Struktur Routing API Arche
+	// 4. Struktur Routing API Archeres
 	api := app.Group("/api")
 
 	// Rute Autentikasi & Sesi
@@ -63,7 +63,7 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("Server API Arche berjalan aktif pada port %s...", port)
+	log.Printf("Server API Archeres berjalan aktif pada port %s...", port)
 	if err := app.Listen(":" + port); err != nil {
 		log.Fatalf("Gagal menjalankan server API: %v", err)
 	}

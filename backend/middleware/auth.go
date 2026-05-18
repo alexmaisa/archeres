@@ -15,7 +15,7 @@ var JWTSecret = []byte(getSecret())
 func getSecret() string {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
-		secret = "supersecretjwtkeyforarche2026"
+		secret = "supersecretjwtkeyforarcheres2026"
 	}
 	return secret
 }

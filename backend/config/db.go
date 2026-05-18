@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"arche/backend/models"
+	"archeres/backend/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -16,7 +16,7 @@ var DB *gorm.DB
 func ConnectDB() {
 	dbPath := os.Getenv("DATABASE_PATH")
 	if dbPath == "" {
-		dbPath = "arche.db"
+		dbPath = "archeres.db"
 	}
 
 	var err error

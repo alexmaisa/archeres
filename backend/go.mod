@@ -1,4 +1,4 @@
-module arche/backend
+module archeres/backend
 
 go 1.25.7
 

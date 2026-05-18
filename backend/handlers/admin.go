@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"time"
 
-	"arche/backend/config"
-	"arche/backend/models"
+	"archeres/backend/config"
+	"archeres/backend/models"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -62,7 +62,7 @@ func GetStats(c *fiber.Ctx) error {
 	// Fetch dynamic database size for resource profiling
 	dbPath := os.Getenv("DATABASE_PATH")
 	if dbPath == "" {
-		dbPath = "arche.db"
+		dbPath = "archeres.db"
 	}
 	var dbSize int64
 	fileInfo, err := os.Stat(dbPath)
@@ -148,7 +148,7 @@ func VacuumDatabase(c *fiber.Ctx) error {
 	// Fetch new db size
 	dbPath := os.Getenv("DATABASE_PATH")
 	if dbPath == "" {
-		dbPath = "arche.db"
+		dbPath = "archeres.db"
 	}
 	var dbSize int64
 	fileInfo, err := os.Stat(dbPath)
