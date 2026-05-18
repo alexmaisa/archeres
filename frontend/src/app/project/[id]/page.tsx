@@ -1,3 +1,4 @@
+import React from "react";
 import WorkspaceClient from "./WorkspaceClient";
 
 export async function generateStaticParams() {

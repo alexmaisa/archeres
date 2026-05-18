@@ -1,25 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash } from "../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
+import { User, Project } from "../types";
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
-  const [user, setUser] = useState(null);
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
   
   // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newDesc, setNewDesc] = useState("");
-  const [modalLoading, setModalLoading] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newDesc, setNewDesc] = useState<string>("");
+  const [modalLoading, setModalLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // Authenticate session locally
@@ -35,26 +36,26 @@ export default function DashboardPage() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch("/api/projects", { method: "GET" });
+      const data = await apiFetch<Project[]>("/api/projects", { method: "GET" });
       setProjects(data || []);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLanguageToggle = (lang) => {
+  const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
   };
 
-  const handleCreateProject = async (e) => {
+  const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
     setModalLoading(true);
     try {
-      const newProj = await apiFetch("/api/projects", {
+      const newProj = await apiFetch<Project>("/api/projects", {
         method: "POST",
         body: JSON.stringify({
           title: newTitle,
@@ -68,20 +69,20 @@ export default function DashboardPage() {
       
       // Dynamic routing direct into workspace or reload
       router.push(`/project/${newProj.id}`);
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
     } finally {
       setModalLoading(false);
     }
   };
 
-  const handleDeleteProject = async (id) => {
+  const handleDeleteProject = async (id: number) => {
     if (!confirm(t("dashboard.deleteConfirm"))) return;
 
     try {
       await apiFetch(`/api/projects/${id}`, { method: "DELETE" });
       setProjects(projects.filter((p) => p.id !== id));
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
     }
   };
@@ -296,7 +297,7 @@ export default function DashboardPage() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: "100vh",
     width: "100vw",
@@ -393,10 +394,6 @@ const styles = {
     fontSize: "0.85rem",
     borderColor: "rgba(239, 68, 68, 0.2)",
     color: "#fca5a5",
-    "&:hover": {
-      backgroundColor: "rgba(239, 68, 68, 0.1)",
-      borderColor: "rgba(239, 68, 68, 0.5)",
-    },
   },
   mainContent: {
     flex: 1,
@@ -504,10 +501,6 @@ const styles = {
     fontSize: "0.85rem",
     borderColor: "rgba(239, 68, 68, 0.15)",
     color: "#fca5a5",
-    "&:hover": {
-      backgroundColor: "rgba(239, 68, 68, 0.08)",
-      borderColor: "rgba(239, 68, 68, 0.4)",
-    },
   },
   loadingState: {
     display: "flex",
@@ -540,10 +533,6 @@ const styles = {
     justifyContent: "center",
     maxWidth: "600px",
     margin: "3rem auto 0 auto",
-  },
-  emptyIcon: {
-    fontSize: "3.5rem",
-    marginBottom: "1rem",
   },
   emptyTitle: {
     fontSize: "1.5rem",
@@ -599,9 +588,6 @@ const styles = {
     cursor: "pointer",
     lineHeight: 1,
     transition: "color 0.15s ease",
-    "&:hover": {
-      color: "white",
-    },
   },
   modalForm: {
     display: "flex",

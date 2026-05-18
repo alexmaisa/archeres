@@ -1,5 +1,5 @@
 // Shared API caller utility supporting dev/prod environment states
-export const getApiUrl = (path) => {
+export const getApiUrl = (path: string): string => {
   const isDev = process.env.NODE_ENV === 'development';
   // Prepend local Go server in dev, use relative endpoint in production (Nginx proxy)
   const baseUrl = isDev ? 'http://localhost:8080' : '';
@@ -7,15 +7,15 @@ export const getApiUrl = (path) => {
 };
 
 // Standardized fetch wrapper that forces session cookies handling
-export const apiFetch = async (path, options = {}) => {
+export const apiFetch = async <T = any>(path: string, options: RequestInit = {}): Promise<T> => {
   const url = getApiUrl(path);
   
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
-  };
+  } as HeadersInit;
 
-  const config = {
+  const config: RequestInit = {
     ...options,
     headers,
     credentials: 'include', // Mandates cookie exchange for JWT security
@@ -28,5 +28,5 @@ export const apiFetch = async (path, options = {}) => {
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 };

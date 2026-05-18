@@ -1,5 +1,7 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+
+// In Next.js react-i18next we can just import from 'react-i18next'
+import { initReactI18next as reactI18nInit } from 'react-i18next';
 
 const resources = {
   en: {
@@ -249,7 +251,7 @@ const resources = {
 };
 
 i18n
-  .use(initReactI18next)
+  .use(reactI18nInit)
   .init({
     resources,
     lng: 'en', // Default language

@@ -1,3 +1,4 @@
+import React from "react";
 import "./globals.css";
 import Providers from "./providers";
 
@@ -6,7 +7,7 @@ export const metadata = {
   description: "A compact, multiuser workspace to help beginner researchers select research designs, calculate sample sizes, and structure methodology drafts.",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>

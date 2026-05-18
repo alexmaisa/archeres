@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import "./i18n"; // register translation bundles
@@ -13,11 +13,25 @@ import {
   IconKey 
 } from "./components/Icons";
 
+interface Feature {
+  icon: string;
+  name: string;
+  desc: string;
+}
+
+interface LanguageContent {
+  title: string;
+  subtitle: string;
+  ctaStart: string;
+  ctaLogin: string;
+  features: Feature[];
+}
+
 export default function Home() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Monitor screen resize for bulletproof responsive viewports
   useEffect(() => {
@@ -37,7 +51,7 @@ export default function Home() {
   const currentLang = i18n.language || "en";
 
   // Academic Localizations Dictionary
-  const content = {
+  const content: Record<string, LanguageContent> = {
     en: {
       title: "The Scientific Paradigm Planner for Academic Research",
       subtitle: "Formulate mathematically sound sample sizes, operationalize conceptual indicators, and compile structured Chapter III thesis drafts instantaneously.",
@@ -99,7 +113,7 @@ export default function Home() {
   const copy = content[currentLang] || content["en"];
 
   // Render SVG based on designated type key
-  const getIcon = (type) => {
+  const getIcon = (type: string): React.JSX.Element | null => {
     switch (type) {
       case "helix":
         return <IconHelix size={32} style={{ color: "#c084fc", strokeWidth: 2 }} />;
@@ -115,13 +129,13 @@ export default function Home() {
   };
 
   // Layout calculations dynamically adapting based on screen layout type
-  const containerStyle = {
+  const containerStyle: React.CSSProperties = {
     ...styles.landingContainer,
     height: isMobile ? "auto" : "100vh",
     overflowY: isMobile ? "auto" : "hidden"
   };
 
-  const mainContainerStyle = {
+  const mainContainerStyle: React.CSSProperties = {
     ...styles.mainContainer,
     flexDirection: isMobile ? "column" : "row",
     height: isMobile ? "auto" : "calc(100vh - 105px)",
@@ -131,7 +145,7 @@ export default function Home() {
     gap: isMobile ? "2.5rem" : "3.5rem"
   };
 
-  const heroStyle = {
+  const heroStyle: React.CSSProperties = {
     ...styles.heroSection,
     alignItems: isMobile ? "center" : "flex-start",
     textAlign: isMobile ? "center" : "left",
@@ -139,7 +153,7 @@ export default function Home() {
     padding: isMobile ? "1rem 0" : "0"
   };
 
-  const gridStyle = {
+  const gridStyle: React.CSSProperties = {
     ...styles.featuresGrid,
     gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
     maxWidth: isMobile ? "600px" : "620px"
@@ -242,7 +256,7 @@ export default function Home() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   landingContainer: {
     width: "100vw",
     backgroundColor: "hsl(var(--bg-color))",
@@ -290,7 +304,7 @@ const styles = {
     zIndex: 0,
     pointerEvents: "none",
   },
-  // Compact Fixed Header Style (Now controlled globally via globals.css)
+  // Compact Fixed Header Style
   headerActions: {
     display: "flex",
     alignItems: "center",
@@ -326,9 +340,6 @@ const styles = {
     fontSize: "0.85rem",
     fontWeight: 600,
     transition: "color 0.2s ease",
-    ":hover": {
-      color: "white",
-    }
   },
   // Hero Styles
   heroSection: {
@@ -418,5 +429,4 @@ const styles = {
     color: "rgba(255,255,255,0.45)",
     lineHeight: 1.35,
   },
-  // Compact Fixed Footer Style (Now controlled globally via globals.css)
 };

@@ -1,24 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
+
+interface LoginResponse {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    createdAt: string;
+  };
+}
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const handleLanguageToggle = (lang) => {
+  const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setError(t("auth.invalidInput"));
@@ -30,7 +40,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await apiFetch("/api/auth/login", {
+      const data = await apiFetch<LoginResponse>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
@@ -44,7 +54,7 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || t("auth.invalidCreds"));
     } finally {
       setLoading(false);
@@ -141,7 +151,7 @@ export default function LoginPage() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",
     flexDirection: "column",

@@ -1,30 +1,66 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IconFolder, IconRefresh, IconUsers, IconHelix } from "../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
+import { User } from "../types";
+
+interface AdminProject {
+  id: number;
+  userName: string;
+  title: string;
+  approach: string;
+  designType: string;
+  formula: string;
+  sampleSize: number;
+  createdAt: string;
+}
+
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  projectCount: number;
+  createdAt: string;
+}
+
+interface AdminStatsState {
+  totalProjects: number;
+  dbSizeBytes: number;
+  serverUptimeSecs: number;
+  allocatedRamMb: number;
+  approachStats: {
+    kuantitatif: number;
+    kualitatif: number;
+    metodeCampuran: number;
+    [key: string]: number;
+  };
+  users: AdminUser[];
+  projects: AdminProject[];
+}
 
 export default function AdminPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
-  const [user, setUser] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<AdminStatsState | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
   
   // Tab controller (0: User Directory, 1: Projects Monitor)
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   // Interactive Maintenance & Filter states
-  const [vacuuming, setVacuuming] = useState(false);
-  const [vacuumSuccess, setVacuumSuccess] = useState(false);
-  const [approachFilter, setApproachFilter] = useState("all");
+  const [vacuuming, setVacuuming] = useState<boolean>(false);
+  const [vacuumSuccess, setVacuumSuccess] = useState<boolean>(false);
+  const [approachFilter, setApproachFilter] = useState<string>("all");
   
   // Real-time server Uptime increments locally
-  const [uptimeSecs, setUptimeSecs] = useState(0);
+  const [uptimeSecs, setUptimeSecs] = useState<number>(0);
 
   useEffect(() => {
     if (stats && stats.serverUptimeSecs) {
@@ -44,26 +80,28 @@ export default function AdminPage() {
     setVacuuming(true);
     setVacuumSuccess(false);
     try {
-      const res = await apiFetch("/api/admin/db/vacuum", { method: "POST" });
-      setStats((prev) => ({
-        ...prev,
-        dbSizeBytes: res.dbSizeBytes
-      }));
+      const res = await apiFetch<{ dbSizeBytes: number }>("/api/admin/db/vacuum", { method: "POST" });
+      if (stats) {
+        setStats({
+          ...stats,
+          dbSizeBytes: res.dbSizeBytes
+        });
+      }
       setVacuumSuccess(true);
       setTimeout(() => setVacuumSuccess(false), 3000);
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message || "Gagal merapikan SQLite Database.");
     } finally {
       setVacuuming(false);
     }
   };
 
-  const handleApproachFilterClick = (filterType) => {
+  const handleApproachFilterClick = (filterType: string) => {
     setApproachFilter(filterType);
     setActiveTab(1); // Auto-focus master projects data grid
   };
 
-  const formatBytes = (bytes) => {
+  const formatBytes = (bytes: number) => {
     if (!bytes) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
@@ -71,7 +109,7 @@ export default function AdminPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const formatUptime = (seconds) => {
+  const formatUptime = (seconds: number) => {
     if (!seconds) return "0s";
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -79,16 +117,16 @@ export default function AdminPage() {
     return `${h}h ${m}m ${s}s`;
   };
 
-  const getApproachCount = (type) => {
+  const getApproachCount = (type: string) => {
     if (!stats || !stats.approachStats) return 0;
     return stats.approachStats[type] || 0;
   };
 
-  const getApproachPillStyle = (type, isActive) => {
+  const getApproachPillStyle = (type: string, isActive: boolean): React.CSSProperties => {
     let borderColor = "rgba(255, 255, 255, 0.08)";
     let color = "rgba(255, 255, 255, 0.5)";
     let background = "rgba(255, 255, 255, 0.02)";
-    let fontWeight = "normal";
+    let fontWeight: "normal" | "bold" = "normal";
 
     if (isActive) {
       borderColor = "#38bdf8";
@@ -110,7 +148,7 @@ export default function AdminPage() {
     };
   };
 
-  const getVacuumButtonStyle = (success) => {
+  const getVacuumButtonStyle = (success: boolean): React.CSSProperties => {
     return {
       ...styles.vacuumBtn,
       borderColor: success ? "#10b981" : "rgba(239, 68, 68, 0.25)",
@@ -119,7 +157,7 @@ export default function AdminPage() {
     };
   };
 
-  // Filter projects dynamically client-side!
+  // Filter projects dynamically client-side
   const filteredProjects = stats && stats.projects ? stats.projects.filter((p) => {
     if (approachFilter === "all") return true;
     if (!p.approach) return false;
@@ -138,7 +176,7 @@ export default function AdminPage() {
       router.push("/auth/login");
       return;
     }
-    const parsed = JSON.parse(savedUser);
+    const parsed = JSON.parse(savedUser) as User;
     if (parsed.role !== "admin") {
       router.push("/dashboard");
       return;
@@ -150,9 +188,9 @@ export default function AdminPage() {
   const fetchAdminStats = async () => {
     setLoading(true);
     try {
-      const statsData = await apiFetch("/api/admin/stats", { method: "GET" });
-      const usersData = await apiFetch("/api/admin/users", { method: "GET" });
-      const projectsData = await apiFetch("/api/admin/projects", { method: "GET" });
+      const statsData = await apiFetch<any>("/api/admin/stats", { method: "GET" });
+      const usersData = await apiFetch<AdminUser[]>("/api/admin/users", { method: "GET" });
+      const projectsData = await apiFetch<any[]>("/api/admin/projects", { method: "GET" });
       
       setStats({
         ...statsData,
@@ -168,14 +206,14 @@ export default function AdminPage() {
           createdAt: p.createdAt,
         })),
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLanguageToggle = (lang) => {
+  const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
   };
 
@@ -270,7 +308,7 @@ export default function AdminPage() {
               {/* Card 1: Active Projects / Instant Filter */}
               <div className="glass-panel" style={styles.statCard}>
                 <span style={styles.statLabel}>{t("admin.activeProjects")}</span>
-                <span style={styles.statVal} style={{ color: "#38bdf8" }}>
+                <span style={{ ...styles.statVal, color: "#38bdf8" }}>
                   {stats.totalProjects}
                 </span>
                 
@@ -305,7 +343,7 @@ export default function AdminPage() {
               {/* Card 2: SQLite Storage / Optimizer defragmenter */}
               <div className="glass-panel" style={styles.statCard}>
                 <span style={styles.statLabel}>SQLite Storage</span>
-                <span style={styles.statVal} style={{ color: vacuumSuccess ? "#10b981" : "#22d3ee" }} className={vacuumSuccess ? "animate-pulse" : ""}>
+                <span style={{ ...styles.statVal, color: vacuumSuccess ? "#10b981" : "#22d3ee" }} className={vacuumSuccess ? "animate-pulse" : ""}>
                   {formatBytes(stats.dbSizeBytes)}
                 </span>
                 <div style={styles.vacuumActionArea}>
@@ -334,7 +372,7 @@ export default function AdminPage() {
                   Go Server Telemetry
                   <span className="heartbeat-dot" style={{ marginLeft: "8px" }}></span>
                 </span>
-                <span style={styles.statVal} style={{ color: "#a78bfa" }}>
+                <span style={{ ...styles.statVal, color: "#a78bfa" }}>
                   {stats.allocatedRamMb ? stats.allocatedRamMb.toFixed(2) + " MB RAM" : "1.25 MB RAM"}
                 </span>
                 <span style={styles.statSub}>
@@ -471,7 +509,7 @@ export default function AdminPage() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: "100vh",
     width: "100vw",
@@ -715,12 +753,6 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.2s ease"
   },
-  approachPillActive: {
-    background: "rgba(56, 189, 248, 0.15)",
-    borderColor: "#38bdf8",
-    color: "#38bdf8",
-    fontWeight: "bold"
-  },
   vacuumActionArea: {
     marginTop: "0.5rem",
     display: "flex",
@@ -740,11 +772,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "0.4rem"
-  },
-  vacuumBtnSuccess: {
-    background: "rgba(16, 185, 129, 0.15)",
-    borderColor: "#10b981",
-    color: "#a7f3d0"
   },
   spinnerMini: {
     width: "12px",

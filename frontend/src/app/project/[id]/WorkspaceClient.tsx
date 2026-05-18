@@ -1,43 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
 import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy } from "../../components/Icons";
+import { User } from "../../types";
+
+interface VariableDefinition {
+  name: string;
+  role: string;
+  scale: string;
+}
+
+interface ResearchDesign {
+  approach?: string;
+  designType?: string;
+  formula?: string;
+  populationSize?: number;
+  confidenceLevel?: number;
+  marginOfError?: number;
+  estimatedProportion?: number;
+  analysisMethod?: string;
+  variablesJson?: string;
+  sampleSize?: number;
+}
+
+interface WorkspaceProject {
+  id: number;
+  title: string;
+  description: string;
+  researchDesign?: ResearchDesign;
+}
 
 export default function WorkspaceClient() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useParams();
-  const projectId = params.id;
+  const projectId = params.id as string;
 
-  const [user, setUser] = useState(null);
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saveLoading, setSaveLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [project, setProject] = useState<WorkspaceProject | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saveLoading, setSaveLoading] = useState<boolean>(false);
 
   // Wizard active step (1: Paradigm, 2: Sample Size, 3: Variables, 4: Export)
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState<number>(1);
 
   // Wizard states
-  const [approach, setApproach] = useState("quant");
-  const [design, setDesign] = useState("Experimental");
-  const [formula, setFormula] = useState("slovin");
-  const [popSize, setPopSize] = useState(1000);
-  const [confLevel, setConfLevel] = useState(0.95);
-  const [marginError, setMarginError] = useState(0.05);
-  const [proportion, setProportion] = useState(0.5);
-  const [variables, setVariables] = useState([
+  const [approach, setApproach] = useState<string>("quant");
+  const [design, setDesign] = useState<string>("Experimental");
+  const [formula, setFormula] = useState<string>("slovin");
+  const [popSize, setPopSize] = useState<number>(1000);
+  const [confLevel, setConfLevel] = useState<number>(0.95);
+  const [marginError, setMarginError] = useState<number>(0.05);
+  const [proportion, setProportion] = useState<number>(0.5);
+  const [variables, setVariables] = useState<VariableDefinition[]>([
     { name: "X1 - Social Media Exposure", role: "Independent (Cause)", scale: "Interval (Ordered, Equal Distances)" },
     { name: "Y - Teen self-esteem score", role: "Dependent (Effect)", scale: "Ratio (Ordered, True Zero Point)" }
   ]);
-  const [analysisMethod, setAnalysisMethod] = useState("Multiple Linear Regression");
+  const [analysisMethod, setAnalysisMethod] = useState<string>("Multiple Linear Regression");
   
   // Real-time calculated sample size
-  const [sampleSize, setSampleSize] = useState(286);
+  const [sampleSize, setSampleSize] = useState<number>(286);
   // Preview draft language ('id' or 'en')
-  const [previewLang, setPreviewLang] = useState("id");
+  const [previewLang, setPreviewLang] = useState<string>("id");
 
   useEffect(() => {
     // Authenticate session locally
@@ -58,7 +85,7 @@ export default function WorkspaceClient() {
   const fetchProjectDetails = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch(`/api/projects/${projectId}`, { method: "GET" });
+      const data = await apiFetch<WorkspaceProject>(`/api/projects/${projectId}`, { method: "GET" });
       setProject(data);
       
       // Load saved research design wizard state if present
@@ -67,10 +94,10 @@ export default function WorkspaceClient() {
         if (rd.approach) setApproach(rd.approach);
         if (rd.designType) setDesign(rd.designType);
         if (rd.formula) setFormula(rd.formula);
-        if (rd.populationSize) setPopSize(rd.populationSize);
-        if (rd.confidenceLevel) setConfLevel(rd.confidenceLevel);
-        if (rd.marginOfError) setMarginError(rd.marginOfError);
-        if (rd.estimatedProportion) setProportion(rd.estimatedProportion);
+        if (rd.populationSize !== undefined) setPopSize(rd.populationSize);
+        if (rd.confidenceLevel !== undefined) setConfLevel(rd.confidenceLevel);
+        if (rd.marginOfError !== undefined) setMarginError(rd.marginOfError);
+        if (rd.estimatedProportion !== undefined) setProportion(rd.estimatedProportion);
         if (rd.analysisMethod) setAnalysisMethod(rd.analysisMethod);
         if (rd.variablesJson) {
           try {
@@ -80,7 +107,7 @@ export default function WorkspaceClient() {
           }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
       router.push("/dashboard");
     } finally {
@@ -151,20 +178,23 @@ export default function WorkspaceClient() {
     setVariables([...variables, { name: "", role: "Independent (Cause)", scale: "Interval (Ordered, Equal Distances)" }]);
   };
 
-  const handleRemoveVariable = (index) => {
+  const handleRemoveVariable = (index: number) => {
     setVariables(variables.filter((_, i) => i !== index));
   };
 
-  const handleVariableChange = (index, field, value) => {
+  const handleVariableChange = (index: number, field: keyof VariableDefinition, value: string) => {
     const updated = [...variables];
-    updated[index][field] = value;
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
     setVariables(updated);
 
     // Auto-update analytical recommendations based on variable properties!
     generateAnalyticalAdvice(updated);
   };
 
-  const generateAnalyticalAdvice = (vars) => {
+  const generateAnalyticalAdvice = (vars: VariableDefinition[]) => {
     if (vars.length < 2) return;
     
     const scales = vars.map(v => v.scale);
@@ -183,6 +213,7 @@ export default function WorkspaceClient() {
   };
 
   const handleSaveProgress = async () => {
+    if (!project) return;
     setSaveLoading(true);
     try {
       await apiFetch(`/api/projects/${projectId}`, {
@@ -205,7 +236,7 @@ export default function WorkspaceClient() {
         }),
       });
       alert(t("common.saved"));
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message || t("common.errorOccurred"));
     } finally {
       setSaveLoading(false);
@@ -213,6 +244,7 @@ export default function WorkspaceClient() {
   };
 
   const handleDownloadMd = () => {
+    if (!project) return;
     const markdown = generateMarkdownDraft(previewLang);
     const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -230,7 +262,7 @@ export default function WorkspaceClient() {
   };
 
   // Dynamic Markdown compiler
-  const generateMarkdownDraft = (lang) => {
+  const generateMarkdownDraft = (lang: string) => {
     if (lang === "id") {
       return `# BAB III: METODOLOGI PENELITIAN
 
@@ -286,7 +318,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
     }
   };
 
-  const renderMarkdownToHtml = (md) => {
+  const renderMarkdownToHtml = (md: string): string => {
     let html = md
       .replace(/^# (.*$)/gim, '<h1 style="font-size:1.6rem; font-family:\'Outfit\', sans-serif; font-weight:800; border-bottom:1.5px solid rgba(255,255,255,0.08); padding-bottom:0.6rem; color:#c084fc; margin-bottom:1.25rem;">$1</h1>')
       .replace(/^## (.*$)/gim, '<h2 style="font-size:1.25rem; font-family:\'Outfit\', sans-serif; font-weight:700; color:#38bdf8; margin-top:1.5rem; margin-bottom:0.75rem;">$1</h2>')
@@ -605,7 +637,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
                   {t("wizard.addVarBtn")}
                 </button>
               </div>
-              <p style={styles.inputHelp} style={{ marginBottom: "1.5rem" }}>
+              <p style={{ ...styles.inputHelp, marginBottom: "1.5rem" }}>
                 {t("wizard.varDesc")}
               </p>
 
@@ -670,7 +702,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
 
           {/* STEP 4: Exporter & Completion controls */}
           {activeStep === 4 && (
-            <div style={styles.stepForm} className="animate-fade-in" style={{ textAlign: "center", padding: "2rem" }}>
+            <div className="animate-fade-in" style={{ ...styles.stepForm, textAlign: "center", padding: "2rem" }}>
               <span style={{ fontSize: "4rem" }}>🎉</span>
               <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "1.5rem 0 0.5rem 0", color: "white" }}>
                 {i18n.language === "id" ? "Konfigurasi Metodologi Lengkap!" : "Methodology Structured!"}
@@ -784,7 +816,7 @@ Aligned with the scale of measurements and variable distributions, statistical h
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   workspaceGrid: {
     display: "grid",
     gridTemplateColumns: "300px 1fr 500px",

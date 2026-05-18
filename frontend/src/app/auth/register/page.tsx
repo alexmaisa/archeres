@@ -1,26 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
+
+interface RegisterResponse {
+  message?: string;
+  error?: string;
+}
 
 export default function RegisterPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
-  const handleLanguageToggle = (lang) => {
+  const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !password) {
       setError(t("auth.invalidInput"));
@@ -33,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await apiFetch("/api/auth/register", {
+      await apiFetch<RegisterResponse>("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
       });
@@ -42,7 +47,7 @@ export default function RegisterPage() {
       setTimeout(() => {
         router.push("/auth/login");
       }, 1500);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
     } finally {
       setLoading(false);
@@ -153,7 +158,7 @@ export default function RegisterPage() {
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",
     flexDirection: "column",
