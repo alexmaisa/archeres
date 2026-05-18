@@ -267,7 +267,7 @@ export default function RegisterPage() {
               className="btn btn-primary"
               style={{ marginTop: "1rem", padding: "0.75rem", fontSize: "0.95rem", fontWeight: 700 }}
             >
-              {i18n.language === "id" ? "Saya Sudah Menyimpan Kunci & Lanjut Masuk" : "I Have Saved the Key & Proceed to Login"}
+              {i18n.language === "id" ? "Kunci Disimpan, Lanjut Masuk" : "Key Saved, Proceed to Login"}
             </button>
           </div>
         ) : (
