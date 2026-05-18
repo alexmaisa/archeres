@@ -232,10 +232,6 @@ export default function Home() {
       <main style={mainContainerStyle}>
         {/* Left Side: Hero Information */}
         <section style={heroStyle}>
-          <span style={styles.badge}>
-            <IconHelix size={11} style={{ marginRight: "5px", verticalAlign: "middle", strokeWidth: 2.5 }} />
-            PLATFORM v1.0 DELIVERED
-          </span>
           <h1 style={styles.heroTitle}>{copy.title}</h1>
           <p style={styles.heroSubtitle}>{copy.subtitle}</p>
 
