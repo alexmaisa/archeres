@@ -232,15 +232,15 @@ export default function AdminPage() {
   return (
     <div style={styles.container} className="animate-fade-in">
       {/* Background glowing ambient circles */}
-      <div style={styles.glowCircle1}></div>
-      <div style={styles.glowCircle2}></div>
+      <div className="glow-ambient-red"></div>
+      <div className="glow-ambient-purple"></div>
 
       {/* Navigation Header */}
       <header className="fixed-header">
         <div className="nav-brand">
           <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
-          <span style={styles.badge} className="badge-danger">Admin Hub</span>
+          <span className="badge badge-danger">Admin Hub</span>
         </div>
 
         <div style={styles.navControls}>
@@ -282,11 +282,11 @@ export default function AdminPage() {
       </header>
 
       {/* Main Body */}
-      <main style={styles.mainContent}>
-        <div style={styles.welcomeSection}>
+      <main className="main-container">
+        <div className="welcome-section">
           <div>
-            <h1 style={styles.welcomeTitle}>{t("admin.title")}</h1>
-            <p style={styles.welcomeSubtitle}>{t("admin.subtitle")}</p>
+            <h1 className="welcome-title">{t("admin.title")}</h1>
+            <p className="welcome-subtitle">{t("admin.subtitle")}</p>
           </div>
           <button onClick={fetchAdminStats} className="btn btn-outline" style={styles.refreshBtn}>
             <IconRefresh size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
@@ -304,35 +304,39 @@ export default function AdminPage() {
         ) : !stats ? null : (
           <>
             {/* Global Admin Telemetry summary cards */}
-            <section style={styles.statsGrid}>
+            <section className="telemetry-grid">
               {/* Card 1: Active Projects / Instant Filter */}
-              <div className="glass-panel" style={styles.statCard}>
-                <span style={styles.statLabel}>{t("admin.activeProjects")}</span>
-                <span style={{ ...styles.statVal, color: "#38bdf8" }}>
+              <div className="glass-panel telemetry-card">
+                <span className="telemetry-label">{t("admin.activeProjects")}</span>
+                <span className="telemetry-val" style={{ color: "#38bdf8" }}>
                   {stats.totalProjects}
                 </span>
                 
-                <div style={styles.approachPillsGroup}>
+                <div className="approach-pills-group">
                   <button
                     onClick={() => handleApproachFilterClick("all")}
+                    className="approach-pill"
                     style={getApproachPillStyle("all", approachFilter === "all")}
                   >
                     Semua
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("kuantitatif")}
+                    className="approach-pill"
                     style={getApproachPillStyle("kuantitatif", approachFilter === "kuantitatif")}
                   >
                     Quant ({getApproachCount("kuantitatif")})
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("kualitatif")}
+                    className="approach-pill"
                     style={getApproachPillStyle("kualitatif", approachFilter === "kualitatif")}
                   >
                     Qual ({getApproachCount("kualitatif")})
                   </button>
                   <button
                     onClick={() => handleApproachFilterClick("metodeCampuran")}
+                    className="approach-pill"
                     style={getApproachPillStyle("metodeCampuran", approachFilter === "metodeCampuran")}
                   >
                     Campuran ({getApproachCount("metodeCampuran")})
@@ -341,20 +345,21 @@ export default function AdminPage() {
               </div>
 
               {/* Card 2: SQLite Storage / Optimizer defragmenter */}
-              <div className="glass-panel" style={styles.statCard}>
-                <span style={styles.statLabel}>SQLite Storage</span>
-                <span style={{ ...styles.statVal, color: vacuumSuccess ? "#10b981" : "#22d3ee" }} className={vacuumSuccess ? "animate-pulse" : ""}>
+              <div className="glass-panel telemetry-card">
+                <span className="telemetry-label">SQLite Storage</span>
+                <span className={`telemetry-val ${vacuumSuccess ? "animate-pulse" : ""}`} style={{ color: vacuumSuccess ? "#10b981" : "#22d3ee" }}>
                   {formatBytes(stats.dbSizeBytes)}
                 </span>
-                <div style={styles.vacuumActionArea}>
+                <div className="vacuum-action-area">
                   <button
                     onClick={handleVacuum}
                     disabled={vacuuming}
+                    className="vacuum-btn"
                     style={getVacuumButtonStyle(vacuumSuccess)}
                   >
                     {vacuuming ? (
                       <>
-                        <div style={styles.spinnerMini}></div>
+                        <div className="spinner-mini"></div>
                         Vacuuming...
                       </>
                     ) : vacuumSuccess ? (
@@ -367,38 +372,32 @@ export default function AdminPage() {
               </div>
 
               {/* Card 3: Go Server Telemetry with Uptime and Heartbeat */}
-              <div className="glass-panel" style={styles.statCard}>
-                <span style={styles.statLabel}>
+              <div className="glass-panel telemetry-card">
+                <span className="telemetry-label">
                   Go Server Telemetry
                   <span className="heartbeat-dot" style={{ marginLeft: "8px" }}></span>
                 </span>
-                <span style={{ ...styles.statVal, color: "#a78bfa" }}>
+                <span className="telemetry-val" style={{ color: "#a78bfa" }}>
                   {stats.allocatedRamMb ? stats.allocatedRamMb.toFixed(2) + " MB RAM" : "1.25 MB RAM"}
                 </span>
-                <span style={styles.statSub}>
+                <span className="telemetry-sub">
                   Uptime: <strong style={{ color: "white" }}>{formatUptime(uptimeSecs)}</strong>
                 </span>
               </div>
             </section>
 
             {/* Admin Hub Tab Controller */}
-            <div style={styles.tabsBar}>
+            <div className="tabs-bar">
               <button
                 onClick={() => setActiveTab(0)}
-                style={{
-                  ...styles.tabBtn,
-                  ...(activeTab === 0 ? styles.tabBtnActive : {}),
-                }}
+                className={`tab-btn ${activeTab === 0 ? "active" : ""}`}
               >
                 <IconUsers size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                 {t("admin.userTitle")}
               </button>
               <button
                 onClick={() => setActiveTab(1)}
-                style={{
-                  ...styles.tabBtn,
-                  ...(activeTab === 1 ? styles.tabBtnActive : {}),
-                }}
+                className={`tab-btn ${activeTab === 1 ? "active" : ""}`}
               >
                 <IconHelix size={15} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                 {t("admin.projTitle")}
@@ -407,9 +406,9 @@ export default function AdminPage() {
 
             {/* TAB 0: User Directory */}
             {activeTab === 0 && (
-              <div style={styles.tabContent} className="glass-panel animate-fade-in">
+              <div className="glass-panel tab-content animate-fade-in">
                 {stats.users.length === 0 ? (
-                  <p style={styles.emptyTableText}>{t("admin.noUsers")}</p>
+                  <p className="empty-table-text">{t("admin.noUsers")}</p>
                 ) : (
                   <div className="arche-table-wrapper">
                     <table className="arche-table table-compact">
@@ -430,10 +429,7 @@ export default function AdminPage() {
                             <td style={{ fontWeight: 700, color: "white" }}>{u.name}</td>
                             <td>{u.email}</td>
                             <td>
-                              <span
-                                style={styles.roleTag}
-                                className={u.role === "admin" ? "badge-danger" : "badge-primary"}
-                              >
+                              <span className={`badge ${u.role === "admin" ? "badge-danger" : "badge-primary"}`}>
                                 {u.role.toUpperCase()}
                               </span>
                             </td>
@@ -450,9 +446,9 @@ export default function AdminPage() {
 
             {/* TAB 1: Projects Monitor */}
             {activeTab === 1 && (
-              <div style={styles.tabContent} className="glass-panel animate-fade-in">
+              <div className="glass-panel tab-content animate-fade-in">
                 {stats.projects.length === 0 ? (
-                  <p style={styles.emptyTableText}>{t("admin.noProjects")}</p>
+                  <p className="empty-table-text">{t("admin.noProjects")}</p>
                 ) : (
                   <div className="arche-table-wrapper">
                     <table className="arche-table table-compact">
@@ -477,7 +473,7 @@ export default function AdminPage() {
                               {p.title}
                             </td>
                             <td>
-                              <span style={styles.approachTag} className="badge-primary">
+                              <span className="badge badge-primary">
                                 {p.approach ? p.approach.toUpperCase() : "N/A"}
                               </span>
                             </td>
@@ -520,56 +516,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
   },
-  glowCircle1: {
-    position: "absolute",
-    top: "-10%",
-    left: "-10%",
-    width: "450px",
-    height: "450px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(239,68,68,0.08) 0%, rgba(0,0,0,0) 70%)",
-    zIndex: 1,
-    pointerEvents: "none",
-  },
-  glowCircle2: {
-    position: "absolute",
-    bottom: "10%",
-    right: "-5%",
-    width: "500px",
-    height: "500px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(124,58,237,0.08) 0%, rgba(0,0,0,0) 70%)",
-    zIndex: 1,
-    pointerEvents: "none",
-  },
-  navbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "1rem 2.5rem",
-    borderRadius: "0",
-    borderTop: "none",
-    borderLeft: "none",
-    borderRight: "none",
-    zIndex: 10,
-  },
-  navBrand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  logoText: {
-    fontSize: "1.75rem",
-    fontWeight: 800,
-    letterSpacing: "-0.04em",
-    background: "linear-gradient(135deg, #f87171 0%, #38bdf8 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  badge: {
-    fontSize: "0.7rem",
-    padding: "0.2rem 0.5rem",
-  },
   navControls: {
     display: "flex",
     alignItems: "center",
@@ -607,111 +553,9 @@ const styles: Record<string, React.CSSProperties> = {
     borderColor: "rgba(239, 68, 68, 0.2)",
     color: "#fca5a5",
   },
-  mainContent: {
-    flex: 1,
-    padding: "80px 2rem 65px 2rem",
-    maxWidth: "1400px",
-    width: "100%",
-    margin: "0 auto",
-    zIndex: 5,
-  },
-  welcomeSection: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "1rem",
-    gap: "1rem",
-    flexWrap: "wrap",
-  },
-  welcomeTitle: {
-    fontSize: "2rem",
-    fontWeight: 800,
-    letterSpacing: "-0.03em",
-    color: "rgba(255, 255, 255, 0.95)",
-    marginBottom: "0.25rem",
-  },
-  welcomeSubtitle: {
-    fontSize: "0.9rem",
-    color: "rgba(255, 255, 255, 0.6)",
-  },
   refreshBtn: {
     padding: "0.5rem 1rem",
     fontSize: "0.85rem",
-  },
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "1rem",
-    marginBottom: "1.5rem",
-  },
-  statCard: {
-    padding: "1.25rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-  },
-  statLabel: {
-    fontSize: "0.75rem",
-    fontWeight: 800,
-    color: "rgba(255, 255, 255, 0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-    display: "flex",
-    alignItems: "center"
-  },
-  statVal: {
-    fontSize: "2rem",
-    fontWeight: 800,
-    lineHeight: 1.1,
-    margin: "0.25rem 0",
-  },
-  statSub: {
-    fontSize: "0.8rem",
-    color: "rgba(255, 255, 255, 0.4)",
-  },
-  tabsBar: {
-    display: "flex",
-    gap: "0.75rem",
-    marginBottom: "1rem",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
-    paddingBottom: "0.5rem",
-  },
-  tabBtn: {
-    background: "transparent",
-    border: "none",
-    color: "rgba(255, 255, 255, 0.5)",
-    fontSize: "0.9rem",
-    fontWeight: 700,
-    padding: "0.4rem 0.8rem",
-    cursor: "pointer",
-    borderRadius: "6px",
-    transition: "all 0.2s ease",
-  },
-  tabBtnActive: {
-    background: "rgba(255, 255, 255, 0.03)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    color: "white",
-  },
-  tabContent: {
-    padding: "1.25rem",
-    minHeight: "300px",
-  },
-  emptyTableText: {
-    textAlign: "center",
-    color: "rgba(255, 255, 255, 0.4)",
-    padding: "3rem 0",
-  },
-  roleTag: {
-    fontSize: "0.7rem",
-    padding: "0.15rem 0.4rem",
-    borderRadius: "4px",
-    display: "inline-block",
-  },
-  approachTag: {
-    fontSize: "0.7rem",
-    padding: "0.15rem 0.4rem",
-    borderRadius: "4px",
-    display: "inline-block",
   },
   loadingState: {
     display: "flex",
@@ -734,51 +578,5 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "8px",
     textAlign: "center",
     fontWeight: 600,
-  },
-  approachPillsGroup: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "0.4rem",
-    marginTop: "0.5rem"
-  },
-  approachPill: {
-    background: "rgba(255, 255, 255, 0.02)",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "rgba(255, 255, 255, 0.08)",
-    borderRadius: "4px",
-    color: "rgba(255, 255, 255, 0.5)",
-    fontSize: "0.7rem",
-    padding: "0.2rem 0.4rem",
-    cursor: "pointer",
-    transition: "all 0.2s ease"
-  },
-  vacuumActionArea: {
-    marginTop: "0.5rem",
-    display: "flex",
-    alignItems: "center"
-  },
-  vacuumBtn: {
-    background: "rgba(239, 68, 68, 0.1)",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "rgba(239, 68, 68, 0.25)",
-    color: "#fca5a5",
-    borderRadius: "4px",
-    fontSize: "0.72rem",
-    padding: "0.25rem 0.5rem",
-    cursor: "pointer",
-    transition: "all 0.2s ease",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.4rem"
-  },
-  spinnerMini: {
-    width: "12px",
-    height: "12px",
-    border: "2px solid rgba(255, 255, 255, 0.1)",
-    borderTopColor: "#fca5a5",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite"
   }
 };
