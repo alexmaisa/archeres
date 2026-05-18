@@ -34,6 +34,9 @@ export default function DashboardPage() {
   const activeProjects = projects.filter((p) => !p.isArchived);
   const archivedProjects = projects.filter((p) => p.isArchived);
 
+  const projectToDelete = projects.find((p) => p.id === projectIdToDelete);
+  const isTargetAlreadyArchived = projectToDelete ? projectToDelete.isArchived : false;
+
   useEffect(() => {
     // Authenticate session locally
     const savedUser = localStorage.getItem("user");
@@ -575,24 +578,26 @@ export default function DashboardPage() {
             </div>
 
             <div className="arche-modal-actions" style={{ marginTop: "1rem", gap: "0.75rem" }}>
-              <button
-                type="button"
-                onClick={handleArchiveProject}
-                className="btn"
-                style={{
-                  backgroundColor: "rgba(245, 158, 11, 0.15)",
-                  border: "1px solid rgba(245, 158, 11, 0.3)",
-                  color: "#fbbf24",
-                  padding: "0.5rem 1.15rem",
-                  borderRadius: "8px",
-                  fontWeight: 600,
-                  fontSize: "0.88rem",
-                  transition: "all 0.2s ease"
-                }}
-                disabled={deleteLoading}
-              >
-                {deleteLoading ? t("common.loading") : t("dashboard.archiveBtn")}
-              </button>
+              {!isTargetAlreadyArchived && (
+                <button
+                  type="button"
+                  onClick={handleArchiveProject}
+                  className="btn"
+                  style={{
+                    backgroundColor: "rgba(245, 158, 11, 0.15)",
+                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                    color: "#fbbf24",
+                    padding: "0.5rem 1.15rem",
+                    borderRadius: "8px",
+                    fontWeight: 600,
+                    fontSize: "0.88rem",
+                    transition: "all 0.2s ease"
+                  }}
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? t("common.loading") : t("dashboard.archiveBtn")}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleDeleteProject}
