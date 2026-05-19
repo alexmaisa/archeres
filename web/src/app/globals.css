@@ -1069,19 +1069,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .mobile-nav-menu {
   position: absolute;
-  top: 60px;
-  left: 0;
-  right: 0;
-  background: rgba(10, 10, 10, 0.96);
+  top: 54px;
+  right: 1rem;
+  width: 220px;
+  background: rgba(15, 15, 15, 0.92);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   z-index: 99;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.15);
   animation: navSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
