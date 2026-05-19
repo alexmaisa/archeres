@@ -26,3 +26,6 @@ web/out/
 .next/
 out/
 pnpm-debug.log*
+
+# Temporary Markdown Files
+release_notes*.md
