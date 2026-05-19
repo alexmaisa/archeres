@@ -2109,7 +2109,13 @@ Aligned with the scale of measurements and variable distribution, statistical hy
           </button>
         )}
         {/* 1. LEFT PANEL: Checklist & Navigation */}
-        <aside className="workspace-sidebar glass-panel" style={styles.leftPanel}>
+        <aside
+          className="workspace-sidebar glass-panel"
+          style={{
+            ...styles.leftPanel,
+            display: isMobile ? "none" : "flex"
+          }}
+        >
           <div style={styles.leftHeader}>
             <button onClick={() => router.push("/user/dashboard")} style={styles.backLink}>
               ← {t("common.dashboard")}
