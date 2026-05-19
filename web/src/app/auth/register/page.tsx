@@ -57,7 +57,7 @@ export default function RegisterPage() {
   const [captchaSvg, setCaptchaSvg] = useState<string>("");
   const [captchaAnswer, setCaptchaAnswer] = useState<string>("");
 
-  const loadCaptcha = async () => {
+  const loadCaptcha = async (retryCount = 0) => {
     try {
       const res = await apiFetch<{ captchaToken: string; captchaSvg: string }>("/api/auth/captcha");
       if (res.captchaToken && res.captchaSvg) {
@@ -67,6 +67,10 @@ export default function RegisterPage() {
       }
     } catch (err) {
       console.error("Failed to load captcha", err);
+      if (retryCount < 2) {
+        // Retry loading after a brief delay (perfect for concurrent server startup latency)
+        setTimeout(() => loadCaptcha(retryCount + 1), 1500);
+      }
     }
   };
 
@@ -401,7 +405,7 @@ export default function RegisterPage() {
                     <span>{i18n.language === "id" ? "Verifikasi Keamanan" : "Security Verification"}</span>
                     <button
                       type="button"
-                      onClick={loadCaptcha}
+                      onClick={() => loadCaptcha(0)}
                       style={{
                         background: "transparent",
                         border: "none",
