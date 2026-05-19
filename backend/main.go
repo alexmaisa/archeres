@@ -24,7 +24,7 @@ func main() {
 	// 3. Register Logging & CORS (Cross-Origin Resource Sharing) Middleware
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, http://127.0.0.1:3000",
+		AllowOrigins:     "http://localhost:3000, http://127.0.0.1:3000, http://192.168.20.11:3000, http://100.80.196.99:3000",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
 		AllowCredentials: true,

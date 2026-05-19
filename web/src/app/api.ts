@@ -1,8 +1,15 @@
 // Shared API caller utility supporting dev/prod environment states
 export const getApiUrl = (path: string): string => {
   const isDev = process.env.NODE_ENV === 'development';
-  // Prepend local Go server in dev, use relative endpoint in production (Nginx proxy)
-  const baseUrl = isDev ? 'http://localhost:8080' : '';
+  // Prepend local Go server in dev (dynamically resolved to current hostname), use relative endpoint in production (Nginx proxy)
+  let baseUrl = '';
+  if (isDev) {
+    if (typeof window !== 'undefined') {
+      baseUrl = `http://${window.location.hostname}:8080`;
+    } else {
+      baseUrl = 'http://localhost:8080';
+    }
+  }
   return `${baseUrl}${path}`;
 };
 
