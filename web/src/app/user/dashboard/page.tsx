@@ -14,6 +14,8 @@ export default function DashboardPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
 
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -110,6 +112,14 @@ export default function DashboardPage() {
     }
     setUser(JSON.parse(savedUser));
     fetchProjects();
+
+    setMounted(true);
+    setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const fetchProjects = async () => {
@@ -390,8 +400,8 @@ export default function DashboardPage() {
 
             <div style={{
               display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "stretch" : "center",
               justifyContent: "space-between",
               gap: "1rem",
               marginBottom: "1.25rem",
@@ -416,15 +426,23 @@ export default function DashboardPage() {
                     borderRadius: "8px",
                     background: "rgba(255, 255, 255, 0.02)",
                     border: "1px solid rgba(255, 255, 255, 0.06)",
-                    color: "rgba(255, 255, 255, 0.9)"
+                    color: "rgba(255, 255, 255, 0.9)",
+                    width: "100%",
+                    boxSizing: "border-box"
                   }}
                 />
               </div>
 
               {/* Filters and Sorting dropdowns */}
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ 
+                display: "flex", 
+                flexDirection: isMobile ? "column" : "row", 
+                alignItems: isMobile ? "stretch" : "center", 
+                gap: "0.75rem",
+                width: isMobile ? "100%" : "auto"
+              }}>
                 {/* Approach Filter */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: "0.5rem", width: isMobile ? "100%" : "auto" }}>
                   <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
                     {t("dashboard.filterLabel")}:
                   </span>
@@ -433,7 +451,7 @@ export default function DashboardPage() {
                     onChange={(e) => setApproachFilter(e.target.value)}
                     className="form-input"
                     style={{
-                      width: "160px",
+                      width: isMobile ? "100%" : "160px",
                       height: "38px",
                       margin: 0,
                       padding: "0 0.75rem",
@@ -442,18 +460,20 @@ export default function DashboardPage() {
                       background: "rgba(3, 7, 18, 0.6)",
                       border: "1px solid rgba(255, 255, 255, 0.06)",
                       color: "rgba(255, 255, 255, 0.8)",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      boxSizing: "border-box"
                     }}
                   >
                     <option value="All">{t("dashboard.filterAll")}</option>
                     <option value="Kuantitatif">Kuantitatif</option>
                     <option value="Kualitatif">Kualitatif</option>
+                    <option value="Metode Campuran">Metode Campuran</option>
                     <option value="R&D">R&D</option>
                   </select>
                 </div>
 
                 {/* Explicit Sorting Dropdown */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: "0.5rem", width: isMobile ? "100%" : "auto" }}>
                   <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
                     {t("dashboard.sortLabel")}:
                   </span>
@@ -466,7 +486,7 @@ export default function DashboardPage() {
                     }}
                     className="form-input"
                     style={{
-                      width: "210px",
+                      width: isMobile ? "100%" : "210px",
                       height: "38px",
                       margin: 0,
                       padding: "0 0.75rem",
@@ -475,7 +495,8 @@ export default function DashboardPage() {
                       background: "rgba(3, 7, 18, 0.6)",
                       border: "1px solid rgba(255, 255, 255, 0.06)",
                       color: "rgba(255, 255, 255, 0.8)",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      boxSizing: "border-box"
                     }}
                   >
                     <option value="title-asc">{t("dashboard.sortTitleAsc")}</option>
@@ -491,196 +512,262 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="glass-panel arche-table-wrapper" style={{ overflow: "hidden" }}>
-              <table className="arche-table table-compact">
-                <thead>
-                  <tr>
-                    <th style={{ width: "25%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("title")}>
-                      <span style={{ display: "inline-flex", alignItems: "center" }}>
-                        {t("dashboard.projectTitleColumn")}
-                        {renderSortIndicator("title")}
-                      </span>
-                    </th>
-                    <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
-                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("approach")}>
-                      <span style={{ display: "inline-flex", alignItems: "center" }}>
-                        {t("dashboard.projectApproachColumn")}
-                        {renderSortIndicator("approach")}
-                      </span>
-                    </th>
-                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("createdAt")}>
-                      <span style={{ display: "inline-flex", alignItems: "center" }}>
-                        {t("dashboard.createdAtColumn")}
-                        {renderSortIndicator("createdAt")}
-                      </span>
-                    </th>
-                    <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("updatedAt")}>
-                      <span style={{ display: "inline-flex", alignItems: "center" }}>
-                        {t("dashboard.updatedAtColumn")}
-                        {renderSortIndicator("updatedAt")}
-                      </span>
-                    </th>
-                    <th style={{ width: "5%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeTab === "active" ? (
-                    activeProjects.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
-                            <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
-                            <span style={{ fontSize: "0.95rem" }}>
-                              {i18n.language === "id" 
-                                ? "Belum ada proyek penelitian aktif yang dibuat." 
-                                : "No active research projects have been created yet."}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : displayedActive.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
-                            <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
-                            <span style={{ fontSize: "0.95rem" }}>
-                              {t("dashboard.noMatchFound")}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      displayedActive.map((proj) => (
-                        <tr key={proj.id}>
-                          <td style={{ verticalAlign: "middle" }}>
-                            <div
-                              onClick={() => router.push(`/user/project?id=${proj.id}`)}
-                              className="project-title-link"
-                            >
-                              {proj.title}
-                            </div>
-                          </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.88rem" }}>
-                            {proj.description
-                              ? proj.description.length > 80
-                                ? `${proj.description.substring(0, 80)}...`
-                                : proj.description
-                              : "No description provided."}
-                          </td>
-                          <td style={{ verticalAlign: "middle" }}>
-                            {proj.approach ? (
-                              <span className={`badge ${
-                                proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
-                                  ? "badge-primary"
-                                  : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
-                                    ? "badge-cyan"
-                                    : "badge-success"
-                              }`}>
-                                {proj.approach === "Kuantitatif"
-                                  ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
-                                  : proj.approach === "Kualitatif"
-                                    ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
-                                    : proj.approach === "Metode Campuran"
-                                      ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
-                                      : proj.approach}
-                              </span>
-                            ) : (
-                              <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
-                            )}
-                          </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
-                            {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                          </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
+            {isMobile ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+                {activeTab === "active" ? (
+                  activeProjects.length === 0 ? (
+                    <div className="glass-panel" style={{ padding: "3rem 1.5rem", textAlign: "center", color: "rgba(255, 255, 255, 0.4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                        <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {i18n.language === "id" 
+                            ? "Belum ada proyek penelitian aktif yang dibuat." 
+                            : "No active research projects have been created yet."}
+                        </span>
+                      </div>
+                    </div>
+                  ) : displayedActive.length === 0 ? (
+                    <div className="glass-panel" style={{ padding: "3rem 1.5rem", textAlign: "center", color: "rgba(255, 255, 255, 0.4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                        <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {t("dashboard.noMatchFound")}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    displayedActive.map((proj) => (
+                      <div key={proj.id} className="glass-panel animate-fade-in" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
+                          <span className={`badge ${
+                            proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
+                              ? "badge-primary"
+                              : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
+                                ? "badge-cyan"
+                                : "badge-success"
+                          }`} style={{ fontSize: "0.75rem" }}>
+                            {proj.approach === "Kuantitatif"
+                              ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                              : proj.approach === "Kualitatif"
+                                ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                : proj.approach === "Metode Campuran"
+                                  ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                  : proj.approach || "—"}
+                          </span>
+                          <span style={{ fontSize: "0.7rem", color: "rgba(255, 255, 255, 0.3)" }}>
                             {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                          </td>
-                          <td style={{ verticalAlign: "middle", textAlign: "right" }}>
-                            <button
-                              onClick={() => {
-                                setProjectIdToDelete(proj.id);
-                                setProjectTitleToDelete(proj.title);
-                                setShowDeleteModal(true);
-                              }}
-                              className="btn btn-outline project-action-delete"
-                              style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
-                            >
-                              <IconTrash size={13} />
-                            </button>
+                          </span>
+                        </div>
+                        <h3 
+                          onClick={() => router.push(`/user/project?id=${proj.id}`)}
+                          style={{ fontSize: "1.1rem", fontWeight: 800, color: "#fff", cursor: "pointer", margin: 0, textDecoration: "none" }}
+                          className="project-title-link"
+                        >
+                          {proj.title}
+                        </h3>
+                        <p style={{ fontSize: "0.85rem", color: "rgba(255, 255, 255, 0.6)", margin: 0, lineHeight: 1.4 }}>
+                          {proj.description
+                            ? proj.description.length > 120
+                              ? `${proj.description.substring(0, 120)}...`
+                              : proj.description
+                            : "No description provided."}
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
+                          <button
+                            onClick={() => {
+                              setProjectIdToDelete(proj.id);
+                              setProjectTitleToDelete(proj.title);
+                              setShowDeleteModal(true);
+                            }}
+                            className="btn btn-outline project-action-delete"
+                            style={{ padding: "0.4rem 0.75rem", fontSize: "0.75rem", borderRadius: "8px" }}
+                          >
+                            <IconTrash size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )
+                ) : (
+                  archivedProjects.length === 0 ? (
+                    <div className="glass-panel" style={{ padding: "3rem 1.5rem", textAlign: "center", color: "rgba(255, 255, 255, 0.4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                        <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {i18n.language === "id" 
+                            ? "Belum ada proyek penelitian yang diarsipkan." 
+                            : "No archived research projects found."}
+                        </span>
+                      </div>
+                    </div>
+                  ) : displayedArchived.length === 0 ? (
+                    <div className="glass-panel" style={{ padding: "3rem 1.5rem", textAlign: "center", color: "rgba(255, 255, 255, 0.4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                        <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {t("dashboard.noMatchFound")}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    displayedArchived.map((proj) => (
+                      <div key={proj.id} className="glass-panel animate-fade-in" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid rgba(255, 255, 255, 0.08)", opacity: 0.85 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
+                          <span className="badge badge-secondary" style={{ fontSize: "0.75rem", backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
+                            {proj.approach === "Kuantitatif"
+                              ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                              : proj.approach === "Kualitatif"
+                                ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                : proj.approach === "Metode Campuran"
+                                  ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                  : proj.approach || "—"}
+                          </span>
+                          <span style={{ fontSize: "0.7rem", color: "rgba(255, 255, 255, 0.3)" }}>
+                            {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                          </span>
+                        </div>
+                        <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "rgba(255, 255, 255, 0.8)", margin: 0 }}>
+                          {proj.title}
+                        </h3>
+                        <p style={{ fontSize: "0.85rem", color: "rgba(255, 255, 255, 0.55)", margin: 0, lineHeight: 1.4 }}>
+                          {proj.description
+                            ? proj.description.length > 120
+                              ? `${proj.description.substring(0, 120)}...`
+                              : proj.description
+                            : "No description provided."}
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.05)", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
+                          <button
+                            onClick={() => handleUnarchiveProject(proj.id)}
+                            className="btn btn-outline"
+                            title={t("dashboard.unarchiveBtn")}
+                            style={{ padding: "0.4rem 0.75rem", fontSize: "0.75rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
+                          >
+                            <IconRefresh size={12} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setProjectIdToDelete(proj.id);
+                              setProjectTitleToDelete(proj.title);
+                              setShowDeleteModal(true);
+                            }}
+                            className="btn btn-outline project-action-delete"
+                            title={t("dashboard.deletePermanent")}
+                            style={{ padding: "0.4rem 0.75rem", fontSize: "0.75rem", borderRadius: "8px" }}
+                          >
+                            <IconTrash size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="glass-panel arche-table-wrapper" style={{ overflowX: "auto" }}>
+                <table className="arche-table table-compact">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "25%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("title")}>
+                        <span style={{ display: "inline-flex", alignItems: "center" }}>
+                          {t("dashboard.projectTitleColumn")}
+                          {renderSortIndicator("title")}
+                        </span>
+                      </th>
+                      <th style={{ width: "25%" }}>{t("dashboard.projectDescColumn")}</th>
+                      <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("approach")}>
+                        <span style={{ display: "inline-flex", alignItems: "center" }}>
+                          {t("dashboard.projectApproachColumn")}
+                          {renderSortIndicator("approach")}
+                        </span>
+                      </th>
+                      <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("createdAt")}>
+                        <span style={{ display: "inline-flex", alignItems: "center" }}>
+                          {t("dashboard.createdAtColumn")}
+                          {renderSortIndicator("createdAt")}
+                        </span>
+                      </th>
+                      <th style={{ width: "15%", cursor: "pointer", userSelect: "none" }} onClick={() => handleHeaderClick("updatedAt")}>
+                        <span style={{ display: "inline-flex", alignItems: "center" }}>
+                          {t("dashboard.updatedAtColumn")}
+                          {renderSortIndicator("updatedAt")}
+                        </span>
+                      </th>
+                      <th style={{ width: "5%", textAlign: "right" }}>{t("dashboard.actionsColumn")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeTab === "active" ? (
+                      activeProjects.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                              <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                              <span style={{ fontSize: "0.95rem" }}>
+                                {i18n.language === "id" 
+                                  ? "Belum ada proyek penelitian aktif yang dibuat." 
+                                  : "No active research projects have been created yet."}
+                              </span>
+                            </div>
                           </td>
                         </tr>
-                      ))
-                    )
-                  ) : (
-                    archivedProjects.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
-                            <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
-                            <span style={{ fontSize: "0.95rem" }}>
-                              {i18n.language === "id" 
-                                ? "Belum ada proyek penelitian yang diarsipkan." 
-                                : "No archived research projects found."}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : displayedArchived.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
-                            <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
-                            <span style={{ fontSize: "0.95rem" }}>
-                              {t("dashboard.noMatchFound")}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      displayedArchived.map((proj) => (
-                        <tr key={proj.id} style={{ opacity: 0.8 }}>
-                          <td style={{ verticalAlign: "middle" }}>
-                            <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
-                              {proj.title}
+                      ) : displayedActive.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                              <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                              <span style={{ fontSize: "0.95rem" }}>
+                                {t("dashboard.noMatchFound")}
+                              </span>
                             </div>
                           </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.55)", fontSize: "0.88rem" }}>
-                            {proj.description
-                              ? proj.description.length > 80
-                                ? `${proj.description.substring(0, 80)}...`
-                                : proj.description
-                              : "No description provided."}
-                          </td>
-                          <td style={{ verticalAlign: "middle" }}>
-                            {proj.approach ? (
-                              <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
-                                {proj.approach === "Kuantitatif"
-                                  ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
-                                  : proj.approach === "Kualitatif"
-                                    ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
-                                    : proj.approach === "Metode Campuran"
-                                      ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
-                                      : proj.approach}
-                              </span>
-                            ) : (
-                              <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
-                            )}
-                          </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
-                            {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                          </td>
-                          <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
-                            {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
-                          </td>
-                          <td style={{ verticalAlign: "middle", textAlign: "right" }}>
-                            <div style={{ display: "inline-flex", gap: "0.5rem" }}>
-                              <button
-                                onClick={() => handleUnarchiveProject(proj.id)}
-                                className="btn btn-outline"
-                                title={t("dashboard.unarchiveBtn")}
-                                style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
+                        </tr>
+                      ) : (
+                        displayedActive.map((proj) => (
+                          <tr key={proj.id}>
+                            <td style={{ verticalAlign: "middle" }}>
+                              <div
+                                onClick={() => router.push(`/user/project?id=${proj.id}`)}
+                                className="project-title-link"
                               >
-                                <IconRefresh size={13} />
-                              </button>
+                                {proj.title}
+                              </div>
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.88rem" }}>
+                              {proj.description
+                                ? proj.description.length > 80
+                                  ? `${proj.description.substring(0, 80)}...`
+                                  : proj.description
+                                : "No description provided."}
+                            </td>
+                            <td style={{ verticalAlign: "middle" }}>
+                              {proj.approach ? (
+                                <span className={`badge ${
+                                  proj.approach === "Kuantitatif" || proj.approach === "Quantitative"
+                                    ? "badge-primary"
+                                    : proj.approach === "Kualitatif" || proj.approach === "Qualitative"
+                                      ? "badge-cyan"
+                                      : "badge-success"
+                                }`}>
+                                  {proj.approach === "Kuantitatif"
+                                    ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                                    : proj.approach === "Kualitatif"
+                                      ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                      : proj.approach === "Metode Campuran"
+                                        ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                        : proj.approach}
+                                </span>
+                              ) : (
+                                <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
+                              )}
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
+                              {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.85rem" }}>
+                              {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                            </td>
+                            <td style={{ verticalAlign: "middle", textAlign: "right" }}>
                               <button
                                 onClick={() => {
                                   setProjectIdToDelete(proj.id);
@@ -688,20 +775,107 @@ export default function DashboardPage() {
                                   setShowDeleteModal(true);
                                 }}
                                 className="btn btn-outline project-action-delete"
-                                title={t("dashboard.deletePermanent")}
                                 style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
                               >
                                 <IconTrash size={13} />
                               </button>
+                            </td>
+                          </tr>
+                        ))
+                      )
+                    ) : (
+                      archivedProjects.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                              <IconFolder size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                              <span style={{ fontSize: "0.95rem" }}>
+                                {i18n.language === "id" 
+                                  ? "Belum ada proyek penelitian yang diarsipkan." 
+                                  : "No archived research projects found."}
+                              </span>
                             </div>
                           </td>
                         </tr>
-                      ))
-                    )
-                  )}
-                </tbody>
-              </table>
-            </div>
+                      ) : displayedArchived.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "rgba(255, 255, 255, 0.4)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}>
+                              <IconFilter size={32} style={{ color: "rgba(255, 255, 255, 0.15)" }} />
+                              <span style={{ fontSize: "0.95rem" }}>
+                                {t("dashboard.noMatchFound")}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        displayedArchived.map((proj) => (
+                          <tr key={proj.id} style={{ opacity: 0.8 }}>
+                            <td style={{ verticalAlign: "middle" }}>
+                              <div style={{ fontWeight: 700, color: "rgba(255, 255, 255, 0.8)", fontSize: "1.05rem" }}>
+                                {proj.title}
+                              </div>
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.55)", fontSize: "0.88rem" }}>
+                              {proj.description
+                                ? proj.description.length > 80
+                                  ? `${proj.description.substring(0, 80)}...`
+                                  : proj.description
+                                : "No description provided."}
+                            </td>
+                            <td style={{ verticalAlign: "middle" }}>
+                              {proj.approach ? (
+                                <span className="badge badge-secondary" style={{ backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.6)" }}>
+                                  {proj.approach === "Kuantitatif"
+                                    ? (i18n.language === "id" ? "Kuantitatif" : "Quantitative")
+                                    : proj.approach === "Kualitatif"
+                                      ? (i18n.language === "id" ? "Kualitatif" : "Qualitative")
+                                      : proj.approach === "Metode Campuran"
+                                        ? (i18n.language === "id" ? "Metode Campuran" : "Mixed Methods")
+                                        : proj.approach}
+                                </span>
+                              ) : (
+                                <span style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: "0.85rem" }}>—</span>
+                              )}
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                              {new Date(proj.createdAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                            </td>
+                            <td style={{ verticalAlign: "middle", color: "rgba(255, 255, 255, 0.4)", fontSize: "0.85rem" }}>
+                              {new Date(proj.updatedAt).toLocaleDateString(i18n.language === "id" ? "id-ID" : "en-US")}
+                            </td>
+                            <td style={{ verticalAlign: "middle", textAlign: "right" }}>
+                              <div style={{ display: "inline-flex", gap: "0.5rem" }}>
+                                <button
+                                  onClick={() => handleUnarchiveProject(proj.id)}
+                                  className="btn btn-outline"
+                                  title={t("dashboard.unarchiveBtn")}
+                                  style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px", color: "#22d3ee", borderColor: "rgba(34, 211, 238, 0.3)" }}
+                                >
+                                  <IconRefresh size={13} />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setProjectIdToDelete(proj.id);
+                                    setProjectTitleToDelete(proj.title);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="btn btn-outline project-action-delete"
+                                  title={t("dashboard.deletePermanent")}
+                                  style={{ padding: "0.45rem 0.85rem", fontSize: "0.8rem", borderRadius: "8px" }}
+                                >
+                                  <IconTrash size={13} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -85,6 +85,8 @@ export default function WorkspaceClient() {
     tips: string;
   }
 
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const [eduPopupOpen, setEduPopupOpen] = useState<boolean>(false);
   const [eduPopupItemId, setEduPopupItemId] = useState<string | null>(null);
 
@@ -117,6 +119,14 @@ export default function WorkspaceClient() {
     }
     setUser(JSON.parse(savedUser));
     fetchProjectDetails();
+
+    setMounted(true);
+    setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Whenever calculation variables change, execute calculator client-side immediately!
@@ -1969,7 +1979,13 @@ Aligned with the scale of measurements and variable distribution, statistical hy
         className="workspace-layout"
         style={{
           ...styles.workspaceWrapper,
-          gridTemplateColumns: "300px 1fr 500px",
+          gridTemplateColumns: !mounted 
+            ? "300px 1fr 500px" 
+            : isMobile 
+              ? "1fr" 
+              : window.innerWidth <= 1200 
+                ? "240px 1fr" 
+                : "300px 1fr 500px",
           position: "relative",
         }}
       >
@@ -1982,7 +1998,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               position: "absolute",
               top: "50%",
               transform: "translateY(-50%)",
-              right: showPreview ? "487px" : "-1px",
+              right: showPreview ? (isMobile ? "calc(100% - 25px)" : "487px") : "-1px",
               width: "26px",
               height: "50px",
               borderRadius: "8px 0 0 8px",
@@ -2077,17 +2093,119 @@ Aligned with the scale of measurements and variable distribution, statistical hy
 
         {/* 2. MIDDLE PANEL: Interactive Forms & Calculators */}
         <section className="workspace-wizard" style={styles.middlePanel}>
-          <div style={styles.middleHeader}>
-            <span style={styles.middleStepIndicator}>
-              {t("wizard.progress", { current: activeStep, total: 4 })}
-            </span>
-            <h1 style={styles.middleStepTitle}>
-              {activeStep === 1 && t("wizard.step1")}
-              {activeStep === 2 && t("wizard.step2")}
-              {activeStep === 3 && t("wizard.step3")}
-              {activeStep === 4 && t("wizard.step4")}
-            </h1>
+          <div style={{
+            ...styles.middleHeader,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "0.5rem",
+            marginBottom: "1rem"
+          }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span style={styles.middleStepIndicator}>
+                {t("wizard.progress", { current: activeStep, total: 4 })}
+              </span>
+              <h1 style={styles.middleStepTitle}>
+                {activeStep === 1 && t("wizard.step1")}
+                {activeStep === 2 && t("wizard.step2")}
+                {activeStep === 3 && t("wizard.step3")}
+                {activeStep === 4 && t("wizard.step4")}
+              </h1>
+            </div>
+
+            {isMobile && (
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  onClick={() => router.push("/user/dashboard")}
+                  className="btn btn-outline"
+                  style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  <span>←</span> {t("common.dashboard")}
+                </button>
+                <button
+                  onClick={handleSaveProgress}
+                  className="btn btn-primary"
+                  style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "4px" }}
+                  disabled={saveLoading}
+                >
+                  <IconSave size={12} />
+                  {t("common.save")}
+                </button>
+              </div>
+            )}
           </div>
+
+          {isMobile && (
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              padding: "0.5rem 1rem",
+              marginBottom: "1.25rem",
+              gap: "0.5rem",
+              backdropFilter: "blur(8px)",
+              width: "100%",
+              boxSizing: "border-box"
+            }}>
+              {[1, 2, 3, 4].map((stepNum) => {
+                const unlocked = isStepUnlocked(stepNum);
+                const completed = isStepCompleted(stepNum) || activeStep > stepNum;
+                const isActive = activeStep === stepNum;
+
+                return (
+                  <button
+                    key={stepNum}
+                    onClick={() => {
+                      if (unlocked) {
+                        setActiveStep(stepNum);
+                      } else {
+                        triggerAlert(t("wizard.stepLockedAlert", { prevStep: stepNum - 1 }), t("common.notification"), "warning");
+                      }
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      border: isActive 
+                        ? "2px solid #a78bfa" 
+                        : unlocked 
+                          ? "1px solid rgba(255, 255, 255, 0.2)" 
+                          : "1px solid rgba(255, 255, 255, 0.05)",
+                      background: isActive 
+                        ? "rgba(167, 139, 250, 0.2)" 
+                        : unlocked 
+                          ? "rgba(255, 255, 255, 0.05)" 
+                          : "transparent",
+                      color: isActive 
+                        ? "#c084fc" 
+                        : unlocked 
+                          ? "rgba(255, 255, 255, 0.8)" 
+                          : "rgba(255, 255, 255, 0.2)",
+                      fontSize: "0.9rem",
+                      fontWeight: 800,
+                      cursor: unlocked ? "pointer" : "not-allowed",
+                      transition: "all 0.2s ease",
+                      position: "relative",
+                      boxShadow: isActive ? "0 0 10px rgba(167, 139, 250, 0.3)" : "none",
+                    }}
+                  >
+                    {completed && !isActive ? (
+                      <span style={{ color: "#34d399", fontSize: "0.85rem" }}>✓</span>
+                    ) : (
+                      stepNum
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div style={styles.formContainer}>
             {/* STEP 1: Research Paradigm & Design Selector */}
@@ -2569,15 +2687,27 @@ Aligned with the scale of measurements and variable distribution, statistical hy
           className="workspace-preview glass-panel"
           style={{
             ...styles.rightPanel,
-            width: "500px",
-            minWidth: "500px",
-            maxWidth: "500px",
+            width: isMobile ? "100%" : "500px",
+            minWidth: isMobile ? "100%" : "500px",
+            maxWidth: isMobile ? "100%" : "500px",
             opacity: 1,
             visibility: "visible",
             padding: "0px",
             borderLeft: "1px solid hsl(var(--card-border))",
-            position: "relative",
+            position: (!mounted || window.innerWidth > 1200) ? "relative" : "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 95,
+            height: "100%",
+            transform: (!mounted || window.innerWidth > 1200) 
+              ? "none" 
+              : showPreview ? "translateX(0)" : "translateX(100%)",
+            transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             overflow: "hidden",
+            display: (!mounted || window.innerWidth > 1200) 
+              ? "flex" 
+              : showPreview ? "flex" : "none",
           }}
         >
           {/* STATIC BASE PANEL: Educational Concept Explainer */}
@@ -2599,7 +2729,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               top: 0,
               right: 0,
               bottom: 0,
-              width: "500px",
+              width: isMobile ? "100%" : "500px",
               height: "100%",
               backgroundColor: "hsl(var(--card-bg))",
               borderLeft: "1px solid hsl(var(--card-border))",

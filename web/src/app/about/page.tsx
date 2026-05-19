@@ -97,13 +97,16 @@ export default function AboutPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [windowWidth, setWindowWidth] = useState<number>(1200);
 
   useEffect(() => {
     setMounted(true);
     setIsMobile(window.innerWidth <= 768);
+    setWindowWidth(window.innerWidth);
 
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
+      setWindowWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -684,7 +687,7 @@ export default function AboutPage() {
             gap: "2rem"
           }}>
             {copy.mathFormulas.map((f, idx) => (
-              <div key={idx} className="glass-panel" style={{ padding: "2rem", borderRadius: "16px", display: "flex", flexDirection: isMobile ? "column" : "row", gap: "2rem", alignItems: "stretch" }}>
+              <div key={idx} className="glass-panel" style={{ padding: "2rem", borderRadius: "16px", display: "flex", flexDirection: windowWidth <= 1024 ? "column" : "row", gap: "2rem", alignItems: "stretch" }}>
                 
                 {/* Left Side: Equation and Title */}
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.25rem", justifyContent: "space-between" }}>

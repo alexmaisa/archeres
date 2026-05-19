@@ -116,7 +116,7 @@ function RecoverVaultContent() {
       <div style={styles.glowCircle2} />
 
       {/* Language switcher */}
-      <div style={styles.langBar}>
+      <div className="auth-lang-bar">
         <button
           onClick={() => i18n.changeLanguage("en")}
           style={{ ...styles.langBtn, ...(i18n.language === "en" ? styles.langBtnActive : {}) }}

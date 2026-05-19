@@ -470,9 +470,6 @@ h1, h2, h3, h4, h5, h6 {
   .workspace-layout {
     grid-template-columns: 240px 1fr;
   }
-  .workspace-preview {
-    display: none; /* Accessible via toggle view on mid-sized screens */
-  }
 }
 
 @media (max-width: 768px) {
@@ -485,6 +482,39 @@ h1, h2, h3, h4, h5, h6 {
   }
   .workspace-wizard {
     padding: 1.25rem;
+  }
+  .fixed-header {
+    padding: 0 1rem;
+  }
+  .navLinks {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-brand-name {
+    display: none !important;
+  }
+}
+
+/* Global Responsive Language Switcher for Auth Pages */
+.auth-lang-bar {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+@media (max-width: 640px) {
+  .auth-lang-bar {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
   }
 }
 

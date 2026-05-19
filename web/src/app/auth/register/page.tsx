@@ -115,7 +115,7 @@ export default function RegisterPage() {
       <div style={styles.glowCircle2}></div>
 
       {/* Language Switcher Bar */}
-      <div style={styles.langBar}>
+      <div className="auth-lang-bar">
         <button
           onClick={() => handleLanguageToggle("en")}
           style={{

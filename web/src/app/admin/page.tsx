@@ -1110,7 +1110,7 @@ export default function AdminPage() {
               {/* Visual Charts Analytics Section - 2 Columns */}
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))",
                 gap: "1.5rem",
                 marginBottom: "2rem"
               }}>
