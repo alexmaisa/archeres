@@ -7,6 +7,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -22,7 +25,7 @@ jobs:
         with:
           registry: repo.alexmaisa.my.id
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ env.FORGEJO_GLOBAL_TOKEN }}
 
       - name: Build and push Backend Image
         uses: docker/build-push-action@v5
