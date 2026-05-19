@@ -7,9 +7,12 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code and build statically
+# Install C compiler for go-sqlite3 CGO dependency
+RUN apk add --no-cache gcc musl-dev
+
+# Copy source code and build with CGO enabled
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main main.go
+RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-w -s" -o main main.go
 
 # Stage 2: Minimal runtime image
 FROM alpine:3.19
