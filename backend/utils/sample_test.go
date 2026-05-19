@@ -86,3 +86,28 @@ func TestCalculateLemeshow(t *testing.T) {
 		t.Errorf("Lemeshow known population (N=1000) = %d; want 279", finResult)
 	}
 }
+
+// TestCalculateDaniel verifies that Daniel's formula calculation yields expected values
+func TestCalculateDaniel(t *testing.T) {
+	// Unknown population Daniel (should match Cochran/Lemeshow infinite)
+	infResult := CalculateDaniel(1.96, 0.5, 0.05, 0)
+	if infResult != 385 {
+		t.Errorf("CalculateDaniel unknown population = %d; want 385", infResult)
+	}
+
+	// Known population Daniel (should match Lemeshow finite correction)
+	finResult := CalculateDaniel(1.96, 0.5, 0.05, 1000)
+	if finResult != 279 {
+		t.Errorf("CalculateDaniel known population (N=1000) = %d; want 279", finResult)
+	}
+}
+
+// TestCalculateYamane verifies that Yamane's formula matches Slovin's calculations
+func TestCalculateYamane(t *testing.T) {
+	result := CalculateYamane(1000, 0.05)
+	expected := CalculateSlovin(1000, 0.05)
+	if result != expected {
+		t.Errorf("CalculateYamane(N=1000, e=0.05) = %d; want %d (matching Slovin)", result, expected)
+	}
+}
+
