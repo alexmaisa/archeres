@@ -33,11 +33,22 @@ export default function Home() {
   const router = useRouter();
   const [mounted, setMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
  
   // Monitor screen resize for bulletproof responsive viewports
   useEffect(() => {
     setMounted(true);
     setIsMobile(window.innerWidth <= 768);
+
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.email) {
+          setIsLoggedIn(true);
+        }
+      } catch (e) {}
+    }
  
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -282,9 +293,15 @@ export default function Home() {
             </button>
           </div>
  
-          <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
-            {t("auth.submitLogin")}
-          </button>
+          {isLoggedIn ? (
+            <button onClick={() => router.push("/user/dashboard")} className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
+              {currentLang === "id" ? "Ke Workspace" : "Go to Workspace"}
+            </button>
+          ) : (
+            <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
+              {t("auth.submitLogin")}
+            </button>
+          )}
         </div>
       </header>
  
@@ -296,22 +313,35 @@ export default function Home() {
           <p style={heroSubtitleStyle}>{copy.subtitle}</p>
  
           <div style={ctaButtonGroupStyle}>
-            <button 
-              onClick={() => router.push("/auth/register")} 
-              className="btn btn-primary" 
-              style={primaryCtaStyle}
-            >
-              <IconRocket size={16} strokeWidth={2.5} stroke="white" />
-              {copy.ctaStart}
-            </button>
-            <button 
-              onClick={() => router.push("/auth/login")} 
-              className="btn btn-outline" 
-              style={secondaryCtaStyle}
-            >
-              <IconKey size={16} strokeWidth={2.5} stroke="white" />
-              {copy.ctaLogin}
-            </button>
+            {isLoggedIn ? (
+              <button 
+                onClick={() => router.push("/user/dashboard")} 
+                className="btn btn-primary" 
+                style={primaryCtaStyle}
+              >
+                <IconRocket size={16} strokeWidth={2.5} stroke="white" />
+                {currentLang === "id" ? "Masuk ke Workspace Anda" : "Enter Your Workspace"}
+              </button>
+            ) : (
+              <>
+                <button 
+                  onClick={() => router.push("/auth/register")} 
+                  className="btn btn-primary" 
+                  style={primaryCtaStyle}
+                >
+                  <IconRocket size={16} strokeWidth={2.5} stroke="white" />
+                  {copy.ctaStart}
+                </button>
+                <button 
+                  onClick={() => router.push("/auth/login")} 
+                  className="btn btn-outline" 
+                  style={secondaryCtaStyle}
+                >
+                  <IconKey size={16} strokeWidth={2.5} stroke="white" />
+                  {copy.ctaLogin}
+                </button>
+              </>
+            )}
           </div>
         </section>
 
