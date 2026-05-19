@@ -5,14 +5,15 @@
 <h1 align="center">Archeres</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/UI-Premium-blueviolet" alt="UI-Premium">
-  <img src="https://img.shields.io/badge/version-v0.9.0--beta-orange" alt="Version">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
-  <img src="https://img.shields.io/badge/Status-Active-brightgreen" alt="Status">
-  <br>
-  <img src="https://img.shields.io/badge/Platform-Web-lightgrey" alt="Platform">
-  <img src="https://img.shields.io/badge/Tech-Next.js%20%7C%20Go%20%7C%20SQLite%20%7C%20Docker-blue" alt="Tech">
-  <img src="https://img.shields.io/badge/Security-Zero--Knowledge%20E2EE-success" alt="Security">
+  <img src="https://img.shields.io/badge/UI-Premium-a855f7" alt="UI-Premium">
+  <img src="https://img.shields.io/badge/version-v0.9.0--beta-f97316" alt="Version">
+  <img src="https://img.shields.io/badge/license-MIT-06b6d4" alt="License">
+  <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">
+  <img src="https://img.shields.io/badge/Tech-Next.js%20%7C%20Go%20%7C%20SQLite%20%7C%20Docker-3b82f6" alt="Tech">
+  <img src="https://img.shields.io/badge/Security-Zero--Knowledge%20E2EE-ec4899" alt="Security">
 </p>
 
 **Archeres** is a state-of-the-art, scholarly, and Zero-Knowledge End-to-End Encrypted (E2EE) Scientific Research Methodology Planner. Designed specifically for academic scholars, researchers, and university students, Archeres provides an interactive, mathematically rigorous environment to operationalize study variables, calculate scientifically sound sample sizes, and instantly compile peer-review-ready Chapter III thesis methodology drafts concurrently in English and Indonesian.
