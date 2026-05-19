@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -99,7 +100,13 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	// Send welcome email (graceful — registration succeeds even if email fails)
-	_ = utils.SendWelcomeEmail(user.Email, user.Name)
+	go func(email, name string) {
+		if err := utils.SendWelcomeEmail(email, name); err != nil {
+			log.Printf("[SMTP] Failed to send welcome email to %s: %v", email, err)
+		} else {
+			log.Printf("[SMTP] Welcome email successfully sent to %s", email)
+		}
+	}(user.Email, user.Name)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Registration successful. Please ensure you have securely saved your recovery key.",
