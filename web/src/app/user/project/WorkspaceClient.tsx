@@ -1923,7 +1923,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
       {/* Navigation Header */}
       <header className="fixed-header">
         <div className="nav-brand" style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
-          <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
+          <img src="/Archeres.svg" alt="Archeres Logo" className="nav-brand-logo" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
           <span className="badge badge-primary">Workspace</span>
         </div>
