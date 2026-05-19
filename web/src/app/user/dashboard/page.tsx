@@ -288,7 +288,7 @@ export default function DashboardPage() {
 
       {/* Navigation Header */}
       <header className="fixed-header">
-        <div className="nav-brand" style={{ cursor: "pointer" }} onClick={() => router.push("/user/dashboard")}>
+        <div className="nav-brand" style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
           <IconHelix size={22} className="nav-brand-logo" style={{ strokeWidth: 2.5 }} />
           <span className="nav-brand-name">{t("common.appName")}</span>
           <span className="badge badge-primary">Workspace</span>
