@@ -2217,7 +2217,76 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             )}
           </div>
 
+          {isMobile && (
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              padding: "0.5rem 1rem",
+              marginBottom: "1.25rem",
+              gap: "0.5rem",
+              backdropFilter: "blur(8px)",
+              width: "100%",
+              boxSizing: "border-box"
+            }}>
+              {[1, 2, 3, 4].map((stepNum) => {
+                const unlocked = isStepUnlocked(stepNum);
+                const completed = isStepCompleted(stepNum) || activeStep > stepNum;
+                const isActive = activeStep === stepNum;
 
+                return (
+                  <button
+                    key={stepNum}
+                    onClick={() => {
+                      if (unlocked) {
+                        setActiveStep(stepNum);
+                      } else {
+                        triggerAlert(t("wizard.stepLockedAlert", { prevStep: stepNum - 1 }), t("common.notification"), "warning");
+                      }
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      border: isActive 
+                        ? "2px solid #a78bfa" 
+                        : unlocked 
+                          ? "1px solid rgba(255, 255, 255, 0.2)" 
+                          : "1px solid rgba(255, 255, 255, 0.05)",
+                      background: isActive 
+                        ? "rgba(167, 139, 250, 0.2)" 
+                        : unlocked 
+                          ? "rgba(255, 255, 255, 0.05)" 
+                          : "transparent",
+                      color: isActive 
+                        ? "#c084fc" 
+                        : unlocked 
+                          ? "rgba(255, 255, 255, 0.8)" 
+                          : "rgba(255, 255, 255, 0.2)",
+                      fontSize: "0.9rem",
+                      fontWeight: 800,
+                      cursor: unlocked ? "pointer" : "not-allowed",
+                      transition: "all 0.2s ease",
+                      position: "relative",
+                      boxShadow: isActive ? "0 0 10px rgba(167, 139, 250, 0.3)" : "none",
+                    }}
+                  >
+                    {completed && !isActive ? (
+                      <span style={{ color: "#34d399", fontSize: "0.85rem" }}>✓</span>
+                    ) : (
+                      stepNum
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div style={styles.formContainer}>
             {/* STEP 1: Research Paradigm & Design Selector */}
