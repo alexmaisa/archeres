@@ -9,8 +9,6 @@
   <img src="https://img.shields.io/badge/version-v0.9.0--beta-f97316" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-06b6d4" alt="License">
   <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
-</p>
-<p align="center">
   <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">
   <img src="https://img.shields.io/badge/Tech-Next.js%20%7C%20Go%20%7C%20SQLite%20%7C%20Docker-3b82f6" alt="Tech">
   <img src="https://img.shields.io/badge/Security-Zero--Knowledge%20E2EE-ec4899" alt="Security">
