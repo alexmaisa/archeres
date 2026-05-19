@@ -92,8 +92,8 @@ export default function Home() {
         },
         {
           icon: "key",
-          name: "Zero-Knowledge Cryptography",
-          desc: "Your intellectual property is secured via client-side encryption, safeguarding your thesis drafts from unauthorized leaks."
+          name: "Zero-Knowledge E2EE",
+          desc: "Your intellectual property, researcher identity, and thesis drafts are fully secured via client-side AES-GCM 256 End-to-End Encryption."
         },
         {
           icon: "book",
@@ -130,8 +130,8 @@ export default function Home() {
         },
         {
           icon: "key",
-          name: "Jaminan Privasi Mutlak",
-          desc: "Ide penelitian Anda sepenuhnya aman. Enkripsi data dilakukan langsung pada perangkat Anda untuk mencegah kebocoran gagasan ilmiah sebelum dipublikasikan."
+          name: "Zero-Knowledge E2EE",
+          desc: "Identitas peneliti, draf proposal, dan rancangan riset dilindungi enkripsi ujung-ke-ujung (E2EE) AES-GCM 256 secara langsung pada perangkat Anda."
         },
         {
           icon: "book",

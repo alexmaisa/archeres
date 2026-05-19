@@ -5,6 +5,9 @@ import Providers from "./providers";
 export const metadata = {
   title: "Archeres - Scientific Research Methodology Planner",
   description: "A compact, multiuser workspace to help beginner researchers select research designs, calculate sample sizes, and structure methodology drafts.",
+  icons: {
+    icon: "/Archeres.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

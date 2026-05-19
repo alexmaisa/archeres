@@ -155,8 +155,8 @@ export default function AboutPage() {
       featuresList: [
         {
           icon: "key",
-          title: "Zero-Knowledge Privacy",
-          desc: "Your intellectual property belongs entirely to you. Draft calculations are encrypted locally on your browser before being persisted, keeping your thoughts safe."
+          title: "Zero-Knowledge E2EE",
+          desc: "Your academic profile, research drafts, and variables are fully secured using AES-GCM 256 End-to-End Encryption (E2EE) locally on your device before transmission."
         },
         {
           icon: "shield",
@@ -338,8 +338,8 @@ export default function AboutPage() {
       featuresList: [
         {
           icon: "key",
-          title: "Kerahasiaan Draf (Zero-Knowledge)",
-          desc: "Ide dan kekayaan intelektual Anda sepenuhnya terlindungi. Enkripsi data draf dilakukan secara lokal pada peramban Anda untuk mencegah potensi kebocoran gagasan ilmiah sebelum publikasi."
+          title: "Zero-Knowledge E2EE",
+          desc: "Kekayaan intelektual, profil peneliti, dan draf bab riset Anda dilindungi sepenuhnya secara lokal di browser menggunakan enkripsi ujung-ke-ujung (E2EE) AES-GCM 256."
         },
         {
           icon: "shield",
