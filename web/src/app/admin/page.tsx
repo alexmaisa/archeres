@@ -551,7 +551,7 @@ export default function AdminPage() {
 
     const width = 800;
     const height = 180;
-    const paddingLeft = 35;
+    const paddingLeft = 45;
     const paddingRight = 15;
     const paddingTop = 20;
     const paddingBottom = 25;
@@ -567,7 +567,7 @@ export default function AdminPage() {
 
     const getCoordinates = (data: number[]) => {
       return data.map((val, idx) => {
-        const x = paddingLeft + 15 + idx * ((chartWidth - 30) / (months.length - 1 || 1));
+        const x = paddingLeft + 40 + idx * ((chartWidth - 60) / (months.length - 1 || 1));
         const y = paddingTop + chartHeight * (1 - val / maxVal);
         return { x, y, val };
       });
@@ -717,7 +717,7 @@ export default function AdminPage() {
             pointerEvents: "none"
           }}>
             {months.map((mStr, idx) => {
-              const xVal = paddingLeft + 15 + idx * ((chartWidth - 30) / (months.length - 1 || 1));
+              const xVal = paddingLeft + 40 + idx * ((chartWidth - 60) / (months.length - 1 || 1));
               const leftPct = (xVal / width) * 100;
               return (
                 <span key={mStr} style={{
