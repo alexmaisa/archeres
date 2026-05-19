@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix, IconRefresh, IconSearch, IconFilter } from "../../components/Icons";
+import { IconWrench, IconPlus, IconFolder, IconBook, IconTrash, IconHelix, IconRefresh, IconSearch, IconFilter, IconMenu, IconX } from "../../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
@@ -16,6 +16,7 @@ export default function DashboardPage() {
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [mounted, setMounted] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -293,7 +294,8 @@ export default function DashboardPage() {
           <span className="badge badge-primary">Workspace</span>
         </div>
 
-        <div style={styles.navControls}>
+        {/* Desktop Navigation Controls */}
+        <div className="nav-controls-desktop" style={styles.navControls}>
           {user.role === "admin" && (
             <button
               onClick={() => router.push("/admin")}
@@ -331,6 +333,73 @@ export default function DashboardPage() {
             {t("common.logout")}
           </button>
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className="burger-btn"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMobileMenuOpen ? <IconX size={22} /> : <IconMenu size={22} />}
+        </button>
+
+        {/* Mobile Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="mobile-nav-menu animate-fade-in">
+            {user.role === "admin" && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push("/admin");
+                }}
+                className="btn btn-outline"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                <IconWrench size={14} />
+                {t("common.admin")}
+              </button>
+            )}
+
+            {/* Language Switcher inside Mobile Drawer */}
+            <div style={{ ...styles.langBar, width: "100%", justifyContent: "center" }}>
+              <button
+                onClick={() => handleLanguageToggle("en")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "en" ? styles.langBtnActive : {}),
+                }}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => handleLanguageToggle("id")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "id" ? styles.langBtnActive : {}),
+                }}
+              >
+                ID
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="btn btn-outline btn-danger"
+              style={{ width: "100%", justifyContent: "center", background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5" }}
+            >
+              {t("common.logout")}
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Body */}

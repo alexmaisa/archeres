@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IconFolder, IconRefresh, IconUsers, IconHelix } from "../components/Icons";
+import { IconFolder, IconRefresh, IconUsers, IconHelix, IconMenu, IconX } from "../components/Icons";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../api";
@@ -56,6 +56,7 @@ export default function AdminPage() {
   const [stats, setStats] = useState<AdminStatsState | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Interactive Maintenance states
   const [vacuuming, setVacuuming] = useState<boolean>(false);
@@ -807,7 +808,8 @@ export default function AdminPage() {
           <span className="badge badge-danger">Admin Hub</span>
         </div>
 
-        <div style={styles.navControls}>
+        {/* Desktop Navigation Controls */}
+        <div className="nav-controls-desktop" style={styles.navControls}>
           <button
             onClick={() => router.push("/user/dashboard")}
             className="btn btn-outline"
@@ -843,6 +845,71 @@ export default function AdminPage() {
             {t("common.logout")}
           </button>
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className="burger-btn"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMobileMenuOpen ? <IconX size={22} /> : <IconMenu size={22} />}
+        </button>
+
+        {/* Mobile Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="mobile-nav-menu animate-fade-in">
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                router.push("/user/dashboard");
+              }}
+              className="btn btn-outline"
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              <IconFolder size={14} />
+              {t("common.dashboard")}
+            </button>
+
+            {/* Language Switcher inside Mobile Drawer */}
+            <div style={{ ...styles.langBar, width: "100%", justifyContent: "center" }}>
+              <button
+                onClick={() => handleLanguageToggle("en")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "en" ? styles.langBtnActive : {}),
+                }}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => handleLanguageToggle("id")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "id" ? styles.langBtnActive : {}),
+                }}
+              >
+                ID
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="btn btn-outline btn-danger"
+              style={{ width: "100%", justifyContent: "center", background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5" }}
+            >
+              {t("common.logout")}
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Body */}

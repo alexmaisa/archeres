@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook, IconFileText, IconMerge, IconLightbulb, IconTrendingDown, IconLink, IconRuler, IconUsers, IconRefresh, IconFolder } from "../../components/Icons";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook, IconFileText, IconMerge, IconLightbulb, IconTrendingDown, IconLink, IconRuler, IconUsers, IconRefresh, IconFolder, IconMenu, IconX } from "../../components/Icons";
 import { User } from "../../types";
 import { encryptText, decryptText } from "../../lib/crypto";
 import { getMEK, clearMEK } from "../../lib/session";
@@ -47,6 +47,7 @@ export default function WorkspaceClient() {
   const [project, setProject] = useState<WorkspaceProject | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const [activeStep, setActiveStep] = useState<number>(1);
   const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
@@ -1927,7 +1928,8 @@ Aligned with the scale of measurements and variable distribution, statistical hy
           <span className="badge badge-primary">Workspace</span>
         </div>
 
-        <div style={styles.navControls}>
+        {/* Desktop Navigation Controls */}
+        <div className="nav-controls-desktop" style={styles.navControls}>
           {user && user.role === "admin" && (
             <button
               onClick={() => router.push("/admin")}
@@ -1972,6 +1974,85 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             {t("common.logout")}
           </button>
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className="burger-btn"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {isMobileMenuOpen ? <IconX size={22} /> : <IconMenu size={22} />}
+        </button>
+
+        {/* Mobile Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="mobile-nav-menu animate-fade-in">
+            {user && user.role === "admin" && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push("/admin");
+                }}
+                className="btn btn-outline"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                <IconWrench size={14} />
+                {t("common.admin")}
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                router.push("/user/dashboard");
+              }}
+              className="btn btn-outline"
+              style={{ width: "100%", justifyContent: "center" }}
+            >
+              <IconFolder size={14} />
+              {t("common.dashboard")}
+            </button>
+
+            {/* Language Switcher inside Mobile Drawer */}
+            <div style={{ ...styles.langBar, width: "100%", justifyContent: "center" }}>
+              <button
+                onClick={() => handleLanguageToggle("en")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "en" ? styles.langBtnActive : {}),
+                }}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => handleLanguageToggle("id")}
+                style={{
+                  ...styles.langBtn,
+                  flex: 1,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  ...(i18n.language === "id" ? styles.langBtnActive : {}),
+                }}
+              >
+                ID
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="btn btn-outline btn-danger"
+              style={{ width: "100%", justifyContent: "center", background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5" }}
+            >
+              {t("common.logout")}
+            </button>
+          </div>
+        )}
       </header>
 
       {/* 3-Panel Workspace between Header & Footer */}
