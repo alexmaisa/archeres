@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"net/mail"
 	"net/smtp"
 	"os"
 )
@@ -58,11 +59,18 @@ func SendResetEmail(to, token string) error {
 		</html>
 	`, resetURL, resetURL, resetURL)
 
-	msg := []byte("To: " + to + "\r\n" + subject + mime + body)
+	fromHeader := from
+	envelopeFrom := from
+	if parsed, err := mail.ParseAddress(from); err == nil {
+		envelopeFrom = parsed.Address
+		fromHeader = parsed.String()
+	}
+
+	msg := []byte("From: " + fromHeader + "\r\nTo: " + to + "\r\n" + subject + mime + body)
 	auth := smtp.PlainAuth("", user, pass, host)
 
 	addr := fmt.Sprintf("%s:%s", host, port)
-	err := smtp.SendMail(addr, auth, from, []string{to}, msg)
+	err := smtp.SendMail(addr, auth, envelopeFrom, []string{to}, msg)
 	if err != nil {
 		return fmt.Errorf("failed to send SMTP mail: %w", err)
 	}
@@ -146,11 +154,18 @@ func SendWelcomeEmail(to, name string) error {
 		</html>
 	`, displayName, loginURL)
 
-	msg := []byte("To: " + to + "\r\n" + subject + mime + body)
+	fromHeader := from
+	envelopeFrom := from
+	if parsed, err := mail.ParseAddress(from); err == nil {
+		envelopeFrom = parsed.Address
+		fromHeader = parsed.String()
+	}
+
+	msg := []byte("From: " + fromHeader + "\r\nTo: " + to + "\r\n" + subject + mime + body)
 	auth := smtp.PlainAuth("", user, pass, host)
 
 	addr := fmt.Sprintf("%s:%s", host, port)
-	if err := smtp.SendMail(addr, auth, from, []string{to}, msg); err != nil {
+	if err := smtp.SendMail(addr, auth, envelopeFrom, []string{to}, msg); err != nil {
 		return fmt.Errorf("failed to send welcome email: %w", err)
 	}
 
