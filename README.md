@@ -7,7 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/UI-Premium-a855f7" alt="UI-Premium">
   <img src="https://img.shields.io/badge/version-v0.9.0--beta-f97316" alt="Version">
-  <img src="https://img.shields.io/badge/license-MIT-06b6d4" alt="License">
+  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-ef4444" alt="License">
   <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
   <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">
   <img src="https://img.shields.io/badge/Tech-Next.js%20%7C%20Go%20%7C%20SQLite%20%7C%20Docker-3b82f6" alt="Tech">
@@ -174,4 +174,4 @@ On every Git release event (`release: [published]`), the workflow automatically:
 
 ## ⚖️ License & Auditability
 
-This project is open-source and licensed under the **MIT License**. The complete source code of both the Next.js client and Go server is fully accessible to encourage public cryptographic audits, security reviews, and academic methodology validation. See the [LICENSE](LICENSE) file for details.
+This project is source-available and licensed under the **PolyForm Noncommercial License 1.0.0**. The complete source code of both the Next.js client and Go server is fully accessible to encourage public cryptographic audits, security reviews, and academic methodology validation. The software is 100% free for educational, academic, personal, and research purposes, but strictly prohibits commercial exploitation, SaaS hosting, or monetization without the explicit written authorization of **Benny Maisa**. See the [LICENSE](LICENSE) file for details.

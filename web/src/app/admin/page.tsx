@@ -1237,7 +1237,7 @@ export default function AdminPage() {
       </main>
       <footer className="fixed-footer">
         <p className="footer-text">
-          &copy; 2026 Benny Maisa. Archeres: Empowering beginner researchers to structure sound methodologies. <span className="footer-powered">Powered by Next.js, Go Fiber, & SQLite.</span>
+          &copy; 2026 <a href="https://repo.alexmaisa.my.id/alexmaisa" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "underline" }}>Benny Maisa</a>. <a href="/LICENSE" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "underline" }}>Archeres is licensed under PolyForm Noncommercial 1.0.0</a>. <span className="footer-powered">Powered by Next.js, Go Fiber, & SQLite.</span>
         </p>
       </footer>
     </div>
