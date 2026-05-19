@@ -93,6 +93,27 @@ func SendWelcomeEmail(to, name, recoveryKey string) error {
 
 	loginURL := fmt.Sprintf("%s/auth/login", appURL)
 
+	displayName := name
+	// Check if the name looks like an E2EE encrypted base64 string
+	if len(name) >= 20 {
+		isEncrypted := true
+		for _, char := range name {
+			if char == ' ' {
+				isEncrypted = false
+				break
+			}
+		}
+		if isEncrypted {
+			// Fallback to email prefix
+			for i, char := range to {
+				if char == '@' {
+					displayName = to[:i]
+					break
+				}
+			}
+		}
+	}
+
 	subject := "Subject: [Archeres] Welcome — Save Your Recovery Key\r\n"
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 	body := fmt.Sprintf(`
@@ -126,7 +147,7 @@ func SendWelcomeEmail(to, name, recoveryKey string) error {
 			</div>
 		</body>
 		</html>
-	`, name, recoveryKey, loginURL)
+	`, displayName, recoveryKey, loginURL)
 
 	msg := []byte("To: " + to + "\r\n" + subject + mime + body)
 	auth := smtp.PlainAuth("", user, pass, host)

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { deriveWrappingKey, unwrapMasterKey } from "../../lib/crypto";
+import { deriveWrappingKey, unwrapMasterKey, decryptTextSafe } from "../../lib/crypto";
 import { storeMEK } from "../../lib/session";
 
 interface LoginResponse {
@@ -50,19 +50,24 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      // --- E2EE: Unwrap MEK from password vault and store in sessionStorage ---
+      // --- E2EE: Unwrap MEK from password vault, store in sessionStorage, and decrypt researcher name ---
+      let decryptedName = data.user.name;
       try {
         const wrappingKey = await deriveWrappingKey(password, data.vaultSalt);
         const mek = await unwrapMasterKey(data.passwordVault, wrappingKey);
         await storeMEK(mek);
+        decryptedName = await decryptTextSafe(data.user.name, mek);
       } catch (cryptoErr) {
-        console.error("Failed to unwrap MEK", cryptoErr);
+        console.error("Failed to unwrap MEK or decrypt researcher name", cryptoErr);
         // Continue login — user can still access non-encrypted data
       }
-      // -----------------------------------------------------------------------
-
-      // Save user session details locally
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // --------------------------------------------------------------------------------------------------
+ 
+      // Save user session details locally with decrypted name
+      localStorage.setItem("user", JSON.stringify({
+        ...data.user,
+        name: decryptedName,
+      }));
 
       // Redirect based on role or standard dashboard
       if (data.user.role === "admin") {

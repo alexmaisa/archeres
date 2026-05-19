@@ -222,3 +222,29 @@ export async function decryptText(
 
   return new TextDecoder().decode(decrypted);
 }
+
+/**
+ * Safely decrypts a string. Returns the original string if decryption fails or mek is null.
+ * Provides excellent backward compatibility for legacy plaintext records.
+ */
+export async function decryptTextSafe(
+  ciphertextBase64: string,
+  mek: CryptoKey | null
+): Promise<string> {
+  if (!mek || !ciphertextBase64) return ciphertextBase64;
+  try {
+    const combined = fromBase64(ciphertextBase64);
+    const iv = combined.slice(0, IV_BYTES);
+    const ciphertext = combined.slice(IV_BYTES);
+
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      mek,
+      ciphertext
+    );
+
+    return new TextDecoder().decode(decrypted);
+  } catch (e) {
+    return ciphertextBase64;
+  }
+}

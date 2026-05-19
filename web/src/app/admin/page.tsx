@@ -163,6 +163,16 @@ export default function AdminPage() {
     fetchAdminStats();
   }, []);
 
+  const displayUserName = (name: string) => {
+    if (!name) return "";
+    // Check if it looks like an E2EE encrypted base64 string
+    const isBase64 = /^[A-Za-z0-9+/=]+$/.test(name);
+    if (isBase64 && name.length >= 20 && !name.includes(" ")) {
+      return i18n.language === "id" ? "Pengguna Terenkripsi (E2EE)" : "Encrypted User (E2EE)";
+    }
+    return name;
+  };
+
   const fetchAdminStats = async () => {
     setLoading(true);
     try {
@@ -1120,7 +1130,7 @@ export default function AdminPage() {
                   <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
                     <div>
                       <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thName")}</div>
-                      <div style={{ color: "white", fontWeight: 700, fontSize: "1.1rem", marginTop: "0.15rem" }}>{searchResult.name}</div>
+                       <div style={{ color: "white", fontWeight: 700, fontSize: "1.1rem", marginTop: "0.15rem" }}>{displayUserName(searchResult.name)}</div>
                     </div>
                     <div>
                       <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 700 }}>{t("admin.thEmail")}</div>

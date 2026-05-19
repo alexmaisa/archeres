@@ -10,6 +10,7 @@ import {
   generateRecoveryKey,
   deriveWrappingKey,
   wrapMasterKey,
+  encryptText,
 } from "../../lib/crypto";
 
 interface RegisterResponse {
@@ -79,12 +80,15 @@ export default function RegisterPage() {
 
       const passwordVault = await wrapMasterKey(mek, passwordWrappingKey);
       const recoveryVault = await wrapMasterKey(mek, recoveryWrappingKey);
+      
+      // Zero-Knowledge E2EE: Encrypt the researcher's Name using the MEK
+      const encryptedName = await encryptText(name, mek);
       // ----------------------------------------------------------------
 
       const res = await apiFetch<RegisterResponse>("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({
-          name,
+          name: encryptedName,
           email,
           password,
           passwordVault,
