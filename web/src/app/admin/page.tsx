@@ -808,7 +808,7 @@ export default function AdminPage() {
   if (!user || user.role !== "admin") return null;
 
   return (
-    <div style={styles.container} className="animate-fade-in">
+    <div style={styles.container}>
       {/* Background glowing ambient circles */}
       <div className="glow-ambient-red"></div>
       <div className="glow-ambient-purple"></div>
@@ -926,7 +926,7 @@ export default function AdminPage() {
       </header>
 
       {/* Main Body */}
-      <main className="main-container">
+      <main className="main-container animate-fade-in">
         <div className="welcome-section">
           <div>
             <h1 className="welcome-title">{t("admin.title")}</h1>

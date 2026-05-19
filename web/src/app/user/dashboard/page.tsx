@@ -281,7 +281,7 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div style={styles.container} className="animate-fade-in">
+    <div style={styles.container}>
       {/* Background glowing ambient circles */}
       <div className="glow-ambient-cyan"></div>
       <div className="glow-ambient-purple"></div>
@@ -403,7 +403,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Body */}
-      <main className="main-container">
+      <main className="main-container animate-fade-in">
         <div className="welcome-section">
           <div>
             <h1 className="welcome-title">
