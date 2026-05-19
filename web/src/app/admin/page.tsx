@@ -278,14 +278,16 @@ export default function AdminPage() {
 
   const renderDonutChart = () => {
     const { items, total } = getFormulaData();
-    const r = 48;
-    const circ = 2 * Math.PI * r; // ~301.59
+    const r = 110;
+    const circ = 2 * Math.PI * r; 
+    const svgSize = 260;
+    const center = svgSize / 2;
     
     if (total === 0) {
       return (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2rem", height: "160px" }}>
-          <svg width="130" height="130" viewBox="0 0 130 130">
-            <circle cx="65" cy="65" r={r} fill="transparent" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2rem", height: "300px" }}>
+          <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`}>
+            <circle cx={center} cy={center} r={r} fill="transparent" stroke="rgba(255,255,255,0.06)" strokeWidth="18" />
           </svg>
           <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>
             {i18n.language === "id" ? "Belum ada data formula" : "No formula data yet"}
@@ -297,9 +299,9 @@ export default function AdminPage() {
     let currentOffset = 0;
 
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.5rem", marginTop: "1rem" }} className="animate-fade-in">
-        <div style={{ position: "relative", width: "130px", height: "130px", margin: "0 auto" }}>
-          <svg width="130" height="130" viewBox="0 0 130 130" style={{ transform: "rotate(-90deg)" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "3rem", marginTop: "2rem", flex: 1 }} className="animate-fade-in">
+        <div style={{ position: "relative", width: `${svgSize}px`, height: `${svgSize}px`, margin: "0 auto" }}>
+          <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`} style={{ transform: "rotate(-90deg)" }}>
             {items.map((item) => {
               if (item.val === 0) return null;
               const pct = (item.val / total) * 100;
@@ -310,12 +312,12 @@ export default function AdminPage() {
               return (
                 <circle
                   key={item.key}
-                  cx="65"
-                  cy="65"
+                  cx={center}
+                  cy={center}
                   r={r}
                   fill="transparent"
                   stroke={item.color}
-                  strokeWidth="12"
+                  strokeWidth="20"
                   strokeDasharray={`${circ} ${circ}`}
                   strokeDashoffset={dashOffset}
                   strokeLinecap="round"
@@ -331,18 +333,18 @@ export default function AdminPage() {
             transform: "translate(-50%, -50%)",
             textAlign: "center"
           }}>
-            <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "white", display: "block", lineHeight: 1.1 }}>{total}</span>
-            <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total</span>
+            <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "white", display: "block", lineHeight: 1.1 }}>{total}</span>
+            <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total</span>
           </div>
         </div>
 
         {/* Dynamic Legends Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem 1rem", flex: 1, minWidth: "160px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem 2rem", width: "100%" }}>
           {items.map((item) => {
             const pct = total > 0 ? ((item.val / total) * 100).toFixed(0) : "0";
             return (
-              <div key={item.key} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", opacity: item.val > 0 ? 1 : 0.35 }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: item.color, flexShrink: 0 }}></span>
+              <div key={item.key} style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.9rem", opacity: item.val > 0 ? 1 : 0.35 }}>
+                <span style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: item.color, flexShrink: 0 }}></span>
                 <span style={{ color: "rgba(255,255,255,0.75)" }}>{item.label}</span>
                 <strong style={{ color: "white", marginLeft: "auto" }}>{pct}%</strong>
               </div>
@@ -580,7 +582,7 @@ export default function AdminPage() {
     const loginArea = buildAreaString(loginPoints);
 
     return (
-      <div style={{ marginTop: "1rem", position: "relative", maxWidth: "900px", margin: "1rem auto 0" }} className="animate-fade-in">
+      <div style={{ marginTop: "1rem", position: "relative" }} className="animate-fade-in">
         {/* Dynamic legends block */}
         <div style={{ display: "flex", gap: "1.5rem", justifyContent: "flex-end", marginBottom: "0.5rem", fontSize: "0.8rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
@@ -1115,34 +1117,39 @@ export default function AdminPage() {
                 {t("admin.chartSectionTitle")}
               </h2>
               
-              {/* Row 1: Donut (Grafik A) and Bar (Grafik B) side-by-side (2 columns) */}
+              {/* Visual Charts Analytics Section - 2 Columns */}
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
                 gap: "1.5rem",
-                marginBottom: "1.5rem"
+                marginBottom: "2rem"
               }}>
-                <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                {/* Left Column: Donut Chart */}
+                <div className="glass-panel" style={{ padding: "1.5rem", display: "flex", flexDirection: "column" }}>
                   <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
                     {t("admin.chartFormulaTitle")}
                   </h3>
                   {renderDonutChart()}
                 </div>
 
-                <div className="glass-panel" style={{ padding: "1.5rem" }}>
-                  <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                    {t("admin.chartProjectsTitle")}
-                  </h3>
-                  {renderBarChart()}
-                </div>
-              </div>
+                {/* Right Column: Bar Chart & Line Chart */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                    <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                      {t("admin.chartProjectsTitle")}
+                    </h3>
+                    {renderBarChart()}
+                  </div>
 
-              {/* Row 2: Dual Line Chart (Grafik C) full width (1 column stretching) */}
-              <div className="glass-panel" style={{ padding: "1.5rem", marginBottom: "2rem" }}>
-                <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                  {t("admin.chartActivityTitle")}
-                </h3>
-                {renderLineChart()}
+                  <div className="glass-panel" style={{ padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                      {t("admin.chartActivityTitle")}
+                    </h3>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                      {renderLineChart()}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </>
