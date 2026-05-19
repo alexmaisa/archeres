@@ -502,6 +502,10 @@ h1, h2, h3, h4, h5, h6 {
     text-overflow: clip !important;
     line-height: 1.4 !important;
   }
+  .footer-powered {
+    display: block !important;
+    margin-top: 0.35rem !important;
+  }
   .navLinks {
     display: none !important;
   }
