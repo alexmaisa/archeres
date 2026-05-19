@@ -467,17 +467,9 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              alignItems: isMobile ? "stretch" : "center",
-              justifyContent: "space-between",
-              gap: "1rem",
-              marginBottom: "1.25rem",
-              padding: "0.25rem 0"
-            }}>
+            <div className="dashboard-search-bar">
               {/* Search Box */}
-              <div style={{ position: "relative", flex: "1 1 280px" }}>
+              <div className="dashboard-search-box">
                 <span style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255, 255, 255, 0.35)", pointerEvents: "none", display: "flex", alignItems: "center" }}>
                   <IconSearch size={16} />
                 </span>
@@ -503,16 +495,10 @@ export default function DashboardPage() {
               </div>
 
               {/* Filters and Sorting dropdowns */}
-              <div style={{ 
-                display: "flex", 
-                flexDirection: isMobile ? "column" : "row", 
-                alignItems: isMobile ? "stretch" : "center", 
-                gap: "0.75rem",
-                width: isMobile ? "100%" : "auto"
-              }}>
+              <div className="dashboard-filters">
                 {/* Approach Filter */}
-                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: "0.5rem", width: isMobile ? "100%" : "auto" }}>
-                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600, whiteSpace: "nowrap" }}>
                     {t("dashboard.filterLabel")}:
                   </span>
                   <select
@@ -542,8 +528,8 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Explicit Sorting Dropdown */}
-                <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: "0.5rem", width: isMobile ? "100%" : "auto" }}>
-                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.8rem", color: "rgba(255, 255, 255, 0.4)", fontWeight: 600, whiteSpace: "nowrap" }}>
                     {t("dashboard.sortLabel")}:
                   </span>
                   <select
