@@ -937,7 +937,7 @@ export default function AdminPage() {
 
               {/* Card 5: Research Methodology Approach Distribution */}
               <div className="glass-panel telemetry-card">
-                <span className="telemetry-label" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
+                <span className="telemetry-label">
                   {i18n.language === "id" ? "Distribusi Pendekatan Riset" : "Research Approach Distribution"}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
@@ -967,15 +967,15 @@ export default function AdminPage() {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem 1.25rem", fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#38bdf8" }}></span>
-                      <span>Kuantitatif ({getApproachCount("kuantitatif")})</span>
+                      <span>{i18n.language === "id" ? "Kuantitatif" : "Quantitative"} ({getApproachCount("kuantitatif")})</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#a78bfa" }}></span>
-                      <span>Kualitatif ({getApproachCount("kualitatif")})</span>
+                      <span>{i18n.language === "id" ? "Kualitatif" : "Qualitative"} ({getApproachCount("kualitatif")})</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f472b6" }}></span>
-                      <span>Campuran ({getApproachCount("metodeCampuran")})</span>
+                      <span>{i18n.language === "id" ? "Campuran" : "Mixed"} ({getApproachCount("metodeCampuran")})</span>
                     </div>
                   </div>
                 </div>
