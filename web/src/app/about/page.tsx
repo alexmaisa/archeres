@@ -98,11 +98,22 @@ export default function AboutPage() {
   const [mounted, setMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [windowWidth, setWindowWidth] = useState<number>(1200);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     setMounted(true);
     setIsMobile(window.innerWidth <= 768);
     setWindowWidth(window.innerWidth);
+
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.email) {
+          setIsLoggedIn(true);
+        }
+      } catch (e) {}
+    }
 
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -618,9 +629,23 @@ export default function AboutPage() {
             </button>
           </div>
 
-          <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
-            {t("auth.submitLogin")}
-          </button>
+          {isLoggedIn ? (
+            <button 
+              onClick={() => router.push("/user/dashboard")} 
+              className="btn btn-primary" 
+              style={{ 
+                padding: isMobile ? "0.4rem 0.75rem" : "0.5rem 1rem", 
+                fontSize: isMobile ? "0.75rem" : "0.85rem",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {isMobile ? "Workspace" : (currentLang === "id" ? "Ke Workspace" : "Go to Workspace")}
+            </button>
+          ) : (
+            <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
+              {t("auth.submitLogin")}
+            </button>
+          )}
         </div>
       </header>
 
@@ -850,24 +875,7 @@ export default function AboutPage() {
           <p style={{ fontSize: "0.88rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>{copy.stackDesc}</p>
         </section>
 
-        {/* Section 5: Dynamic CTA buttons group */}
-        <section style={{ display: "flex", gap: "1rem", justifyContent: "center", width: "100%" }}>
-          <button 
-            onClick={() => router.push("/")}
-            className="btn btn-outline"
-            style={{ padding: "0.75rem 1.75rem", fontSize: "0.9rem" }}
-          >
-            {copy.ctaBack}
-          </button>
-          <button 
-            onClick={() => router.push("/auth/register")}
-            className="btn btn-primary"
-            style={{ padding: "0.75rem 1.75rem", fontSize: "0.9rem" }}
-          >
-            <IconRocket size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-            {copy.ctaRegister}
-          </button>
-        </section>
+
 
       </main>
 
