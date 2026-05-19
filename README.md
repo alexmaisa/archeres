@@ -1,4 +1,8 @@
-# Archeres
+<p align="center">
+  <img src="./web/public/Archeres.svg" alt="Archeres Logo" width="120" height="120">
+</p>
+
+<h1 align="center">Archeres</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/UI-Premium-blueviolet" alt="UI-Premium">
