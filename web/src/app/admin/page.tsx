@@ -940,52 +940,42 @@ export default function AdminPage() {
                 <span className="telemetry-label" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
                   {i18n.language === "id" ? "Distribusi Pendekatan Riset" : "Research Approach Distribution"}
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
-                      <span>Kuantitatif</span>
-                      <strong style={{ color: "#38bdf8" }}>{getApproachCount("kuantitatif")}</strong>
-                    </div>
-                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
-                      <div style={{
-                        height: "100%",
-                        width: stats.totalProjects > 0 ? `${(getApproachCount("kuantitatif") / stats.totalProjects) * 100}%` : "0%",
-                        background: "linear-gradient(90deg, #0284c7, #38bdf8)",
-                        borderRadius: "3px",
-                        transition: "width 1s ease"
-                      }}></div>
-                    </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+                  {/* Single Stacked Progress Bar */}
+                  <div style={{ display: "flex", height: "8px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", overflow: "hidden" }}>
+                    <div style={{
+                      height: "100%",
+                      width: stats.totalProjects > 0 ? `${(getApproachCount("kuantitatif") / stats.totalProjects) * 100}%` : "0%",
+                      background: "linear-gradient(90deg, #0284c7, #38bdf8)",
+                      transition: "width 1s ease"
+                    }}></div>
+                    <div style={{
+                      height: "100%",
+                      width: stats.totalProjects > 0 ? `${(getApproachCount("kualitatif") / stats.totalProjects) * 100}%` : "0%",
+                      background: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+                      transition: "width 1s ease"
+                    }}></div>
+                    <div style={{
+                      height: "100%",
+                      width: stats.totalProjects > 0 ? `${(getApproachCount("metodeCampuran") / stats.totalProjects) * 100}%` : "0%",
+                      background: "linear-gradient(90deg, #db2777, #f472b6)",
+                      transition: "width 1s ease"
+                    }}></div>
                   </div>
 
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
-                      <span>Kualitatif</span>
-                      <strong style={{ color: "#a78bfa" }}>{getApproachCount("kualitatif")}</strong>
+                  {/* Compact Inline Legend */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem 1.25rem", fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#38bdf8" }}></span>
+                      <span>Kuantitatif ({getApproachCount("kuantitatif")})</span>
                     </div>
-                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
-                      <div style={{
-                        height: "100%",
-                        width: stats.totalProjects > 0 ? `${(getApproachCount("kualitatif") / stats.totalProjects) * 100}%` : "0%",
-                        background: "linear-gradient(90deg, #7c3aed, #a78bfa)",
-                        borderRadius: "3px",
-                        transition: "width 1s ease"
-                      }}></div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#a78bfa" }}></span>
+                      <span>Kualitatif ({getApproachCount("kualitatif")})</span>
                     </div>
-                  </div>
-
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.25rem" }}>
-                      <span>Metode Campuran</span>
-                      <strong style={{ color: "#f472b6" }}>{getApproachCount("metodeCampuran")}</strong>
-                    </div>
-                    <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
-                      <div style={{
-                        height: "100%",
-                        width: stats.totalProjects > 0 ? `${(getApproachCount("metodeCampuran") / stats.totalProjects) * 100}%` : "0%",
-                        background: "linear-gradient(90deg, #db2777, #f472b6)",
-                        borderRadius: "3px",
-                        transition: "width 1s ease"
-                      }}></div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f472b6" }}></span>
+                      <span>Campuran ({getApproachCount("metodeCampuran")})</span>
                     </div>
                   </div>
                 </div>
