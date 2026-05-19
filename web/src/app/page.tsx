@@ -188,25 +188,52 @@ export default function Home() {
 
   const ctaButtonGroupStyle: React.CSSProperties = {
     ...styles.ctaButtonGroup,
-    flexDirection: "row",
+    flexDirection: isMobile ? "column" : "row",
+    alignItems: isMobile ? "stretch" : "center",
     justifyContent: isMobile ? "center" : "flex-start",
-    flexWrap: "nowrap",
+    flexWrap: isMobile ? "wrap" : "nowrap",
+    gap: "0.75rem",
   };
  
   const primaryCtaStyle: React.CSSProperties = {
     ...styles.primaryCta,
     padding: isMobile ? "0.75rem 1rem" : "0.75rem 1.75rem",
     fontSize: isMobile ? "0.85rem" : "0.95rem",
-    maxWidth: isMobile ? "220px" : "240px",
+    width: isMobile ? "100%" : "auto",
+    maxWidth: isMobile ? "100%" : "240px",
     whiteSpace: "nowrap",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px"
   };
  
   const secondaryCtaStyle: React.CSSProperties = {
     ...styles.secondaryCta,
     padding: isMobile ? "0.75rem 1rem" : "0.75rem 1.75rem",
     fontSize: isMobile ? "0.85rem" : "0.95rem",
-    maxWidth: isMobile ? "220px" : "240px",
+    width: isMobile ? "100%" : "auto",
+    maxWidth: isMobile ? "100%" : "240px",
     whiteSpace: "nowrap",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px"
+  };
+
+  const heroTitleStyle: React.CSSProperties = {
+    ...styles.heroTitle,
+    fontSize: isMobile ? "1.85rem" : "2.35rem",
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+    width: "100%"
+  };
+
+  const heroSubtitleStyle: React.CSSProperties = {
+    ...styles.heroSubtitle,
+    fontSize: isMobile ? "0.85rem" : "0.95rem",
+    width: "100%",
+    maxWidth: isMobile ? "100%" : "460px"
   };
  
   return (
@@ -265,8 +292,8 @@ export default function Home() {
       <main style={mainContainerStyle}>
         {/* Left Side: Hero Information */}
         <section style={heroStyle}>
-          <h1 style={styles.heroTitle}>{copy.title}</h1>
-          <p style={styles.heroSubtitle}>{copy.subtitle}</p>
+          <h1 style={heroTitleStyle}>{copy.title}</h1>
+          <p style={heroSubtitleStyle}>{copy.subtitle}</p>
  
           <div style={ctaButtonGroupStyle}>
             <button 
