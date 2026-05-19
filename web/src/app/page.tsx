@@ -294,8 +294,16 @@ export default function Home() {
           </div>
  
           {isLoggedIn ? (
-            <button onClick={() => router.push("/user/dashboard")} className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
-              {currentLang === "id" ? "Ke Workspace" : "Go to Workspace"}
+            <button 
+              onClick={() => router.push("/user/dashboard")} 
+              className="btn btn-primary" 
+              style={{ 
+                padding: isMobile ? "0.4rem 0.75rem" : "0.5rem 1rem", 
+                fontSize: isMobile ? "0.75rem" : "0.85rem",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {isMobile ? "Workspace" : (currentLang === "id" ? "Ke Workspace" : "Go to Workspace")}
             </button>
           ) : (
             <button onClick={() => router.push("/auth/login")} style={styles.signInHeaderBtn}>
