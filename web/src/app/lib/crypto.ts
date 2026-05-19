@@ -27,6 +27,20 @@ function fromBase64(b64: string): Uint8Array {
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 }
 
+function checkSecureContext() {
+  if (typeof window !== "undefined" && (!window.crypto || !window.crypto.subtle)) {
+    throw new Error(
+      "Web Crypto API (crypto.subtle) is unavailable.\n\n" +
+      "Archeres uses Zero-Knowledge End-to-End Encryption (E2EE) to protect your research. " +
+      "Modern browsers require a Secure Context (HTTPS or localhost) to enable E2EE libraries.\n\n" +
+      "How to fix in Development:\n" +
+      "1. Access via localhost on your PC.\n" +
+      "2. On mobile/Tailscale, enable Chrome Flag 'Insecure origins treated as secure' and add your server address.\n" +
+      "3. Use a TLS tunnel (e.g. Tailscale HTTPS or ngrok) for HTTPS access."
+    );
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────
 // Salt Generation
 // ─────────────────────────────────────────────────────────────────
@@ -64,6 +78,7 @@ export async function deriveWrappingKey(
   secret: string,
   saltBase64: string
 ): Promise<CryptoKey> {
+  checkSecureContext();
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
@@ -96,6 +111,7 @@ export async function deriveWrappingKey(
  * It is never sent to the server in plaintext — only wrapped (encrypted) form.
  */
 export async function generateMasterKey(): Promise<CryptoKey> {
+  checkSecureContext();
   return crypto.subtle.generateKey(
     { name: "AES-GCM", length: 256 },
     true, // extractable so it can be wrapped and stored in sessionStorage
@@ -116,6 +132,7 @@ export async function wrapMasterKey(
   mek: CryptoKey,
   wrappingKey: CryptoKey
 ): Promise<string> {
+  checkSecureContext();
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
   const wrappedKey = await crypto.subtle.wrapKey("raw", mek, wrappingKey, {
     name: "AES-GCM",
@@ -139,6 +156,7 @@ export async function unwrapMasterKey(
   vaultBase64: string,
   wrappingKey: CryptoKey
 ): Promise<CryptoKey> {
+  checkSecureContext();
   const combined = fromBase64(vaultBase64);
   const iv = combined.slice(0, IV_BYTES);
   const wrappedKey = combined.slice(IV_BYTES);
@@ -166,6 +184,7 @@ export async function encryptText(
   plaintext: string,
   mek: CryptoKey
 ): Promise<string> {
+  checkSecureContext();
   const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
   const encoded = new TextEncoder().encode(plaintext);
 
@@ -190,6 +209,7 @@ export async function decryptText(
   ciphertextBase64: string,
   mek: CryptoKey
 ): Promise<string> {
+  checkSecureContext();
   const combined = fromBase64(ciphertextBase64);
   const iv = combined.slice(0, IV_BYTES);
   const ciphertext = combined.slice(IV_BYTES);
