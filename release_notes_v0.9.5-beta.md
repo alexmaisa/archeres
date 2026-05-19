@@ -1,57 +1,57 @@
 # Archeres Release v0.9.5-beta 🚀
 
-Kami dengan bangga mempersembahkan rilis **v0.9.5-beta**, sebuah pembaruan tonggak pencapaian besar (*milestone*) yang membawa Archeres ke tingkat keamanan, kepatuhan hukum, dan ketahanan sistem yang lebih matang. 
+We are proud to present release **v0.9.5-beta**, a major milestone update that brings Archeres to a more mature level of security, legal compliance, and system resilience.
 
-Pembaruan ini berfokus pada perlindungan platform dari spam robot secara mandiri (*self-hosted*), kepatuhan lisensi non-komersial, serta peningkatan kualitas UI/UX premium yang bersih dan profesional.
-
----
-
-## 🔑 Ringkasan Fitur Utama & Perubahan
-
-### 1. 🛡️ Mesin Captcha Matematika SVG Terenkripsi (Anti-Spam Mandiri)
-Untuk melindungi platform dari serangan spam pendaftaran akun tanpa mengorbankan privasi pengguna (bebas dari kuki pelacakan pihak ketiga), kami telah membangun mesin Captcha kustom:
-*   **Komputasi Distorsi Vektor**: Gambar captcha matematika dihasilkan secara dinamis di backend (Go) dalam format SVG dengan garis kebisingan (*noise lines*), titik acak (*scatter points*), dan rotasi karakter acak untuk menghalau pembaca OCR bot.
-*   **Tanda Tangan Kriptografis (JWT)**: Jawaban captcha yang benar ditandatangani secara aman di backend menggunakan token JWT berumur singkat (kedaluwarsa dalam 5 menit) menggunakan kunci rahasia bersama.
-*   **Widget UI Gelap Glassmorphism**: Dilengkapi tombol penyegar (*Refresh*) captcha interaktif dan masukan numerik yang memicu papan ketik angka secara otomatis di perangkat seluler (`inputMode="numeric"`).
-*   **Stabilitas Koneksi (Retry Resilience)**: Menambahkan mekanisme percobaan ulang otomatis di frontend untuk mengatasi jeda waktu kompilasi server (*hot-reload/boot latency*) saat startup bersamaan.
-
-### 2. ⚖️ Kepatuhan Lisensi Hukum (PolyForm Noncommercial 1.0.0)
-Kami telah memperbarui seluruh basis hukum dan atribusi kepemilikan proyek:
-*   **Atribusi Hak Cipta**: Hak cipta proyek Archeres dipegang sepenuhnya oleh **Benny Maisa**.
-*   **Tautan Repositori Resmi**: Menghubungkan secara dinamis nama pemilik lisensi di bilah kaki (*footer*) ke repositori resmi Gitea/Forgejo: `https://repo.alexmaisa.my.id/alexmaisa`.
-*   **Penerapan Lisensi**: Menetapkan lisensi **PolyForm Noncommercial License 1.0.0** di dalam berkas `LICENSE` utama, `README.md`, dan seluruh bilah kaki aplikasi. Penggunaan proyek ini 100% gratis untuk penelitian akademis, pribadi, dan non-komersial, serta melarang keras monetisasi komersial tanpa izin tertulis.
-
-### 3. 🎨 Penyempurnaan Estetika UI & Visual Premium
-*   **Pembersihan Tautan Bilah Kaki**: Menghilangkan garis bawah (*text underline*) default yang mengganggu estetika pada bilah kaki di 5 halaman utama (Home, About, Admin, Dashboard, dan Workspace Client) guna memberikan sentuhan minimalis dan sangat modern.
+This update focuses on protecting the platform from robotic spam through a self-hosted mechanism, enforcing non-commercial license compliance, and enhancing the premium UI/UX quality for a cleaner, professional look.
 
 ---
 
-## 📦 Berkas yang Mengalami Perubahan
+## 🔑 Key Features & Changes Summary
 
-*   `LICENSE`: Teks lengkap lisensi PolyForm Noncommercial 1.0.0.
-*   `README.md`: Pembaruan badge versi `v0.9.5-beta`, dokumentasi keamanan captcha, serta penjelasan legalitas non-komersial.
-*   `backend/utils/captcha.go` & `captcha_test.go`: Kode komputasi pembuatan SVG dan pengujian unit penandatanganan JWT.
-*   `backend/handlers/auth.go` & `main.go`: Integrasi validasi pendaftaran dan registrasi rute API `/api/auth/captcha`.
-*   `web/package.json`: Pembaruan versi proyek menjadi `0.9.5-beta`.
-*   `web/src/app/auth/register/page.tsx`: Integrasi state captcha, penanganan respons tangguh, serta antarmuka verifikasi keamanan.
-*   Bilah Kaki Frontend (5 Halaman): Pembaruan tautan interaktif eksternal Benny Maisa dan penghapusan dekorasi garis bawah.
+### 1. 🛡️ Encrypted SVG Math Captcha Engine (Self-Hosted Anti-Spam)
+To protect the platform from account registration spam attacks without compromising user privacy (free from third-party tracking cookies), we have built a custom Captcha engine:
+*   **Vector Distortion Computation**: Math captcha images are dynamically generated in the backend (Go) in SVG format with noise lines, scatter points, and random character rotations to thwart OCR bot readers.
+*   **Cryptographic Signatures (JWT)**: Correct captcha answers are securely signed in the backend using short-lived JWT tokens (expiring in 5 minutes) via a shared secret key.
+*   **Glassmorphism Dark UI Widget**: Features an interactive captcha Refresh button and numeric input that automatically triggers the number keyboard on mobile devices (`inputMode="numeric"`).
+*   **Connection Resilience (Retry Mechanism)**: Added an automatic retry mechanism on the frontend to overcome server compilation latency (hot-reload/boot latency) during concurrent startup.
+
+### 2. ⚖️ Legal License Compliance (PolyForm Noncommercial 1.0.0)
+We have updated the entire legal foundation and ownership attribution of the project:
+*   **Copyright Attribution**: The copyright of the Archeres project is held entirely by **Benny Maisa**.
+*   **Official Repository Link**: Dynamically links the license owner's name in the footer to the official Gitea/Forgejo repository: `https://repo.alexmaisa.my.id/alexmaisa`.
+*   **License Enforcement**: Establishes the **PolyForm Noncommercial License 1.0.0** within the main `LICENSE` file, `README.md`, and all application footers. The use of this project is 100% free for academic, personal, and non-commercial research, and strictly prohibits commercial monetization without written permission.
+
+### 3. 🎨 Premium Visual & UI Aesthetics Refinement
+*   **Footer Links Cleanup**: Removed the aesthetically disruptive default text underline from the footer links across 5 main pages (Home, About, Admin, Dashboard, and Workspace Client) to provide a minimalist and highly modern touch.
 
 ---
 
-## 🛠️ Panduan Pembuatan Tag Rilis Manual (Untuk Benny Maisa)
+## 📦 Files Changed
 
-Gunakan perintah git berikut untuk membuat tag rilis secara lokal dan mendorongnya ke repositori Forgejo:
+*   `LICENSE`: Complete text of the PolyForm Noncommercial 1.0.0 license.
+*   `README.md`: Updated `v0.9.5-beta` version badge, captcha security documentation, and non-commercial legal explanations.
+*   `backend/utils/captcha.go` & `captcha_test.go`: Computation code for SVG generation and JWT signature unit testing.
+*   `backend/handlers/auth.go` & `main.go`: Integration of registration validation and registration of the `/api/auth/captcha` API route.
+*   `web/package.json`: Project version update to `0.9.5-beta`.
+*   `web/src/app/auth/register/page.tsx`: Captcha state integration, resilient response handling, and security verification interface.
+*   Frontend Footers (5 Pages): Updated Benny Maisa's external interactive links and removed underline decoration.
+
+---
+
+## 🛠️ Manual Release Tagging Guide (For Benny Maisa)
+
+Use the following git commands to create a release tag locally and push it to the Forgejo repository:
 
 ```bash
-# 1. Pastikan Anda berada di cabang main dan mengambil pembaruan terbaru
+# 1. Ensure you are on the main branch and pull the latest updates
 git checkout main
 git pull origin main
 
-# 2. Buat tag beranotasi baru untuk v0.9.5-beta
+# 2. Create a new annotated tag for v0.9.5-beta
 git tag -a v0.9.5-beta -m "Archeres Release v0.9.5-beta: Encrypted Math Captcha and License Compliance"
 
-# 3. Dorong tag tersebut ke server Forgejo
+# 3. Push the tag to the Forgejo server
 git push origin v0.9.5-beta
 ```
 
-Setelah didorong, alur kerja **Forgejo Actions** secara otomatis akan mendeteksi tag rilis ini, melakukan kompilasi otomatis (*multi-arch*), dan mengunggah gambar Docker terbaru (`archeres-web:latest` & `archeres-backend:latest`) ke registri pribadi Anda di `repo.alexmaisa.my.id`.
+Once pushed, the **Forgejo Actions** workflow will automatically detect this release tag, perform automatic multi-arch compilation, and upload the latest Docker images (`archeres-web:latest` & `archeres-backend:latest`) to your private registry at `repo.alexmaisa.my.id`.
