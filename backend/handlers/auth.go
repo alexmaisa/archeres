@@ -89,17 +89,11 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	// Send welcome email with recovery key (graceful — registration succeeds even if email fails)
-	emailErr := utils.SendWelcomeEmail(user.Email, user.Name, input.RecoveryKey)
-	if emailErr != nil {
-		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-			"message":      "Registration successful. Please sign in.",
-			"emailWarning": "Recovery key could not be sent via email. Please store it manually.",
-		})
-	}
+	// Send welcome email (graceful — registration succeeds even if email fails)
+	_ = utils.SendWelcomeEmail(user.Email, user.Name)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Registration successful. Your recovery key has been sent to your email.",
+		"message": "Registration successful. Please ensure you have securely saved your recovery key.",
 	})
 }
 

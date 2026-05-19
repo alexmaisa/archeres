@@ -70,8 +70,8 @@ func SendResetEmail(to, token string) error {
 	return nil
 }
 
-// SendWelcomeEmail sends a welcome email to a newly registered user containing their recovery key
-func SendWelcomeEmail(to, name, recoveryKey string) error {
+// SendWelcomeEmail sends a welcome email to a newly registered user
+func SendWelcomeEmail(to, name string) error {
 	host := os.Getenv("SMTP_HOST")
 	port := os.Getenv("SMTP_PORT")
 	user := os.Getenv("SMTP_USER")
@@ -114,7 +114,7 @@ func SendWelcomeEmail(to, name, recoveryKey string) error {
 		}
 	}
 
-	subject := "Subject: [Archeres] Welcome — Save Your Recovery Key\r\n"
+	subject := "Subject: [Archeres] Welcome to Your Research Workspace\r\n"
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 	body := fmt.Sprintf(`
 		<html>
@@ -124,15 +124,12 @@ func SendWelcomeEmail(to, name, recoveryKey string) error {
 				<p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 0; margin-bottom: 2rem;">Research Assistant Platform</p>
 				<p style="color: rgba(255,255,255,0.85); font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Welcome, %s! 🎉</p>
 				<p style="color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 0.9rem; margin-bottom: 1.5rem;">
-					Your Archeres account has been successfully created. Below is your unique <strong>Recovery Key</strong> used to restore access to your research vault if you forget your password.
+					Your Archeres account has been successfully created. We are excited to assist you with secure, high-integrity research design and sample calculation.
 				</p>
 				<div style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.25); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
-					<p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.08em;">Your Recovery Key</p>
-					<code style="display: block; color: #a78bfa; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; word-break: break-all; line-height: 1.6;">%s</code>
-				</div>
-				<div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
-					<p style="color: #fca5a5; font-size: 0.82rem; margin: 0; line-height: 1.5;">
-						⚠️ <strong>Save this key in a very secure place.</strong> This key cannot be recovered by our system. Do not share this key with anyone, including the Archeres team.
+					<p style="color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 700; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.08em;">🔒 Zero-Knowledge Platform</p>
+					<p style="color: rgba(255,255,255,0.65); font-size: 0.85rem; margin: 0; line-height: 1.5;">
+						For your absolute privacy, your <strong>Recovery Key</strong> was only shown once on your screen during registration. <strong>We do not send it via email</strong> to protect it from email snooping or server logging. Please make sure you have it stored securely.
 					</p>
 				</div>
 				<div style="text-align: center; margin-bottom: 2rem;">
@@ -147,7 +144,7 @@ func SendWelcomeEmail(to, name, recoveryKey string) error {
 			</div>
 		</body>
 		</html>
-	`, displayName, recoveryKey, loginURL)
+	`, displayName, loginURL)
 
 	msg := []byte("To: " + to + "\r\n" + subject + mime + body)
 	auth := smtp.PlainAuth("", user, pass, host)
