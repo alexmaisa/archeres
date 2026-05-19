@@ -38,7 +38,9 @@ interface MathFormula {
   useCase: string;
   symbols: SymbolItem[];
   reference: string;
+  note?: string;
 }
+
 
 interface ScaleDetail {
   name: string;
@@ -215,8 +217,10 @@ export default function AboutPage() {
             { char: "Z", meaning: "Standard normal value (typically 1.96 for 95% confidence)" },
             { char: "P", meaning: "Anticipated population prevalence or expected proportion" },
             { char: "d", meaning: "Absolute precision limit required" }
-          ]
+          ],
+          note: "Note: Mathematically identical to Daniel's and Cochran's formulas for unknown populations. However, Lemeshow's formula is specifically favored in World Health Organization (WHO) protocols and epidemiological studies. In Archeres, Lemeshow is paired with the Finite Population Correction (FPC) when the population size is known."
         },
+
         { 
           id: "yamane", 
           name: "Yamane Formula", 
@@ -240,8 +244,10 @@ export default function AboutPage() {
             { char: "Z", meaning: "Critical normal value based on confidence intervals" },
             { char: "P", meaning: "Anticipated population prevalence of the trait" },
             { char: "d", meaning: "Margin of precision desired" }
-          ]
+          ],
+          note: "Note: Mathematically identical to Cochran's and Lemeshow's infinite population formulas. It is named after Wayne W. Daniel and is traditionally preferred in clinical, pharmacy, and biostatistics textbooks. In Archeres, it is recommended when the population size is unknown/infinite."
         }
+
       ],
       scaleSectionTitle: "Stevens' Measurement Scales & Statistical Advice",
       scaleSectionDesc: "Understanding the properties of Stevens' measurement scales helps you choose between parametric and non-parametric statistical tests.",
@@ -398,8 +404,10 @@ export default function AboutPage() {
             { char: "Z", meaning: "Skor standar normal kritis (biasanya 1,96 pada tingkat kepercayaan 95%)" },
             { char: "P", meaning: "Ekspektasi proporsi atau tingkat prevalensi penyakit dalam populasi" },
             { char: "d", meaning: "Batas presisi kesalahan absolut yang diinginkan" }
-          ]
+          ],
+          note: "Catatan: Secara matematis identik dengan Rumus Daniel dan Cochran untuk populasi tidak diketahui. Namun, nama Lemeshow disukai dalam protokol Organisasi Kesehatan Dunia (WHO) dan riset epidemiologi. Di Archeres, Lemeshow dipadukan dengan Koreksi Populasi Terbatas (FPC) jika ukuran populasi diketahui."
         },
+
         { 
           id: "yamane", 
           name: "Rumus Yamane", 
@@ -423,8 +431,10 @@ export default function AboutPage() {
             { char: "Z", meaning: "Nilai kritis normal berdasarkan rentang tingkat kepercayaan" },
             { char: "P", meaning: "Antisipasi nilai prevalensi/proporsi fenomena di populasi" },
             { char: "d", meaning: "Margin presisi kesalahan toleransi" }
-          ]
+          ],
+          note: "Catatan: Secara matematis identik dengan rumus Cochran dan Lemeshow untuk populasi tidak terbatas. Dinamai berdasarkan Wayne W. Daniel dan secara tradisional disukai dalam buku teks klinis, farmasi, dan biostatistika. Di Archeres, rumus ini direkomendasikan ketika ukuran populasi tidak diketahui/tak terbatas."
         }
+
       ],
       scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
       scaleSectionDesc: "Memahami karakteristik masing-masing skala pengukuran Stevens membantu Anda memilih antara uji statistik parametris dan non-parametris secara tepat.",
@@ -767,6 +777,18 @@ export default function AboutPage() {
                       {f.reference}
                     </p>
                   </div>
+
+                  {f.note && (
+                    <div style={{ marginTop: "0.25rem", background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.15)", padding: "0.75rem 1rem", borderRadius: "8px" }}>
+                      <h4 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#34d399", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>
+                        {currentLang === "id" ? "Catatan Perbandingan" : "Comparison Note"}
+                      </h4>
+                      <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.8)", lineHeight: 1.45 }}>
+                        {f.note}
+                      </p>
+                    </div>
+                  )}
+
 
                 </div>
 
