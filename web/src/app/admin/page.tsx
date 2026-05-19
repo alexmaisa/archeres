@@ -935,10 +935,10 @@ export default function AdminPage() {
                 </span>
               </div>
 
-              {/* Card 5: Research Methodology Approach Distribution */}
+              {/* Card 5: Research Approach */}
               <div className="glass-panel telemetry-card">
                 <span className="telemetry-label">
-                  {i18n.language === "id" ? "Distribusi Pendekatan Riset" : "Research Approach Distribution"}
+                  {i18n.language === "id" ? "Pendekatan Riset" : "Research Approach"}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
                   {/* Single Stacked Progress Bar */}
