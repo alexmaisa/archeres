@@ -699,6 +699,7 @@ h1, h2, h3, h4, h5, h6 {
 .telemetry-sub {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-outfit), sans-serif;
 }
 
 /* Tab Controllers & Tab Switcher Layouts */

@@ -964,18 +964,18 @@ export default function AdminPage() {
                   </div>
 
                   {/* Compact Inline Legend */}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem 1rem", fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem 1rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#38bdf8" }}></span>
-                      <span>{i18n.language === "id" ? "Kuant" : "Quant"} ({getApproachCount("kuantitatif")})</span>
+                      <span className="telemetry-sub">{i18n.language === "id" ? "Kuant" : "Quant"} ({getApproachCount("kuantitatif")})</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#a78bfa" }}></span>
-                      <span>{i18n.language === "id" ? "Kual" : "Qual"} ({getApproachCount("kualitatif")})</span>
+                      <span className="telemetry-sub">{i18n.language === "id" ? "Kual" : "Qual"} ({getApproachCount("kualitatif")})</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f472b6" }}></span>
-                      <span>{i18n.language === "id" ? "Campuran" : "Mixed"} ({getApproachCount("metodeCampuran")})</span>
+                      <span className="telemetry-sub">{i18n.language === "id" ? "Campuran" : "Mixed"} ({getApproachCount("metodeCampuran")})</span>
                     </div>
                   </div>
                 </div>
