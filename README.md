@@ -24,6 +24,7 @@
 2. **Stevens' Scale Variable Operationalization**: Operationalize variables into Nominal, Ordinal, Interval, or Ratio measurement scales. Systematically map conceptual indicators to unlock context-aware statistical analysis advice and recommendations.
 3. **Scholarly Pedagogy Module**: Learn as you build. Interactive Stevens' scale guides, Stevens' taxonomy definitions, and formula derivations are seamlessly integrated into every step of the research workspace.
 4. **Structured Chapter III Compiler**: Instantly generate structured Chapter 3 methodology markdown files dynamically formatted in academic Bahasa Indonesia and English concurrently.
+5. **Privacy-First Anti-Spam Captcha**: Integrated zero-dependency, self-hosted cryptographic SVG math captcha during registration. Challenge calculations are conducted securely on the backend, generating distorted, highly randomized vector lines and noise clusters that block robotic spam sign-ups while maintaining perfect privacy (no cookies or external tracking).
 
 ---
 

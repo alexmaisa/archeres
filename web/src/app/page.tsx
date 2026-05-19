@@ -87,8 +87,8 @@ export default function Home() {
         },
         {
           icon: "shield",
-          name: "Role-Based Governance Shield",
-          desc: "Strict administrative guards (RBAC) protecting backend telemetries, database sizes, and active studies counts."
+          name: "Anti-Spam Governance Shield",
+          desc: "Armed with robust administrative controls and zero-dependency, privacy-first cryptographic SVG math captchas to block robotic spam sign-ups securely."
         },
         {
           icon: "key",
@@ -125,8 +125,8 @@ export default function Home() {
         },
         {
           icon: "shield",
-          name: "Keamanan & Kendali Platform",
-          desc: "Dilengkapi sistem hak akses terintegrasi untuk mengamankan data serta dashboard pemantauan metrik riset yang aman secara privasi."
+          name: "Sistem Keamanan & Anti-Spam",
+          desc: "Dilengkapi dashboard tata kelola administrator dan verifikasi captcha matematika SVG terenkripsi yang mandiri untuk mencegah spam tanpa pelacak."
         },
         {
           icon: "key",

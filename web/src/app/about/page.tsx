@@ -160,8 +160,8 @@ export default function AboutPage() {
         },
         {
           icon: "shield",
-          title: "Privacy-Preserving Telemetry",
-          desc: "We prioritize user privacy. Platform audit metrics log absolute login occurrence stamps entirely decoupled from individual user IDs or email accounts."
+          title: "Privacy & Anti-Spam Shield",
+          desc: "Protecting users with self-hosted cryptographic SVG math captchas during registration to deter malicious spam, alongside decoupled privacy-preserving activity logs."
         },
         {
           icon: "helix",
@@ -343,8 +343,8 @@ export default function AboutPage() {
         },
         {
           icon: "shield",
-          title: "Telemetri Sesi Tanpa Identitas",
-          desc: "Jaminan privasi total melalui pencatatan telemetri aktivitas masuk secara agregat deret waktu (time-series), sepenuhnya terlepas dari identitas surel (email) atau ID unik pengguna."
+          title: "Sistem Anti-Spam & Privasi",
+          desc: "Melindungi platform menggunakan verifikasi captcha matematika SVG mandiri terenkripsi pada saat pendaftaran, serta telemetri sesi terpisah tanpa identitas surel."
         },
         {
           icon: "helix",
