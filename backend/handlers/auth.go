@@ -25,6 +25,8 @@ type RegisterInput struct {
 	RecoveryVault string `json:"recoveryVault"` // AES-GCM wrapped MEK (recovery-key-derived key)
 	VaultSalt     string `json:"vaultSalt"`     // PBKDF2 salt (base64)
 	RecoveryKey   string `json:"recoveryKey"`   // plaintext recovery key — sent to email, not stored
+	CaptchaToken  string `json:"captchaToken"`
+	CaptchaAnswer string `json:"captchaAnswer"`
 }
 
 // LoginInput models the expected JSON parameters for user sign-in
@@ -39,6 +41,13 @@ func Register(c *fiber.Ctx) error {
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid input data format.",
+		})
+	}
+
+	// Verify Captcha Challenge
+	if err := utils.VerifyCaptcha(input.CaptchaToken, input.CaptchaAnswer); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
 		})
 	}
 
@@ -383,5 +392,19 @@ func ResetPassword(c *fiber.Ctx) error {
 		"message":       "Your password has been successfully updated.",
 		"recoveryVault": user.RecoveryVault,
 		"vaultSalt":     user.VaultSalt,
+	})
+}
+
+// GetCaptcha generates a new cryptographic math challenge and returns its SVG + token
+func GetCaptcha(c *fiber.Ctx) error {
+	token, _, svg, err := utils.GenerateCaptcha()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate captcha puzzle.",
+		})
+	}
+	return c.JSON(fiber.Map{
+		"captchaToken": token,
+		"captchaSvg":   svg,
 	})
 }

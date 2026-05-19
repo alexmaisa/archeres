@@ -35,6 +35,7 @@ func main() {
 
 	// Authentication & Session Routes
 	auth := api.Group("/auth")
+	auth.Get("/captcha", handlers.GetCaptcha)
 	auth.Post("/register", handlers.Register)
 	auth.Post("/login", handlers.Login)
 	auth.Post("/logout", handlers.Logout)

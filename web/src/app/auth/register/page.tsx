@@ -53,6 +53,27 @@ export default function RegisterPage() {
   const [registeredKey, setRegisteredKey] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
+  const [captchaToken, setCaptchaToken] = useState<string>("");
+  const [captchaSvg, setCaptchaSvg] = useState<string>("");
+  const [captchaAnswer, setCaptchaAnswer] = useState<string>("");
+
+  const loadCaptcha = async () => {
+    try {
+      const res = await apiFetch<{ captchaToken: string; captchaSvg: string }>("/api/auth/captcha");
+      if (res.captchaToken && res.captchaSvg) {
+        setCaptchaToken(res.captchaToken);
+        setCaptchaSvg(res.captchaSvg);
+        setCaptchaAnswer("");
+      }
+    } catch (err) {
+      console.error("Failed to load captcha", err);
+    }
+  };
+
+  React.useEffect(() => {
+    loadCaptcha();
+  }, []);
+
   const handleLanguageToggle = (lang: string) => {
     i18n.changeLanguage(lang);
   };
@@ -95,6 +116,8 @@ export default function RegisterPage() {
           recoveryVault,
           vaultSalt: salt,
           recoveryKey,
+          captchaToken,
+          captchaAnswer,
         }),
       });
 
@@ -107,6 +130,7 @@ export default function RegisterPage() {
       setRegisteredKey(recoveryKey);
     } catch (err: any) {
       setError(err.message || t("common.errorOccurred"));
+      loadCaptcha();
     } finally {
       setLoading(false);
     }
@@ -369,6 +393,62 @@ export default function RegisterPage() {
                   </div>
                 )}
               </div>
+
+              {/* Captcha Verification Box */}
+              {captchaSvg && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.2rem" }}>
+                  <label className="form-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{i18n.language === "id" ? "Verifikasi Keamanan" : "Security Verification"}</span>
+                    <button
+                      type="button"
+                      onClick={loadCaptcha}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#a78bfa",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem",
+                        padding: 0,
+                      }}
+                      className="hover-white"
+                      disabled={loading}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" style={{ width: "0.85rem", height: "0.85rem" }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                      {i18n.language === "id" ? "Segarkan" : "Refresh"}
+                    </button>
+                  </label>
+                  <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                    <div 
+                      style={{ 
+                        flex: 1, 
+                        height: "42px", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        justifyContent: "center" 
+                      }} 
+                      dangerouslySetInnerHTML={{ __html: captchaSvg }} 
+                    />
+                    <input
+                      type="text"
+                      pattern="[0-9]*"
+                      inputMode="numeric"
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      className="form-input"
+                      style={{ width: "90px", textAlign: "center", height: "42px", fontSize: "1rem", fontWeight: 700 }}
+                      placeholder="?"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+              )}
 
               <button
                 type="submit"
