@@ -57,6 +57,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Interactive Maintenance states
   const [vacuuming, setVacuuming] = useState<boolean>(false);
@@ -84,6 +85,15 @@ export default function AdminPage() {
       setUptimeSecs((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleVacuum = async () => {
@@ -358,8 +368,8 @@ export default function AdminPage() {
 
   const renderBarChart = () => {
     if (!stats || !stats.trends || !stats.trends.months) return null;
-    const months = stats.trends.months;
-    const projects = stats.trends.projects;
+    const months = isMobile ? stats.trends.months.slice(-6) : stats.trends.months;
+    const projects = isMobile ? stats.trends.projects.slice(-6) : stats.trends.projects;
     const maxVal = Math.max(...projects, 4); // Scale nicely
 
     const width = 500;
@@ -534,9 +544,9 @@ export default function AdminPage() {
 
   const renderLineChart = () => {
     if (!stats || !stats.trends || !stats.trends.months) return null;
-    const months = stats.trends.months;
-    const users = stats.trends.users;
-    const logins = stats.trends.logins;
+    const months = isMobile ? stats.trends.months.slice(-6) : stats.trends.months;
+    const users = isMobile ? stats.trends.users.slice(-6) : stats.trends.users;
+    const logins = isMobile ? stats.trends.logins.slice(-6) : stats.trends.logins;
     const maxVal = Math.max(...users, ...logins, 4);
 
     const width = 800;
@@ -1056,7 +1066,7 @@ export default function AdminPage() {
                 <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", marginTop: "0.25rem" }}>{t("admin.secureLookupDesc")}</p>
               </div>
 
-              <form onSubmit={handleSecureLookup} style={{ display: "flex", gap: "0.75rem" }}>
+              <form onSubmit={handleSecureLookup} className="admin-lookup-form">
                 <input
                   type="email"
                   value={searchEmail}

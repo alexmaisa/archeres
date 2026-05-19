@@ -207,8 +207,8 @@ const resources = {
         actionChangeRoleConfirm: "Are you sure you want to change the role of this user?",
         chartSectionTitle: "Analytics & Platform Insights",
         chartFormulaTitle: "Sample Size Formula Popularity",
-        chartProjectsTitle: "Monthly Methodology Growth",
-        chartActivityTitle: "User Activity & Session Telemetry (Last 12 Months)",
+        chartProjectsTitle: "Methodology Growth",
+        chartActivityTitle: "User Activity & Telemetry",
         chartLegendRegistrations: "New Registrations",
         chartLegendLogins: "Successful Sessions",
         chartLegendProjects: "Methodologies Drafted"
@@ -418,8 +418,8 @@ const resources = {
         actionChangeRoleConfirm: "Apakah Anda yakin ingin mengubah peran pengguna ini?",
         chartSectionTitle: "Analitik & Wawasan Platform",
         chartFormulaTitle: "Popularitas Rumus Ukuran Sampel",
-        chartProjectsTitle: "Pertumbuhan Metodologi Bulanan",
-        chartActivityTitle: "Tren Aktivitas Pengguna & Telemetri Sesi (12 Bulan Terakhir)",
+        chartProjectsTitle: "Pertumbuhan Metodologi",
+        chartActivityTitle: "Aktivitas & Telemetri Pengguna",
         chartLegendRegistrations: "Registrasi Akun Baru",
         chartLegendLogins: "Sesi Masuk Berhasil",
         chartLegendProjects: "Metodologi Dirumuskan"
