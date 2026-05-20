@@ -364,6 +364,45 @@ export default function WorkspaceClient() {
         n = (z * z * p * q) / (e * e);
         break;
 
+      case "isaac_michael":
+        let chi2IM = 3.841;
+        if (e <= 0.01) chi2IM = 6.635;
+        else if (e <= 0.05) chi2IM = 3.841;
+        else chi2IM = 2.706;
+        const numIM = chi2IM * N * p * q;
+        const denIM = (e * e) * (N - 1) + chi2IM * p * q;
+        n = numIM / denIM;
+        break;
+
+      case "arikunto":
+        if (N < 100) n = N;
+        else {
+          let pct = e;
+          if (pct <= 0 || pct > 1.0) pct = 0.10;
+          n = N * pct;
+        }
+        break;
+
+      case "gay_diehl":
+        if (design === "Correlational") n = 30;
+        else if (design === "Experimental" || design === "Quasi-Experimental" || design === "Causal-Comparative") n = 60;
+        else if (design === "Survey / Descriptive") {
+           if (N <= 0) {
+             n = 100;
+           } else {
+             let calc = N * 0.10;
+             if (N < 1000) calc = N * 0.20;
+             n = calc > N ? N : calc;
+           }
+        } else {
+           n = variables.length > 0 ? 10 * variables.length : 30;
+        }
+        break;
+
+      case "kish_leslie":
+        n = (z * z * p * q) / (e * e);
+        break;
+
       default:
         n = N / (1 + N * (e * e));
     }
@@ -481,6 +520,22 @@ export default function WorkspaceClient() {
 
   // Dynamic Markdown compiler
   const generateMarkdownDraft = (lang: string) => {
+    const buildParamsId = () => {
+      if (formula === "arikunto") return `* Persentase Pengambilan Sampel: **${(marginError * 100).toFixed(1)}%** dari total populasi sesuai pedoman Suharsimi Arikunto.`;
+      if (formula === "gay_diehl") return `* Pedoman Ukuran Sampel: Mengikuti standar Gay & Diehl (1992) untuk penelitian jenis **${design}**.`;
+      if (formula === "isaac_michael") return `* Tingkat Signifikansi ($e$): **${marginError * 100}%**\n* Proporsi Atribut Estimasi ($p$): **${proportion}**`;
+      if (formula === "kish_leslie") return `* Batas Toleransi Kesalahan ($e$): **${marginError * 100}%**\n* Tingkat Kepercayaan ($Z$): **${confLevel * 100}%**\n* Proporsi Asumsi ($p$): **${proportion}**`;
+      return `* Batas Toleransi Kesalahan ($e$): **${marginError * 100}%**\n* Tingkat Kepercayaan ($1-\\alpha$): **${confLevel * 100}%**\n* Proporsi Atribut Estimasi ($p$): **${proportion}**`;
+    };
+
+    const buildParamsEn = () => {
+      if (formula === "arikunto") return `* Target Sampling Percentage: **${(marginError * 100).toFixed(1)}%** of the total population based on Suharsimi Arikunto's guideline.`;
+      if (formula === "gay_diehl") return `* Sample Size Guideline: Adhering to Gay & Diehl's (1992) standards for **${design}** research designs.`;
+      if (formula === "isaac_michael") return `* Significance Level ($e$): **${marginError * 100}%**\n* Estimated Attribute Proportion ($p$): **${proportion}**`;
+      if (formula === "kish_leslie") return `* Margin of Error ($e$): **${marginError * 100}%**\n* Confidence Level ($Z$): **${confLevel * 100}%**\n* Estimated Proportion ($p$): **${proportion}**`;
+      return `* Margin of Error ($e$): **${marginError * 100}%**\n* Confidence Level ($1-\\alpha$): **${confLevel * 100}%**\n* Estimated Attribute Proportion ($p$): **${proportion}**`;
+    };
+
     if (lang === "id") {
       let approachText = "Kuantitatif";
       if (approach === "qual") approachText = "Kualitatif";
@@ -490,10 +545,9 @@ export default function WorkspaceClient() {
 
       let popSamplingSection = "";
       if (approach === "quant") {
-        popSamplingSection = `Populasi sasaran dalam penelitian ini didefinisikan sebesar **${popSize}** unit. Mengingat keterbatasan waktu, tenaga, dan finansial, penentuan ukuran sampel minimal dilakukan dengan menerapkan formula **${formula.toUpperCase()}** dengan parameter pengujian:
-* Batas Toleransi Kesalahan ($e$): **${marginError * 100}%**
-* Tingkat Kepercayaan ($1-\\alpha$): **${confLevel * 100}%**
-* Proporsi Atribut Estimasi ($p$): **${proportion}**
+        let popContext = isPopKnown ? `sebesar **${popSize}** unit` : `yang ukurannya tidak terbatas (infinite)`;
+        popSamplingSection = `Populasi sasaran dalam penelitian ini didefinisikan ${popContext}. Mengingat keterbatasan waktu, tenaga, dan finansial, penentuan ukuran sampel minimal dilakukan dengan menerapkan formula **${formula.toUpperCase().replace("_", " ")}** dengan pedoman pengujian:
+${buildParamsId()}
 
 Berdasarkan rumus tersebut, diperoleh ukuran sampel minimal yang representatif sebanyak **${sampleSize}** subjek penelitian.
 
@@ -514,7 +568,7 @@ Ukuran sampel atau jumlah informan dalam penelitian ini tidak ditentukan oleh ru
 
         popSamplingSection = `${mixedDesignExplanation} Oleh karena itu, penentuan sampel menggunakan strategi **${samplingTechnique}** yang terbagi atas dua fase:
 
-1. **Fase Kuantitatif:** Populasi diidentifikasi sebesar **${popSize}** unit. Ukuran sampel minimal dihitung menggunakan formula **${formula.toUpperCase()}** (Margin of Error: **${marginError * 100}%**, Confidence Level: **${confLevel * 100}%**), menghasilkan sampel minimal sebanyak **${sampleSize}** responden. Pengambilan sampel fase ini menggunakan teknik Probability Sampling yang relevan.
+1. **Fase Kuantitatif:** Populasi diidentifikasi ${isPopKnown ? `sebesar **${popSize}** unit` : `tidak terbatas`}. Ukuran sampel minimal dihitung menggunakan formula **${formula.toUpperCase().replace("_", " ")}**, menghasilkan sampel minimal sebanyak **${sampleSize}** responden. Pengambilan sampel fase ini menggunakan teknik Probability Sampling yang relevan.
 2. **Fase Kualitatif:** Penentuan subjek dilakukan secara purposif (*Non-Probability*) dengan prinsip **Saturasi Data (Data Saturation)** guna memperoleh kedalaman wawasan kualitatif.`;
       }
 
@@ -546,10 +600,9 @@ Berdasarkan jenis variabel dan skala data yang telah dipetakan, hipotesis peneli
 
       let popSamplingSection = "";
       if (approach === "quant") {
-        popSamplingSection = `The target population for this study is identified at **${popSize}** individuals. Due to resource constraints, the minimum statistically viable sample size is determined using the **${formula.toUpperCase()}** equation with the following parameters:
-* Margin of Error ($e$): **${marginError * 100}%**
-* Confidence Level ($1-\\alpha$): **${confLevel * 100}%**
-* Estimated Attribute Proportion ($p$): **${proportion}**
+        let popContext = isPopKnown ? `at **${popSize}** individuals` : `as an infinite population`;
+        popSamplingSection = `The target population for this study is identified ${popContext}. Due to resource constraints, the minimum statistically viable sample size is determined using the **${formula.toUpperCase().replace("_", " ")}** formula with the following parameters:
+${buildParamsEn()}
 
 Consequently, a calculated minimum sample size of **${sampleSize}** subjects is required to achieve high statistical power.
 
@@ -570,7 +623,7 @@ The sample size is not determined by mathematical probability estimation formula
 
         popSamplingSection = `${mixedDesignExplanation} Accordingly, the sampling strategy utilizes **${samplingTechnique}** divided across two distinct phases:
 
-1. **Quantitative Strand:** The target population is defined at **${popSize}** units. The minimum sample size is calculated using the **${formula.toUpperCase()}** equation (Margin of Error: **${marginError * 100}%**, Confidence Level: **${confLevel * 100}%**), requiring a minimum of **${sampleSize}** respondents.
+1. **Quantitative Strand:** The target population is defined ${isPopKnown ? `at **${popSize}** units` : `as infinite`}. The minimum sample size is calculated using the **${formula.toUpperCase().replace("_", " ")}** formula, requiring a minimum of **${sampleSize}** respondents.
 2. **Qualitative Strand:** Participants are selected using purposive (*Non-Probability*) sampling, guided strictly by **Data Saturation** principles to yield rich qualitative depth.`;
       }
 
@@ -2442,11 +2495,16 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                         <option value="lemeshow">{t("wizard.formulaLemeshow")}</option>
                         <option value="krejcie_morgan">{t("wizard.formulaKrejcieMorgan")}</option>
                         <option value="yamane">{t("wizard.formulaYamane")}</option>
+                        <option value="isaac_michael">{t("wizard.formulaIsaacMichael")}</option>
+                        <option value="arikunto">{t("wizard.formulaArikunto")}</option>
+                        <option value="gay_diehl">{t("wizard.formulaGayDiehl")}</option>
                       </>
                     ) : (
                       <>
                         <option value="cochran">{t("wizard.formulaCochran")}</option>
                         <option value="daniel">{t("wizard.formulaDaniel")}</option>
+                        <option value="kish_leslie">{t("wizard.formulaKishLeslie")}</option>
+                        <option value="gay_diehl">{t("wizard.formulaGayDiehl")}</option>
                       </>
                     )}
                   </select>
@@ -2524,7 +2582,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 ) : (
                   <div style={styles.slidersCard} className="glass-panel">
                     {/* 1. Population Size N (for finite formulas) */}
-                    {["slovin", "lemeshow", "krejcie_morgan", "yamane"].includes(formula) && (
+                    {(["slovin", "lemeshow", "krejcie_morgan", "yamane", "isaac_michael", "arikunto"].includes(formula) || (formula === "gay_diehl" && design === "Survey / Descriptive")) && (
                       <div style={styles.sliderGroup}>
                         <div style={styles.sliderHeader}>
                           <span style={styles.sliderLabel}>{t("wizard.popSizeLabel")}</span>
@@ -2544,7 +2602,7 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     )}
 
                     {/* 2. Confidence Level Z */}
-                    {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                    {["cochran", "lemeshow", "krejcie_morgan", "daniel", "kish_leslie"].includes(formula) && (
                       <div style={styles.sliderGroup}>
                         <div style={styles.sliderHeader}>
                           <span style={styles.sliderLabel}>{t("wizard.confLevelLabel")}</span>
@@ -2565,25 +2623,27 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     )}
 
                     {/* 3. Margin of Error e */}
+                    {!["gay_diehl"].includes(formula) && (
                     <div style={styles.sliderGroup}>
                       <div style={styles.sliderHeader}>
-                        <span style={styles.sliderLabel}>{t("wizard.marginLabel")}</span>
+                        <span style={styles.sliderLabel}>{formula === "arikunto" ? "Arikunto Percentage" : t("wizard.marginLabel")}</span>
                         <span style={styles.sliderVal}>{(marginError * 100).toFixed(1)}%</span>
                       </div>
                       <input
                         type="range"
-                        min="0.01"
-                        max="0.20"
-                        step="0.005"
+                        min={formula === "arikunto" ? "0.10" : "0.01"}
+                        max={formula === "arikunto" ? "0.25" : "0.20"}
+                        step={formula === "arikunto" ? "0.01" : "0.005"}
                         value={marginError}
                         onChange={(e) => setMarginError(Number(e.target.value))}
                         style={styles.rangeInput}
                       />
-                      <p style={styles.sliderHelp}>{t("wizard.marginDesc")}</p>
+                      <p style={styles.sliderHelp}>{formula === "arikunto" ? "Persentase sampel dari populasi (10-25%)" : t("wizard.marginDesc")}</p>
                     </div>
+                    )}
 
                     {/* 4. Attribute Proportion p */}
-                    {["cochran", "lemeshow", "krejcie_morgan", "daniel"].includes(formula) && (
+                    {["cochran", "lemeshow", "krejcie_morgan", "daniel", "kish_leslie", "isaac_michael"].includes(formula) && (
                       <div style={styles.sliderGroup}>
                         <div style={styles.sliderHeader}>
                           <span style={styles.sliderLabel}>{t("wizard.propLabel")}</span>
