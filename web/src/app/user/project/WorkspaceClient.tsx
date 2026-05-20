@@ -134,7 +134,7 @@ export default function WorkspaceClient() {
   const calculateReliability = () => {
     if (relK <= 1 || relResp <= 1) {
       setRelResult(null);
-      setRelStatusKey("");
+      setRelStatusKey("error_insufficient");
       return;
     }
 
@@ -142,7 +142,7 @@ export default function WorkspaceClient() {
     if (inputMode === "aggregate") {
       const k = relK;
       const vt = parseFloat(totVariance) || 0;
-      if (vt <= 0) {
+      if (vt <= 0.0001) {
         setRelResult(null);
         setRelStatusKey("error_variance");
         return;
@@ -205,7 +205,7 @@ export default function WorkspaceClient() {
       const totalSquaredDiffs = totalScores.map(val => Math.pow(val - totalMean, 2));
       const vt = totalSquaredDiffs.reduce((acc, curr) => acc + curr, 0) / (N - 1);
 
-      if (vt <= 0) {
+      if (vt <= 0.0001) {
         setRelResult(null);
         setRelStatusKey("error_variance");
         return;
@@ -958,6 +958,104 @@ func main() {
   const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(generateMarkdownDraft(previewLang));
     triggerAlert(t("preview.copied"), t("common.notification"), "success");
+  };
+
+  const handleExportBackupJson = () => {
+    if (!project) return;
+    const backupData = {
+      app: "Archeres Research Methodology Planner",
+      version: "1.0.0",
+      backupDate: new Date().toISOString(),
+      projectId: projectId,
+      projectTitle: project.title,
+      designData: {
+        approach,
+        design,
+        formula,
+        popSize,
+        confLevel,
+        marginError,
+        sampleSize,
+        variables,
+        analysisMethod,
+        samplingTechnique,
+        isPopKnown,
+        reliability: {
+          relType,
+          relK,
+          relResp,
+          sumVariances,
+          totVariance,
+          sumSuccessProd,
+          relMatrix,
+          isReliabilityIntegrated
+        }
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${project.title.replace(/\s+/g, "_")}_workspace_backup.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerAlert(i18n.language === "id" ? "Cadangan berhasil diunduh!" : "Backup downloaded successfully!", t("common.notification"), "success");
+  };
+
+  const handleImportBackupJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (json.app !== "Archeres Research Methodology Planner" || !json.designData) {
+          throw new Error(i18n.language === "id" ? "File cadangan tidak valid atau rusak." : "Invalid or corrupt backup file.");
+        }
+
+        const data = json.designData;
+        
+        // Restore step variables
+        if (data.approach) setApproach(data.approach);
+        if (data.design) setDesign(data.design);
+        if (data.formula) setFormula(data.formula);
+        if (data.popSize !== undefined) setPopSize(data.popSize);
+        if (data.confLevel !== undefined) setConfLevel(data.confLevel);
+        if (data.marginError !== undefined) setMarginError(data.marginError);
+        if (data.sampleSize !== undefined) setSampleSize(data.sampleSize);
+        if (data.variables) setVariables(data.variables);
+        if (data.analysisMethod) setAnalysisMethod(data.analysisMethod);
+        if (data.samplingTechnique) setSamplingTechnique(data.samplingTechnique);
+        if (data.isPopKnown !== undefined) setIsPopKnown(data.isPopKnown);
+
+        // Restore reliability data
+        if (data.reliability) {
+          const rel = data.reliability;
+          if (rel.relType) setRelType(rel.relType);
+          if (rel.relK !== undefined) setRelK(rel.relK);
+          if (rel.relResp !== undefined) setRelResp(rel.relResp);
+          if (rel.sumVariances !== undefined) setSumVariances(rel.sumVariances);
+          if (rel.totVariance !== undefined) setTotVariance(rel.totVariance);
+          if (rel.sumSuccessProd !== undefined) setSumSuccessProd(rel.sumSuccessProd);
+          if (rel.relMatrix) setRelMatrix(rel.relMatrix);
+          if (rel.isReliabilityIntegrated !== undefined) setIsReliabilityIntegrated(rel.isReliabilityIntegrated);
+        }
+
+        triggerAlert(
+          i18n.language === "id" ? "Cadangan berhasil dipulihkan! Pastikan untuk menyimpan progres Anda." : "Backup restored successfully! Make sure to save your progress.",
+          t("common.notification"),
+          "success"
+        );
+      } catch (err: any) {
+        triggerAlert(err.message || "Failed to parse backup file", t("common.notification"), "error");
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input value
+    e.target.value = "";
   };
 
   // Dynamic Markdown compiler
@@ -3835,6 +3933,32 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                         </div>
                       )}
 
+                      {/* Error Warning Box */}
+                      {relResult === null && relStatusKey !== "" && relStatusKey.startsWith("error_") && (
+                        <div style={{
+                          marginTop: "1.25rem",
+                          padding: "1rem",
+                          background: "rgba(239, 68, 68, 0.06)",
+                          border: "1px solid rgba(239, 68, 68, 0.25)",
+                          borderRadius: "10px",
+                          color: "#f87171",
+                          fontSize: "0.82rem",
+                          fontWeight: 500,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem"
+                        }} className="animate-fade-in">
+                          <span style={{ fontSize: "1rem" }}>⚠️</span>
+                          <span>
+                            {relStatusKey === "error_variance" 
+                              ? (i18n.language === "id" ? "Kesalahan Perhitungan: Varians total bernilai nol. Responden memberikan skor yang identik pada semua item." : "Calculation Error: Total score variance is zero. Respondents gave identical scores across all items.") 
+                              : relStatusKey === "error_insufficient"
+                              ? (i18n.language === "id" ? "Data Tidak Cukup: Diperlukan minimal 2 butir pertanyaan dan 2 responden untuk pengujian." : "Insufficient Data: A minimum of 2 items and 2 respondents are required for evaluation.")
+                              : (i18n.language === "id" ? "Terjadi kesalahan dalam pengolahan data." : "An error occurred during data processing.")}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Result Display Box */}
                       {relResult !== null && (
                         <div style={{
@@ -3938,6 +4062,104 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     <IconCopy size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                     {t("preview.copy")}
                   </button>
+                </div>
+
+                {/* Local JSON Offline Backup & Restore Section */}
+                <div style={{
+                  marginTop: "2.5rem",
+                  paddingTop: "2rem",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+                  textAlign: "center"
+                }}>
+                  <h4 style={{
+                    fontSize: "0.85rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "rgba(255, 255, 255, 0.5)",
+                    marginBottom: "1rem"
+                  }}>
+                    {i18n.language === "id" ? "Penyimpanan Offline & Cadangan Klien" : "Offline Storage & Client Backup"}
+                  </h4>
+                  <p style={{
+                    fontSize: "0.8rem",
+                    color: "rgba(255,255,255,0.4)",
+                    maxWidth: "400px",
+                    margin: "0 auto 1.5rem auto",
+                    lineHeight: "1.4"
+                  }}>
+                    {i18n.language === "id"
+                      ? "Cadangkan seluruh data instrumen, variabel, dan matriks reliabilitas Anda ke dalam file JSON lokal secara aman untuk dipulihkan kapan saja."
+                      : "Backup all your instrument variables, parameters, and psychometric matrices locally into a JSON file to restore them at any time."}
+                  </p>
+
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1rem",
+                    flexWrap: "wrap"
+                  }}>
+                    <button
+                      onClick={handleExportBackupJson}
+                      className="btn btn-outline"
+                      style={{
+                        padding: "0.6rem 1.2rem",
+                        fontSize: "0.82rem",
+                        background: "rgba(167, 139, 250, 0.05)",
+                        borderColor: "rgba(167, 139, 250, 0.25)",
+                        color: "#c084fc",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                        e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.4)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(167, 139, 250, 0.05)";
+                        e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                      }}
+                    >
+                      📤 {i18n.language === "id" ? "Cadangkan Progres (JSON)" : "Backup Workspace (JSON)"}
+                    </button>
+
+                    <label
+                      className="btn btn-outline"
+                      style={{
+                        padding: "0.6rem 1.2rem",
+                        fontSize: "0.82rem",
+                        background: "rgba(34, 211, 238, 0.05)",
+                        borderColor: "rgba(34, 211, 238, 0.25)",
+                        color: "#22d3ee",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(34, 211, 238, 0.12)";
+                        e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.4)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(34, 211, 238, 0.05)";
+                        e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.25)";
+                      }}
+                    >
+                      📥 {i18n.language === "id" ? "Pulihkan Cadangan" : "Restore Backup"}
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportBackupJson}
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
             )}
