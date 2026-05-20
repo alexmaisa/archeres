@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/UI-Premium-a855f7" alt="UI-Premium">
-  <img src="https://img.shields.io/badge/version-v0.9.8--beta-f97316" alt="Version">
+  <img src="https://img.shields.io/badge/version-v0.9.9--beta-f97316" alt="Version">
   <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-ef4444" alt="License">
   <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
   <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">
@@ -20,11 +20,12 @@
 
 ## 🏛️ Core Pillars & Capabilities
 
-1. **Validated Mathematical Estimators**: High-precision, peer-reviewed sample size calculations powered by a high-speed Go backend. Instantly calculate sample sizes using **Slovin**, **Lemeshow**, **Cochran**, and **Yamane** formulas with strict float precision and ceiling rounding assertions.
-2. **Stevens' Scale Variable Operationalization**: Operationalize variables into Nominal, Ordinal, Interval, or Ratio measurement scales. Systematically map conceptual indicators to unlock context-aware statistical analysis advice and recommendations.
-3. **Scholarly Pedagogy Module**: Learn as you build. Interactive Stevens' scale guides, Stevens' taxonomy definitions, and formula derivations are seamlessly integrated into every step of the research workspace.
-4. **Structured Chapter III Compiler**: Instantly generate structured Chapter 3 methodology markdown files dynamically formatted in academic Bahasa Indonesia and English concurrently.
-5. **Privacy-First Anti-Spam Captcha**: Integrated zero-dependency, self-hosted cryptographic SVG math captcha during registration. Challenge calculations are conducted securely on the backend, generating distorted, highly randomized vector lines and noise clusters that block robotic spam sign-ups while maintaining perfect privacy (no cookies or external tracking).
+1. **Validated Mathematical Estimators & Sensitivity Curve**: High-precision, peer-reviewed sample size calculations powered by a Go backend. Instantly calculate sample sizes using **Slovin**, **Lemeshow**, **Cochran**, **Yamane**, **Daniel**, **Isaac & Michael**, **Arikunto**, **Gay & Diehl**, and **Kish Leslie** formulas, with a dynamic neon **SVG Sensitivity Curve Visualizer** mapping margin of error $e$ to sample size $n$.
+2. **Stevens' Scale Variable Operationalization & Advisor**: Operationalize variables into Nominal, Ordinal, Interval, or Ratio scales, and map indicators to unlock the **Smart Statistical Decision Tree Recommender** which generates copy-pasteable script templates in **Python (SciPy)** and **Go**.
+3. **🔒 E2EE Psychometric Reliability Planner**: A zero-knowledge client-side module to calculate pre-test pilot reliability. Evaluates internal consistency using **Cronbach's Alpha** (for continuous Likert scales) and **Kuder-Richardson 20 / KR-20** (for binary/dichotomous choices) calculated 100% locally in client-side RAM-only state under the **Nunnally Standard (1978)**.
+4. **Scholarly Pedagogy Module**: Learn as you build. Interactive Stevens' scale guides, Stevens' taxonomy definitions, and formula derivations are seamlessly integrated into every step of the research workspace.
+5. **Structured Chapter III Compiler**: Instantly generate structured Chapter 3 methodology markdown files dynamically formatted in academic Bahasa Indonesia and English concurrently, featuring the new **Section 3.5 (Instrument Validity & Reliability)** outlining pilot respondent profiles and calculated coefficients.
+6. **Privacy-First Anti-Spam Captcha**: Integrated zero-dependency, self-hosted cryptographic SVG math captcha during registration. Challenge calculations are conducted securely on the backend, generating distorted, highly randomized vector lines and noise clusters that block robotic spam sign-ups while maintaining perfect privacy (no cookies or external tracking).
 
 ---
 
@@ -57,6 +58,8 @@ graph TD
    * When administrators view audit logs or dashboard lookups, names are automatically masked as **"Encrypted User (E2EE)"** or **"Pengguna Terenkripsi (E2EE)"** based on the chosen language.
 5. **Research Design E2EE**:
    * Project titles, variable definitions, sample formulas, parameters, and compiled drafts are encrypted locally using the MEK prior to API transmission. The database stores strictly ciphertext.
+6. **Local Psychometric Data Policy**:
+   * Raw response matrices for Cronbach's Alpha and KR-20 calculations are strictly kept in transient browser memory (RAM-only React state) and are never transmitted to backend servers or APIs, protecting researcher and respondent data.
 
 ---
 
