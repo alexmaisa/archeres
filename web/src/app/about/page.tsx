@@ -139,18 +139,18 @@ export default function AboutPage() {
       howItWorksSteps: [
         {
           number: "01",
-          title: "Math Estimators Engine",
-          desc: "Calculate precise sample sizes using established formulas (Slovin, Cochran, Lemeshow, Yamane, Daniel) with strict float precision ceiling rounding."
+          title: "Math Estimators & Sensitivity",
+          desc: "Calculate precise sample sizes using established formulas (Slovin, Cochran, Lemeshow, Yamane, Daniel) with strict float precision ceiling rounding, and visualize them using a dynamic Neon SVG Sensitivity Curve."
         },
         {
           number: "02",
-          title: "Operational Variables",
-          desc: "Define your study's conceptual variables into Stevens' taxonomy scale levels (Nominal, Ordinal, Interval, Ratio) to receive smart statistical test advice."
+          title: "Variables, Advisor & Reliability",
+          desc: "Map your variables to Stevens' scales to receive statistical test advice with generated Python/Go scripts. Evaluate pre-test pilot reliability (Cronbach's Alpha / KR-20) locally in a 100% client-side, E2EE-secured matrix."
         },
         {
           number: "03",
-          title: "Structured Draft Compilation",
-          desc: "Convert your operational variables and sample calculations into a clean, peer-reviewed standard Chapter III methodology draft in Indonesian and English."
+          title: "Chapter III Thesis Draft",
+          desc: "Convert your calculations, variable tables, statistical justifications, and Nunnally psychometric reliability metrics into a peer-reviewed standard Chapter III methodology chapter."
         }
       ],
       featuresTitle: "Core Platform Pillars",
@@ -177,7 +177,7 @@ export default function AboutPage() {
         }
       ],
       mathSectionTitle: "Mathematical Estimator Equations",
-      mathSectionDesc: "Archeres performs real-time sampling size estimations using rigorous math models verified by senior academic examiners.",
+      mathSectionDesc: "Archeres performs real-time sampling size estimations and instrument reliability calculations using rigorous math models verified by senior academic examiners.",
       mathLegendTitle: "Symbols Legend",
       mathFormulas: [
         { 
@@ -220,7 +220,6 @@ export default function AboutPage() {
           ],
           note: "Note: Mathematically identical to Daniel's and Cochran's formulas for unknown populations. However, Lemeshow's formula is specifically favored in World Health Organization (WHO) protocols and epidemiological studies. In Archeres, Lemeshow is paired with the Finite Population Correction (FPC) when the population size is known."
         },
-
         { 
           id: "yamane", 
           name: "Yamane Formula", 
@@ -296,8 +295,36 @@ export default function AboutPage() {
             { char: "p", meaning: "Estimated proportion (default 0.5)" },
             { char: "e", meaning: "Margin of error" }
           ]
+        },
+        {
+          id: "cronbach_alpha",
+          name: "Cronbach's Alpha",
+          useCase: "A psychometric coefficient used to evaluate the internal consistency or reliability of a Likert-scale questionnaire (continuous rating scale). Helps verify if a set of items consistently measures the same construct.",
+          context: "Used during pilot instrument pre-tests with 5-point, 7-point, or multi-value interval response options.",
+          reference: "Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika, 16(3), 297-334.",
+          symbols: [
+            { char: "α", meaning: "Cronbach's Alpha coefficient of reliability" },
+            { char: "k", meaning: "Number of test/questionnaire items" },
+            { char: "s_i^2", meaning: "Variance of individual item i" },
+            { char: "s_t^2", meaning: "Total variance of sum scores across respondents" }
+          ],
+          note: "Note: Reliability values range from 0 to 1. Values >= 0.70 are generally accepted as reliable in social research (Nunnally, 1978). In Archeres, it is computed entirely client-side using zero-knowledge E2EE parameters."
+        },
+        {
+          id: "kr20",
+          name: "Kuder-Richardson 20 (KR-20)",
+          useCase: "A specialized psychometric formula used to assess the internal consistency reliability of tests with dichotomous or binary response choices (e.g., Yes/No, Correct/Incorrect, 1/0).",
+          context: "Used in educational diagnostic exams or binary-choice surveys to measure overall instrument reliability.",
+          reference: "Kuder, G. F., & Richardson, M. W. (1937). The theory of the estimation of test reliability. Psychometrika, 2(3), 151-160.",
+          symbols: [
+            { char: "KR-20", meaning: "Kuder-Richardson formula 20 coefficient" },
+            { char: "k", meaning: "Number of binary test items" },
+            { char: "p_i", meaning: "Proportion of correct responses to item i" },
+            { char: "q_i", meaning: "Proportion of incorrect responses to item i (1 - p_i)" },
+            { char: "s_t^2", meaning: "Total variance of observed test scores across respondents" }
+          ],
+          note: "Note: KR-20 is mathematically equivalent to Cronbach's Alpha when items are scored dichotomously (0 or 1), but is optimized specifically for binary-choice evaluations."
         }
-
       ],
       scaleSectionTitle: "Stevens' Measurement Scales & Statistical Advice",
       scaleSectionDesc: "Understanding the properties of Stevens' measurement scales helps you choose between parametric and non-parametric statistical tests.",
@@ -361,7 +388,8 @@ export default function AboutPage() {
         { title: "Part A: Research Philosophy", desc: "Outlines the scientific paradigm, approach (quantitative/qualitative), and standard design rationale." },
         { title: "Part B: Variables Operationalization Matrix", desc: "A comprehensive table linking variables, conceptual definitions, operational indicators, and Stevens scales." },
         { title: "Part C: Population & Sampling Protocol", desc: "Documents the exact mathematical formula choice, variable parameters, and ceiling rounding justifications." },
-        { title: "Part D: Statistical Hypothesis Strategy", desc: "Outlines the specific parametric or non-parametric test schedules chosen to verify the study's claims." }
+        { title: "Part D: Statistical Hypothesis Strategy", desc: "Outlines the specific parametric or non-parametric test schedules chosen to verify the study's claims." },
+        { title: "Part E: Instrument Validity & Reliability (Section 3.5)", desc: "Outlines pilot respondent size, item count, computed coefficient (Alpha/KR-20), and Nunnally standard reliability threshold." }
       ],
       stackTitle: "Our Technology Stack",
       stackDesc: "Archeres is engineered with high-speed, lightweight components: Next.js App Router for dynamic glassmorphic rendering, Go Fiber for high-performance concurrent REST APIs, and SQLite with GORM for robust, isolated telemetry databases.",
@@ -376,18 +404,18 @@ export default function AboutPage() {
       howItWorksSteps: [
         {
           number: "01",
-          title: "Estimasi Ukuran Sampel yang Valid",
-          desc: "Menentukan ukuran sampel minimal secara presisi menggunakan kalkulasi rumus ilmiah populer seperti Slovin, Lemeshow, Cochran, Yamane, dan Daniel dengan pembulatan ke atas secara otomatis."
+          title: "Kalkulator Sampel & Sensitivitas",
+          desc: "Menentukan ukuran sampel minimal secara presisi menggunakan kalkulasi rumus ilmiah populer (Slovin, Lemeshow, Cochran, Yamane, Daniel) dengan pembulatan ke atas otomatis, dan visualisasikan lewat neon Kurva Sensitivitas SVG."
         },
         {
           number: "02",
-          title: "Operasionalisasi Variabel Penelitian",
-          desc: "Memetakan variabel penelitian Anda ke dalam skala pengukuran Stevens (Nominal, Ordinal, Interval, atau Rasio) untuk mendapatkan rekomendasi uji statistik yang sesuai dengan konteks riset."
+          title: "Variabel, Advisor & Reliabilitas",
+          desc: "Petakan variabel penelitian Anda ke skala Stevens untuk mendapatkan rekomendasi uji statistik berupa kode Python/Go. Uji coba instrumen (pilot pre-test) dengan estimasi reliabilitas (Cronbach's Alpha / KR-20) 100% lokal E2EE."
         },
         {
           number: "03",
-          title: "Penyusunan Draf Metodologi Penelitian",
-          desc: "Mengompilasi hasil kalkulasi sampel dan operasionalisasi variabel menjadi draf bab metodologi penelitian (BAB III) berstandar akademik dalam Bahasa Indonesia dan Inggris secara simultan."
+          title: "Kompilasi Bab III Metodologi",
+          desc: "Mengompilasi kalkulasi sampel, tabel operasionalisasi variabel, pembenaran uji statistik, dan pengujian keandalan instrumen Nunnally menjadi draf Bab III berstandar akademik."
         }
       ],
       featuresTitle: "Pilar Utama Keunggulan Platform",
@@ -413,8 +441,8 @@ export default function AboutPage() {
           desc: "Belajar secara aktif saat merancang draf penelitian. Pahami konsep dasar skala pengukuran Stevens, kegunaan setiap rumus sampel, serta konteks akademisnya langsung pada alur kerja Anda."
         }
       ],
-      mathSectionTitle: "Formulasi Matematika Ukuran Sampel",
-      mathSectionDesc: "Archeres melakukan estimasi ukuran sampel secara real-time menggunakan model matematika rigor yang teruji di hadapan penguji akademik.",
+      mathSectionTitle: "Formulasi Matematika Ukuran Sampel & Reliabilitas",
+      mathSectionDesc: "Archeres melakukan estimasi ukuran sampel dan perhitungan reliabilitas instrumen secara real-time menggunakan model matematika akademis teruji.",
       mathLegendTitle: "Legenda Simbol",
       mathFormulas: [
         { 
@@ -457,7 +485,6 @@ export default function AboutPage() {
           ],
           note: "Catatan: Secara matematis identik dengan Rumus Daniel dan Cochran untuk populasi tidak diketahui. Namun, nama Lemeshow disukai dalam protokol Organisasi Kesehatan Dunia (WHO) dan riset epidemiologi. Di Archeres, Lemeshow dipadukan dengan Koreksi Populasi Terbatas (FPC) jika ukuran populasi diketahui."
         },
-
         { 
           id: "yamane", 
           name: "Rumus Yamane", 
@@ -533,8 +560,36 @@ export default function AboutPage() {
             { char: "p", meaning: "Estimasi proporsi (default 0,5)" },
             { char: "e", meaning: "Margin toleransi kesalahan" }
           ]
+        },
+        {
+          id: "cronbach_alpha",
+          name: "Cronbach's Alpha",
+          useCase: "Koefisien psikometrik yang digunakan untuk mengevaluasi konsistensi internal atau reliabilitas kuesioner skala Likert (skala pengukuran kontinu). Membantu memverifikasi apakah sekumpulan butir pertanyaan secara konsisten mengukur konstruk yang sama.",
+          context: "Digunakan selama uji coba instrumen (pilot pre-test) dengan pilihan jawaban rentang nilai/kontinu (misal skala 1-5 atau 1-7).",
+          reference: "Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika, 16(3), 297-334.",
+          symbols: [
+            { char: "α", meaning: "Koefisien reliabilitas Cronbach's Alpha" },
+            { char: "k", meaning: "Jumlah butir pertanyaan/pernyataan instrumen" },
+            { char: "s_i^2", meaning: "Varians skor butir ke-i" },
+            { char: "s_t^2", meaning: "Varians total dari jumlah skor seluruh responden" }
+          ],
+          note: "Catatan: Nilai reliabilitas berkisar antara 0 hingga 1. Nilai >= 0,70 umumnya diterima sebagai instrumen yang reliabel dalam penelitian sosial (Nunnally, 1978). Di Archeres, komputasi ini dieksekusi 100% di browser tanpa menyentuh server (Zero-Knowledge)."
+        },
+        {
+          id: "kr20",
+          name: "Kuder-Richardson 20 (KR-20)",
+          useCase: "Rumus psikometrik khusus yang digunakan untuk menguji konsistensi internal reliabilitas instrumen dengan pilihan jawaban dikotomis atau biner (seperti Ya/Tidak, Benar/Salah, 1/0).",
+          context: "Digunakan dalam ujian diagnostik pendidikan atau survei biner untuk mengukur keandalan instrumen tes.",
+          reference: "Kuder, G. F., & Richardson, M. W. (1937). The theory of the estimation of test reliability. Psychometrika, 2(3), 151-160.",
+          symbols: [
+            { char: "KR-20", meaning: "Koefisien reliabilitas formula Kuder-Richardson 20" },
+            { char: "k", meaning: "Jumlah butir pertanyaan biner instrumen" },
+            { char: "p_i", meaning: "Proporsi jawaban benar untuk butir ke-i" },
+            { char: "q_i", meaning: "Proporsi jawaban salah untuk butir ke-i (1 - p_i)" },
+            { char: "s_t^2", meaning: "Varians total dari jumlah skor tes seluruh responden" }
+          ],
+          note: "Catatan: Rumus KR-20 secara matematis setara dengan Cronbach's Alpha ketika butir pertanyaan dinilai secara dikotomis (0 atau 1), tetapi dioptimalkan secara khusus untuk evaluasi biner."
         }
-
       ],
       scaleSectionTitle: "Skala Pengukuran Stevens & Arahan Uji Statistik",
       scaleSectionDesc: "Memahami karakteristik masing-masing skala pengukuran Stevens membantu Anda memilih antara uji statistik parametris dan non-parametris secara tepat.",
@@ -598,7 +653,8 @@ export default function AboutPage() {
         { title: "Bagian A: Pendekatan & Desain Penelitian", desc: "Menguraikan paradigma keilmuan yang dipilih (kuantitatif/kualitatif) serta alasan ilmiah di balik desain studi." },
         { title: "Bagian B: Matriks Operasionalisasi Variabel", desc: "Tabel komprehensif yang menghubungkan variabel, definisi konseptual, indikator operasional, dan skala pengukuran Stevens." },
         { title: "Bagian C: Protokol Populasi & Perhitungan Sampel", desc: "Mendokumentasikan alasan pemilihan rumus sampel, parameter yang diinput, serta argumen matematis pembulatan ke atas." },
-        { title: "Bagian D: Rencana Pengujian Hipotesis Statistik", desc: "Menyusun jadwal pengujian hipotesis (parametris/non-parametris) untuk menjawab seluruh rumusan masalah penelitian." }
+        { title: "Bagian D: Rencana Pengujian Hipotesis Statistik", desc: "Menyusun jadwal pengujian hipotesis (parametris/non-parametris) untuk menjawab seluruh rumusan masalah penelitian." },
+        { title: "Bagian E: Validitas & Reliabilitas Instrumen (Pasal 3.5)", desc: "Menguraikan ukuran sampel pilot uji coba, jumlah butir pertanyaan, koefisien keandalan terpilih (Alpha/KR-20), serta ambang batas keandalan Nunnally." }
       ],
       stackTitle: "Fondasi Teknologi Berkinerja Tinggi",
       stackDesc: "Archeres dirancang menggunakan arsitektur modern berkecepatan tinggi: Next.js App Router untuk antarmuka glassmorphic yang responsif, Go Fiber untuk kinerja konkurensi API backend yang efisien, serta basis data SQLite terisolasi via GORM untuk keandalan penyimpanan telemetri secara lokal.",
@@ -713,6 +769,38 @@ export default function AboutPage() {
               <span style={styles.numerator}>Z<sup>2</sup> &bull; p &bull; q</span>
               <span style={styles.denominator}>e<sup>2</sup></span>
             </div>
+          </div>
+        );
+      case "cronbach_alpha":
+        return (
+          <div style={styles.mathExpr}>
+            <span>&alpha; = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>k</span>
+              <span style={styles.denominator}>k - 1</span>
+            </div>
+            <span>&bull; [ 1 - </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>&sum; s<sub>i</sub><sup>2</sup></span>
+              <span style={styles.denominator}>s<sub>t</sub><sup>2</sup></span>
+            </div>
+            <span> ]</span>
+          </div>
+        );
+      case "kr20":
+        return (
+          <div style={styles.mathExpr}>
+            <span>KR<sub>20</sub> = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>k</span>
+              <span style={styles.denominator}>k - 1</span>
+            </div>
+            <span>&bull; [ 1 - </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>&sum; p<sub>i</sub>q<sub>i</sub></span>
+              <span style={styles.denominator}>s<sub>t</sub><sup>2</sup></span>
+            </div>
+            <span> ]</span>
           </div>
         );
       default:
