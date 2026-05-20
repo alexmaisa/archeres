@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { apiFetch } from "../../api";
-import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook, IconFileText, IconMerge, IconLightbulb, IconTrendingDown, IconLink, IconRuler, IconUsers, IconRefresh, IconFolder, IconMenu, IconX } from "../../components/Icons";
+import { IconHelix, IconMath, IconChart, IconFileDown, IconPlus, IconSave, IconCopy, IconWrench, IconBook, IconFileText, IconMerge, IconLightbulb, IconTrendingDown, IconLink, IconRuler, IconUsers, IconRefresh, IconFolder, IconMenu, IconX, IconShield } from "../../components/Icons";
 import { User } from "../../types";
 import { encryptText, decryptText } from "../../lib/crypto";
 import { getMEK, clearMEK } from "../../lib/session";
@@ -2069,6 +2069,256 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? "Sebelum melakukan pengujian regresi di program SPSS atau R, pastikan data Anda dibersihkan dari outlier ekstrem (pencilan) guna menghindari bias pada koefisien regresi Anda."
             : "Before executing statistical software computations (e.g., SPSS, R, or SmartPLS), scan and clean your data of extreme outliers to prevent regression coefficient bias."
         };
+      case "quant_sensitivity":
+        return {
+          title: isId ? "Kurva Sensitivitas & Kekuatan Sampel" : "Sensitivity & Statistical Power Curve",
+          badge: isId ? "Kekuatan Sampel" : "Sample Power",
+          definition: isId
+            ? "Uji sensitivitas sampel berbasis kurva kontinu memetakan hubungan berbanding terbalik antara Margin of Error (e) dan ukuran sampel minimum (n). Berdasarkan kaidah statistik inferensial (Cohen, 1988), visualisasi ini membantu peneliti menentukan titik kompromi optimal (trade-off) antara presisi pengukuran dan efisiensi biaya/waktu pengumpulan data lapangan."
+            : "Continuous sampling sensitivity modeling maps the inverse non-linear relationship between the Margin of Error (e) and the minimum required sample size (n). Rooted in inferential power principles (Cohen, 1988), this visual curve guides researchers to pinpoint the optimal trade-off between statistical precision and operational fieldwork efficiency.",
+          characteristics: isId
+            ? [
+                "Hubungan Non-Linear: Semakin kecil margin kesalahan (misal mendekati 1%), ukuran sampel akan meningkat secara eksponensial.",
+                "Visualisasi Dinamis: Membantu mendeteksi sensitivitas perubahan nilai sampel ketika batas presisi diubah.",
+                "Derajat Kepercayaan: Diplot secara konsisten pada tingkat kepercayaan (Confidence Level) yang ditentukan (misal 95% atau 99%).",
+                "Akurasi Keputusan: Mencegah terjadinya riset yang 'underpowered' (kekurangan sampel untuk mendeteksi efek riil) atau 'overpowered' (pemborosan sumber daya)."
+              ]
+            : [
+                "Non-Linear Curve: As the margin of error approaches zero (e.g., 1%), the required sample size grows exponentially.",
+                "Dynamic Visualization: Enables real-time assessment of sample size variance relative to fine adjustments in error limits.",
+                "Confidence Constraints: Plotted consistently against the study's designated Confidence Level (typically 95% or 99%).",
+                "Fieldwork Decision-making: Prevents underpowered studies (failing to detect real effects) and overpowered studies (waste of resources)."
+              ],
+          examples: [],
+          tips: isId
+            ? "Perhatikan lengkungan kurva (elbow point). Titik di mana kurva mulai mendatar sering kali menunjukkan titik optimal di mana penambahan ukuran sampel tidak lagi memberikan peningkatan presisi yang signifikan."
+            : "Identify the 'elbow' or inflection point of the curve. This inflection typically signifies the optimal balance where increasing the sample size yields diminishing returns in statistical precision."
+        };
+      case "quant_reliability":
+        return {
+          title: isId ? "Zero-Knowledge Reliability Planner (E2EE)" : "Zero-Knowledge Reliability Planner (E2EE)",
+          badge: isId ? "Keandalan Instrumen" : "Instrument Reliability",
+          definition: isId
+            ? "Merupakan modul perencana keandalan skala kuesioner yang dijalankan dengan standar privasi mutlak (Zero-Knowledge & E2EE). Sistem mengevaluasi konsistensi internal kuesioner pilot secara lokal di dalam memori browser (RAM React) tanpa mengirimkan matriks jawaban mentah responden ke database server."
+            : "A premium scale-consistency planning module operating under strict zero-knowledge privacy constraints. The system evaluates instrument reliability metrics locally within browser memory (React state), ensuring no raw participant responses or survey matrices are transmitted to external databases.",
+          characteristics: isId
+            ? [
+                "Cronbach's Alpha: Mengukur konsistensi internal kuesioner berskala kontinu/Likert berdasarkan rasio varians item terhadap varians total.",
+                "Kuder-Richardson 20 (KR-20): Menilai reliabilitas instrumen dengan jawaban dikotomi (Benar/Salah, Ya/Tidak, 1/0).",
+                "Nunnally Standard (1978): Menggunakan ambang batas reliabilitas akademis standar α ≥ 0.70 untuk menyatakan instrumen reliabel.",
+                "Isolasi Data Klien: Seluruh perhitungan matriks kovarians dilakukan di sisi klien demi privasi data responden."
+              ]
+            : [
+                "Cronbach's Alpha: Measures internal consistency for continuous/Likert scales using the ratio of item covariance to overall scale variance.",
+                "Kuder-Richardson 20 (KR-20): Specifically gauges scale reliability for dichotomous test variables (Right/Wrong, Yes/No, 1/0).",
+                "Nunnally Standard (1978): Leverages the classical threshold of α ≥ 0.70 as the absolute baseline to establish scale reliability.",
+                "Client-Side Isolation: Covariance matrix computations are executed strictly in memory to honor respondent data privacy."
+              ],
+          examples: [],
+          tips: isId
+            ? "Jika nilai keandalan di bawah 0.70, periksalah varians tiap butir soal. Hapuslah pertanyaan yang memiliki varians mendekati nol atau yang tidak berkorelasi dengan total skor instrumen."
+            : "If reliability falls below 0.70, inspect item-total correlations. Deleting low-variance questions or poorly correlated questions often improves overall scale reliability."
+        };
+      case "quant_code_generator":
+        return {
+          title: isId ? "Pohon Keputusan & Generator Kode Statistik" : "Decision Tree & Statistical Code Generator",
+          badge: isId ? "Otomatisasi Analisis" : "Analysis Automation",
+          definition: isId
+            ? "Modul asisten otomatis yang memetakan variabel penelitian Anda ke dalam rumpun uji statistik yang valid berdasarkan taksonomi skala Stevens. Selain merekomendasikan metode (seperti Regresi Berganda, ANOVA, t-test, Mann-Whitney), sistem menghasilkan kode pemrograman analisis siap pakai."
+            : "An automated methodology assistant that routes your research variables to mathematically valid statistical tests based on Stevens' taxonomy. Besides prescribing appropriate methods (e.g., Regression, ANOVA, t-tests, Wilcoxon), it generates direct, copy-pasteable data analysis scripts.",
+          characteristics: isId
+            ? [
+                "Stevens' Scale-to-Test Routing: Menghubungkan secara otomatis skala nominal/ordinal ke uji non-parametrik, dan skala interval/rasio ke uji parametrik.",
+                "Justifikasi Rationale Akademis: Menyediakan landasan ilmiah yang valid mengapa metode tersebut dipilih untuk dicantumkan dalam Bab III.",
+                "Generator Kode R/Python: Menghasilkan skrip kode analisis statistik Python (SciPy/Statsmodels) dan bahasa pemrograman Go untuk eksekusi langsung.",
+                "Pencegahan Kesalahan Logika: Memastikan peneliti tidak salah memilih uji hipotesis yang tidak sesuai dengan jenis data lapangan."
+              ]
+            : [
+                "Stevens' Scale-to-Test Routing: Automatically maps nominal/ordinal scales to non-parametric tests, and interval/ratio scales to parametric tests.",
+                "Scholarly Justification: Supplies the methodological rationales explaining why the selected test fits the variable structure.",
+                "Interactive Code Snippets: Generates functional, clean scripts in Python (SciPy/Statsmodels) and Go for immediate empirical verification.",
+                "Methodological Safety: Prevents common academic errors, such as running parametric regressions on purely nominal categorical data."
+              ],
+          examples: [],
+          tips: isId
+            ? "Gunakan tab generator kode di Step 3 untuk menyalin skrip analisis. Anda dapat menjalankannya di Jupyter Notebook atau Google Colab untuk memvalidasi data lapangan secara instan."
+            : "Copy the generated scripts from Step 3 and run them in Jupyter Notebooks or Google Colab to validate your pilot study data instantly."
+        };
+      case "qual_focus":
+        return {
+          title: isId ? "Fokus Kajian & Kategori Informan" : "Focus of Inquiry & Informant Categories",
+          badge: isId ? "Struktur Kualitatif" : "Qualitative Structure",
+          definition: isId
+            ? "Dalam paradigma kualitatif, variabel operasional kuantitatif digantikan oleh tema sentral dan sub-tema penelitian (Fokus Kajian) yang bersifat adaptif. Informan dipilih secara purposif dan dikelompokkan ke dalam kategori fungsional (Kunci, Utama, Pendukung) guna menggali wawasan sosial sedalam mungkin."
+            : "In qualitative studies, rigid numerical variables are replaced with adaptive conceptual themes (Focus of Inquiry). Informants are intentionally selected and categorized into functional roles (Key, Primary, Supporting) to maximize the depth of the gathered social insights.",
+          characteristics: isId
+            ? [
+                "Informan Kunci (Key Informant): Tokoh dengan wawasan luas atau otoritas khusus yang menjadi pintu masuk lapangan (contoh: Kepala Suku, Direktur).",
+                "Informan Utama (Primary Informant): Aktor utama yang mengalami fenomena yang dikaji secara langsung (contoh: Guru, Pasien Bencana).",
+                "Informan Pendukung (Supporting Informant): Pihak luar yang memberikan informasi tambahan untuk validasi silang temuan riset.",
+                "Tema Penelitian Elastis: Kategori fokus kajian dapat berkembang seiring dengan temuan baru di lapangan (karakteristik riset kualitatif)."
+              ]
+            : [
+                "Key Informants: Gatekeepers or authorities with comprehensive systemic knowledge (e.g., Tribal Chief, Managing Director).",
+                "Primary Informants: Actors experiencing the central social phenomenon directly (e.g., Classroom Teachers, Disaster Survivors).",
+                "Supporting Informants: Secondary figures providing context or verification to cross-check information.",
+                "Emergent Themes: Conceptual focus categories are semi-structured and can adapt dynamically as new field insights emerge."
+              ],
+          examples: [],
+          tips: isId
+            ? "Petakan kriteria inklusi dan eksklusi informan secara mendetail di Bab III untuk menunjukkan akurasi pemilihan subjek riset Anda."
+            : "Document your informant inclusion and exclusion criteria meticulously in Chapter 3 to demonstrate the precision of your subject selection."
+        };
+      case "qual_analysis":
+        return {
+          title: isId ? "Rencana Analisis Data Kualitatif" : "Qualitative Data Analysis Plan",
+          badge: isId ? "Analisis Kualitatif" : "Qualitative Analysis",
+          definition: isId
+            ? "Merupakan sistematika pengolahan data non-numerik yang diperoleh dari transkrip wawancara, catatan lapangan, dan dokumentasi. Studi kualitatif Archeres mengadopsi model analisis data interaktif klasik Miles & Huberman (Kondensasi Data, Penyajian Data, serta Penarikan Kesimpulan)."
+            : "A systematic pipeline to process non-numerical data collected from interview transcripts, field notes, and documents. Archeres adopts the classic interactive framework of Miles & Huberman (Data Condensation, Data Display, and Conclusion Drawing).",
+          characteristics: isId
+            ? [
+                "Kondensasi Data: Proses memilih, menyederhanakan, mengabstraksi, dan mentransformasikan transkrip wawancara mentah menjadi kode ringkas.",
+                "Penyajian Data (Data Display): Menyusun matriks data, diagram jaringan, atau bagan kategori bertema guna memahami pola temuan secara visual.",
+                "Penarikan Kesimpulan & Verifikasi: Menilai makna data sejak awal riset, menguji kecocokan pola, dan merumuskan kesimpulan teoretis yang kredibel.",
+                "Analisis Tematik: Mengelompokkan kode-kode serupa menjadi unit tema konseptual yang menjawab pertanyaan penelitian secara mendalam."
+              ]
+            : [
+                "Data Condensation: Selecting, focusing, simplifying, abstracting, and transforming raw notes and transcripts into precise codes.",
+                "Data Display: Organizing data into thematic matrices, network diagrams, or conceptual maps to visually trace patterns.",
+                "Conclusion Drawing & Verification: Tracing meanings, testing patterns for alignment, and formulating robust conceptual summaries.",
+                "Thematic Analysis: Grouping similar codes into cohesive conceptual categories to answer the research questions comprehensively."
+              ],
+          examples: [],
+          tips: isId
+            ? "Sebutkan perangkat lunak CAQDAS (seperti NVivo, ATLAS.ti, atau Dedoose) jika Anda menggunakannya untuk mempercepat proses pengkodean transkrip di Bab III."
+            : "Mention if you plan to employ CAQDAS software (e.g., NVivo, ATLAS.ti, or Dedoose) to assist with transcript coding and coding audit trials."
+        };
+      case "qual_trustworthiness":
+        return {
+          title: isId ? "Keabsahan Data Kualitatif (Trustworthiness)" : "Trustworthiness of Qualitative Data",
+          badge: isId ? "Rigoritas Kualitatif" : "Qualitative Rigor",
+          definition: isId
+            ? "Dalam penelitian kualitatif, validitas ilmiah dinilai menggunakan kriteria Keabsahan Data (Trustworthiness) yang dirumuskan oleh Lincoln & Guba (1985). Kriteria ini menguji kejujuran akademis riset melalui empat pilar utama: Kredibilitas, Transferabilitas, Dependabilitas, dan Konfirmabilitas."
+            : "In qualitative inquiry, scientific validity is established through the criteria of Trustworthiness formulated by Lincoln & Guba (1985). It replaces quantitative concepts of validity/reliability with four rigorous pillars: Credibility, Transferability, Dependability, and Confirmability.",
+          characteristics: isId
+            ? [
+                "Kredibilitas (Credibility / Internal Validity): Menjamin bahwa hasil konstruksi pemikiran informan cocok dengan interpretasi peneliti.",
+                "Transferabilitas (Transferability / External Validity): Menyediakan uraian rinci (thick description) agar temuan riset dapat diterapkan di konteks lain.",
+                "Dependabilitas (Dependability / Reliability): Mengaudit konsistensi alur proses penelitian dari awal hingga akhir agar dapat dilacak.",
+                "Konfirmabilitas (Confirmability / Objectivity): Menjamin keaslian data riset benar-benar berasal dari informan, bukan opini subjektif peneliti."
+              ]
+            : [
+                "Credibility (Internal Validity): Ensures the reconstruction of participant meanings matches the researcher's representations.",
+                "Transferability (External Validity): Provides rich, 'thick descriptions' so readers can assess applicability to other social contexts.",
+                "Dependability (Reliability): Tracks the consistency of the research steps to ensure the entire audit trail is traceable.",
+                "Confirmability (Objectivity): Guarantees that findings are derived strictly from the participants' words, not researcher bias."
+              ],
+          examples: [],
+          tips: isId
+            ? "Gunakan instrumen 'Audit Trail' dengan mendokumentasikan jurnal reflektif harian peneliti selama berada di lokasi riset guna membuktikan keabsahan proses."
+            : "Document a detailed 'Audit Trail' by maintaining a daily research journal during field observations to demonstrate process dependability."
+        };
+      case "qual_validation":
+        return {
+          title: isId ? "Strategi Validasi Kualitatif Aktif" : "Active Qualitative Validation Strategies",
+          badge: isId ? "Strategi Validasi" : "Validation Strategies",
+          definition: isId
+            ? "Merupakan aksi konkret di lapangan untuk membuktikan tingkat kepercayaan data kualitatif. Peneliti wajib menerapkan teknik Triangulasi (membandingkan berbagai sumber data atau metode) serta Member Checking guna menjamin transparansi riset."
+            : "Actionable fieldwork techniques utilized to verify the credibility of qualitative data. The researcher is expected to deploy Triangulation (cross-checking multiple sources or methods) and Member Checking to eliminate cognitive biases.",
+          characteristics: isId
+            ? [
+                "Triangulasi Sumber: Membandingkan data dari informan kunci, informan utama, dan informan pendukung untuk melihat konsistensi narasi.",
+                "Triangulasi Metode: Mencocokkan data wawancara mendalam dengan hasil observasi langsung di lapangan serta dokumen arsip resmi.",
+                "Member Checking: Mengonfirmasi kembali transkrip wawancara dan draf analisis tema kepada informan untuk persetujuan keakuratan makna.",
+                "Perpanjangan Pengamatan: Menghabiskan waktu yang cukup di lapangan untuk mendeteksi distorsi informasi dan membangun kepercayaan subjek."
+              ]
+            : [
+                "Source Triangulation: Comparing accounts from key, primary, and supporting informants to detect consistency or divergence.",
+                "Method Triangulation: Cross-checking interview statements against direct field observations and official documentary archives.",
+                "Member Checking: Sharing interview transcripts and conceptual themes back with participants to verify interpretation accuracy.",
+                "Prolonged Engagement: Spending sufficient time in the field to overcome informant reservations and understand deep cultural nuances."
+              ],
+          examples: [],
+          tips: isId
+            ? "Di Bab III Anda, jelaskan secara eksplisit bagaimana Member Checking dilakukan (apakah melalui diskusi tatap muka kembali atau pengiriman berkas persetujuan transkrip)."
+            : "In your methodology chapter, detail precisely how member checking was conducted—whether via follow-up discussions or signing off on transcripts."
+        };
+      case "research_replicability":
+        return {
+          title: isId ? "Prinsip Replikabilitas Riset" : "Research Replicability Principle",
+          badge: isId ? "Replikabilitas" : "Replicability",
+          definition: isId
+            ? "Tujuan utama penulisan BAB III secara presisi dan ilmiah adalah memastikan langkah-langitas metodologi Anda diuraikan secara transparan agar peneliti masa depan dapat mereplikasi riset ini dengan hasil yang konsisten."
+            : "The central goal of Chapter 3 is to state your procedures so clearly and transparently that any future researcher can duplicate your study easily and achieve consistent results.",
+          characteristics: isId
+            ? [
+                "Transparansi Prosedur: Mendokumentasikan setiap langkah pengumpulan data secara jujur dan terbuka tanpa ada yang disembunyikan.",
+                "Standardisasi Pengukuran: Menggunakan alat ukur yang teruji validitas dan reliabilitasnya secara akademis.",
+                "Ketetapan Desain Riset: Memastikan konsistensi pendekatan penelitian sejak awal rumusan masalah hingga analisis data.",
+                "Replikasi Mandiri: Memungkinkan peneliti lain mereproduksi hasil temuan serupa di bawah kondisi riset yang identik."
+              ]
+            : [
+                "Procedural Transparency: Documenting every step of the data gathering process openly without hiding any procedural aspect.",
+                "Standardization of Measurement: Using instruments and metrics that have been rigorously pre-tested for validity and reliability.",
+                "Methodological Consistency: Keeping the study design completely aligned with the research questions and data structures.",
+                "Independent Replication: Empowering other scholars to reproduce similar empirical conclusions under identical conditions."
+              ],
+          examples: [],
+          tips: isId
+            ? "Tulis Bab III dengan bahasa yang operasional dan deskriptif. Hindari kalimat ambigu agar langkah penelitian Anda mudah diikuti langkah demi langkah."
+            : "Write Chapter 3 using operational and highly descriptive language. Avoid ambiguous statements to ensure your procedures can be followed step-by-step."
+        };
+      case "export_options":
+        return {
+          title: isId ? "Pilihan Ekspor Naskah" : "Document Export Options",
+          badge: isId ? "Ekspor Dokumen" : "Document Export",
+          definition: isId
+            ? "Kemudahan transfer naskah riset dari platform Archeres ke perangkat lunak penyunting dokumen eksternal. Kami menyediakan ekspor berbasis format Markdown (.md) yang portabel dan kompatibel secara universal."
+            : "The seamless transfer of your methodology draft from the Archeres environment to external word processors. We offer instant exports in the universally compatible and portable Markdown (.md) format.",
+          characteristics: isId
+            ? [
+                "Format Markdown (.md): Format dokumen berbasis teks ringan yang didukung oleh Microsoft Word, Google Docs, Notion, dan Obsidian.",
+                "Struktur Terpelihara: Heading (BAB III, Sub-bab), bullet points, tabel variabel, dan kutipan rumus matematika LaTeX tetap terjaga rapi.",
+                "Bilingual Sekaligus: Mengunduh versi Bahasa Indonesia dan Bahasa Inggris secara bersamaan dalam satu file tunggal.",
+                "Kemudahan Salin-Tempel: Kode format yang bersih memudahkan integrasi langsung tanpa perlu menata ulang gaya font."
+              ]
+            : [
+                "Markdown Standard (.md): A lightweight, clean text formatting system compatible with Microsoft Word, Google Docs, Notion, and Obsidian.",
+                "Preserved Hierarchy: All headings (Chapter 3, sections), variables tables, bullet lists, and LaTeX formulas remain formatted.",
+                "Concurrent Bilingual Output: Exports both Indonesian and English methodology drafts simultaneously in a single file.",
+                "Easy Integration: Offers clean document code for hassle-free copy-pasting directly into your university thesis templates."
+              ],
+          examples: [],
+          tips: isId
+            ? "Gunakan aplikasi penyunting teks Markdown favorit Anda atau impor langsung ke Google Docs/Word untuk memoles bagian akhir draf tesis Anda."
+            : "Open the exported .md file in your preferred markdown editor or directly import it into Google Docs/Word to put the final touches on your thesis draft."
+        };
+      case "backup_resilience":
+        return {
+          title: isId ? "Offline Storage & Resiliensi Cadangan Lokal" : "Offline Storage & Client Resilience Backup",
+          badge: isId ? "Keamanan & Privasi" : "Security & Privacy",
+          definition: isId
+            ? "Merupakan mekanisme pertahanan data yang beroperasi sepenuhnya di sisi klien (client-side) demi keamanan absolut. Seluruh kemajuan penyusunan draf metodologi Anda disimpan di penyimpanan lokal browser (Local Storage) dan dapat diekspor secara terenkripsi ke file JSON cadangan lokal."
+            : "A client-side data protection framework designed for absolute researcher privacy. All methodology drafts and active variables are stored in browser memory (Local Storage) and can be exported as an encrypted JSON backup file.",
+          characteristics: isId
+            ? [
+                "Penyimpanan Sandbox Mandiri: Setiap proyek memiliki ruang Local Storage terisolasi, mencegah kebocoran data antar proyek dalam satu akun.",
+                "Zero-Server Footprint: Seluruh rancangan riset, variabel, dan respons matriks pre-test dianalisis secara lokal dan tidak disimpan di server luar.",
+                "Impor & Ekspor Cepat: Memfasilitasi pencadangan manual dalam format JSON berkuran kecil yang dapat dipulihkan kapan saja.",
+                "Kompatibilitas Mundur: Schema parser otomatis Archeres mampu membaca file cadangan dari versi lama (v0.9.8/v0.9.9) tanpa kegagalan sistem."
+              ]
+            : [
+                "Sandboxed Project Isolation: Each project is allocated a separate Local Storage workspace, preventing cross-project data leakage.",
+                "Zero-Server Footprint: All conceptual plans, variables, and response matrices are analyzed locally in browser memory without server tracking.",
+                "Instant JSON Backup/Restore: Allows users to download a compact JSON snapshot of their workspace and restore it instantly on any machine.",
+                "Graceful Backward Compatibility: The automated schema parser recovers older backups (v0.9.8/v0.9.9) seamlessly, applying sensible academic defaults."
+              ],
+          examples: [],
+          tips: isId
+            ? "Lakukan ekspor file cadangan (.json) secara berkala sebelum melakukan perubahan besar pada rancangan metodologi Anda untuk menjamin pemulihan data instan."
+            : "Download a JSON backup file (.json) periodically before making massive shifts in your research design to guarantee instant recovery."
+        };
       default:
         return {
           title: "Research Concept",
@@ -2419,81 +2669,231 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                       : "Lemeshow Formula: Suited for infinite/unknown populations (e.g., epidemiological survey) and often paired with systematic sampling.")}
                 </p>
               </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_sensitivity");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconChart size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
+                  {isId ? "Kurva Sensitivitas & Kekuatan Sampel" : "Sensitivity & Statistical Power Curve"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Memetakan batas toleransi kesalahan (Margin of Error) secara kontinu terhadap ukuran sampel minimal untuk memvisualisasikan trade-off kekuatan riset." 
+                    : "Continuously maps Margin of Error (e) against the minimum required sample size to visualize the trade-offs of statistical power."}
+                </p>
+              </div>
             </div>
           );
         }
       case 3:
-        return (
-          <div className="animate-fade-in" style={styles.eduContainer}>
-            <div style={styles.eduBadge}>
-              <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
-              {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}
-            </div>
-            <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Konstruk Variabel" : "Measurement Scales & Structural Roles"}</h3>
-            <p style={styles.eduIntro}>
-              {isId 
-                ? "Merumuskan bagaimana indikator penelitian diidentifikasi, diukur, dan dihubungkan secara struktural untuk kebutuhan analisis data." 
-                : "Defining how your research indicators are classified, measured, and structured for data analysis."}
-            </p>
-
-            <div
-              className="arche-edu-card"
-              style={{ ...styles.eduCard, cursor: "pointer" }}
-              onClick={() => {
-                setEduPopupItemId("var_roles");
-                setEduPopupOpen(true);
-              }}
-            >
-              <h4 style={styles.eduCardTitle}>
-                <IconLink size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
-                {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}
-              </h4>
-              <p style={styles.eduCardBody}>
+        if (approach === "qual") {
+          return (
+            <div className="animate-fade-in" style={styles.eduContainer}>
+              <div style={styles.eduBadge}>
+                <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {isId ? "TUTORIAL: FOKUS KUALITATIF & KEABSAHAN" : "TUTORIAL: QUALITATIVE INQUIRY & VALIDITY"}
+              </div>
+              <h3 style={styles.eduTitle}>{isId ? "Kredibilitas Tematik & Validasi Data Kualitatif" : "Thematic Credibility & Qualitative Validation"}</h3>
+              <p style={styles.eduIntro}>
                 {isId 
-                  ? "Variabel Independen (stimulus) mempengaruhi variabel Dependen (respons). Mediator menjembatani mata rantai kausalitas, sementara Moderator memodifikasi kekuatan pengaruh hubungan tersebut." 
-                  : "Independent (cause) influences Dependent (effect). Mediator bridges the causal chain, whereas Moderator alters relationship strength."}
+                  ? "Merumuskan fokus kajian, merencanakan analisis data tematik, serta menerapkan strategi keabsahan (trustworthiness) riset kualitatif." 
+                  : "Defining the inquiry focus, planning thematic analysis, and implementing qualitative trustworthiness strategies."}
               </p>
-            </div>
 
-            <div
-              className="arche-edu-card"
-              style={{ ...styles.eduCard, cursor: "pointer" }}
-              onClick={() => {
-                setEduPopupItemId("var_scales");
-                setEduPopupOpen(true);
-              }}
-            >
-              <h4 style={styles.eduCardTitle}>
-                <IconRuler size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
-                {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}
-              </h4>
-              <p style={styles.eduCardBody}>
-                {isId 
-                  ? "Nominal (klasifikasi kategori tanpa tingkatan), Ordinal (memiliki peringkat/urutan), Interval (jarak antar nilai setara namun tanpa nilai nol mutlak), dan Rasio (skala pengukuran paling presisi karena memiliki nilai nol mutlak)." 
-                  : "Nominal (Categorical), Ordinal (Ranked), Interval (Equal distances, no true zero), and Ratio (Absolute zero point)."}
-              </p>
-            </div>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_focus");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconLink size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#38bdf8" }} />
+                  {isId ? "Fokus Kajian & Kategori Informan" : "Focus of Inquiry & Informant Categories"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Menggantikan peran variabel konseptual dengan tema kajian mendalam serta menetapkan kelompok informan (Kunci, Utama, Pendukung) secara logis." 
+                    : "Replaces variables with in-depth conceptual themes and defines logical informant groups (Key, Primary, Supporting)."}
+                </p>
+              </div>
 
-            <div
-              className="arche-edu-card"
-              style={{ ...styles.eduTip, cursor: "pointer" }}
-              onClick={() => {
-                setEduPopupItemId("var_testing");
-                setEduPopupOpen(true);
-              }}
-            >
-              <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <IconChart size={16} style={{ color: "#34d399" }} />
-                {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}
-              </strong>
-              <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
-                {isId 
-                  ? `Berdasarkan karakteristik variabel Anda, metode analisis '${analysisMethod}' merupakan pilihan statistik yang paling valid untuk menguji hipotesis penelitian.` 
-                  : `Aligned with your variables, the '${analysisMethod}' method is the ideal statistical choice to test your hypotheses.`}
-              </p>
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_analysis");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconFileText size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                  {isId ? "Rencana Analisis Data Kualitatif" : "Qualitative Data Analysis Plan"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Mengimplementasikan model Miles & Huberman (Kondensasi, Penyajian Data, Penarikan Kesimpulan) atau Analisis Tematik." 
+                    : "Applies the classic Miles & Huberman model (Data Condensation, Data Display, Conclusion Drawing) or Thematic Analysis."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_trustworthiness");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconShield size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
+                  {isId ? "Keabsahan Data Kualitatif (Trustworthiness)" : "Trustworthiness of Qualitative Data"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Prinsip rigoritas metodologis kualitatif (Lincoln & Guba) untuk menjamin kredibilitas, transferabilitas, dependabilitas, dan konfirmabilitas riset." 
+                    : "Methodological rigor principles (Lincoln & Guba) ensuring research credibility, transferability, dependability, and confirmability."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduTip, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("qual_validation");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <IconLightbulb size={16} style={{ color: "#fbbf24" }} />
+                  {isId ? "Strategi Validasi Aktif:" : "Active Validation Strategies:"}
+                </strong>
+                <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
+                  {isId 
+                    ? "Penerapan strategi kredibilitas seperti Triangulasi dan Member Checking wajib dideklarasikan secara eksplisit guna menangkal bias peneliti." 
+                    : "Explicit implementation of credibility strategies like Triangulation and Member Checking is mandatory to counter researcher bias."}
+                </p>
+              </div>
             </div>
-          </div>
-        );
+          );
+        } else {
+          return (
+            <div className="animate-fade-in" style={styles.eduContainer}>
+              <div style={styles.eduBadge}>
+                <IconBook size={14} style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                {isId ? "TUTORIAL: OPERASIONALISASI VARIABEL" : "TUTORIAL: OPERATIONALIZING VARIABLES"}
+              </div>
+              <h3 style={styles.eduTitle}>{isId ? "Skala Pengukuran & Konstruk Variabel" : "Measurement Scales & Structural Roles"}</h3>
+              <p style={styles.eduIntro}>
+                {isId 
+                  ? "Merumuskan bagaimana indikator penelitian diidentifikasi, diukur, dan dihubungkan secara struktural untuk kebutuhan analisis data." 
+                  : "Defining how your research indicators are classified, measured, and structured for data analysis."}
+              </p>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("var_roles");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconLink size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
+                  {isId ? "Peran Metodologis Variabel" : "Methodological Roles"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Variabel Independen (stimulus) mempengaruhi variabel Dependen (respons). Mediator menjembatani mata rantai kausalitas, sementara Moderator memodifikasi kekuatan pengaruh hubungan tersebut." 
+                    : "Independent (cause) influences Dependent (effect). Mediator bridges the causal chain, whereas Moderator alters relationship strength."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("var_scales");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconRuler size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#a78bfa" }} />
+                  {isId ? "Empat Tingkatan Skala Pengukuran (Taksonomi Stevens)" : "Four Measurement Scales"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Nominal (klasifikasi kategori tanpa tingkatan), Ordinal (memiliki peringkat/urutan), Interval (jarak antar nilai setara namun tanpa nilai nol mutlak), dan Rasio (skala pengukuran paling presisi karena memiliki nilai nol mutlak)." 
+                    : "Nominal (Categorical), Ordinal (Ranked), Interval (Equal distances, no true zero), and Ratio (Absolute zero point)."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_reliability");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconShield size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                  {isId ? "Zero-Knowledge Reliability Planner (E2EE)" : "Zero-Knowledge Reliability Planner (E2EE)"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Merencanakan keandalan instrumen dengan uji coba pilot kuesioner. Menghitung koefisien Cronbach's Alpha (skala Likert) atau KR-20 (dikotomi/benar-salah) secara lokal (client-side) tanpa risiko kebocoran data." 
+                    : "Plan instrument reliability with pilot testing. Calculates Cronbach's Alpha (Likert scales) or KR-20 (dichotomous data) locally (client-side) with zero data leak risks."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduCard, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("quant_code_generator");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <h4 style={styles.eduCardTitle}>
+                  <IconWrench size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
+                  {isId ? "Pohon Keputusan & Generator Kode Statistik" : "Decision Tree & Statistical Code Generator"}
+                </h4>
+                <p style={styles.eduCardBody}>
+                  {isId 
+                    ? "Sistem merutekan uji hipotesis (parametrik/non-parametrik) berdasarkan taksonomi Stevens secara otomatis, dilengkapi generator skrip kode Python dan Go siap pakai." 
+                    : "Automatically routes hypotheses (parametric/non-parametric) based on Stevens' taxonomy, offering ready-to-use Python and Go code scripts."}
+                </p>
+              </div>
+
+              <div
+                className="arche-edu-card"
+                style={{ ...styles.eduTip, cursor: "pointer" }}
+                onClick={() => {
+                  setEduPopupItemId("var_testing");
+                  setEduPopupOpen(true);
+                }}
+              >
+                <strong style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <IconChart size={16} style={{ color: "#38bdf8" }} />
+                  {isId ? "Rekomendasi Pengujian Statistik:" : "Recommended Statistical Test:"}
+                </strong>
+                <p style={{ marginTop: "0.25rem", fontSize: "0.8rem", lineHeight: 1.4 }}>
+                  {isId 
+                    ? `Berdasarkan karakteristik variabel Anda, metode analisis '${analysisMethod}' merupakan pilihan statistik yang paling valid untuk menguji hipotesis penelitian.` 
+                    : `Aligned with your variables, the '${analysisMethod}' method is the ideal statistical choice to test your hypotheses.`}
+                </p>
+              </div>
+            </div>
+          );
+        }
       case 4:
         return (
           <div className="animate-fade-in" style={styles.eduContainer}>
@@ -2508,7 +2908,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 : "Congratulations! Your Chapter 3 academic draft is now structured and ready for inclusion in your thesis."}
             </p>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("research_replicability");
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconRefresh size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#22d3ee" }} />
                 {isId ? "Prinsip Replikabilitas Riset" : "Replicability Principle"}
@@ -2520,7 +2927,14 @@ Aligned with the scale of measurements and variable distribution, statistical hy
               </p>
             </div>
 
-            <div style={styles.eduCard}>
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("export_options");
+                setEduPopupOpen(true);
+              }}
+            >
               <h4 style={styles.eduCardTitle}>
                 <IconFolder size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "hsl(var(--primary-color))" }} />
                 {isId ? "Pilihan Ekspor Naskah" : "Export Options"}
@@ -2529,6 +2943,25 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 {isId 
                   ? "Anda dapat mengunduh draf dalam format Markdown (.md) yang dapat dibuka secara instan menggunakan Microsoft Word, Notion, Obsidian, atau aplikasi pengolah dokumen lainnya." 
                   : "Export your draft in Markdown format (.md) which can be directly opened in Microsoft Word, Notion, Obsidian, or text editors."}
+              </p>
+            </div>
+
+            <div
+              className="arche-edu-card"
+              style={{ ...styles.eduCard, cursor: "pointer" }}
+              onClick={() => {
+                setEduPopupItemId("backup_resilience");
+                setEduPopupOpen(true);
+              }}
+            >
+              <h4 style={styles.eduCardTitle}>
+                <IconShield size={18} style={{ marginRight: "8px", verticalAlign: "middle", color: "#34d399" }} />
+                {isId ? "Offline Storage & Resiliensi Cadangan" : "Offline Storage & Client Backup"}
+              </h4>
+              <p style={styles.eduCardBody}>
+                {isId 
+                  ? "Mekanisme pertahanan data terisolasi secara lokal dengan sandbox khusus, menjamin kerahasiaan naskah akademis Anda secara mutlak." 
+                  : "Secure client-side sandboxed local backups, guaranteeing absolute researcher privacy and data resilience."}
               </p>
             </div>
           </div>
