@@ -2810,6 +2810,100 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </>
               )}
             </button>
+
+            {/* Offline Backup & Restore Section */}
+            <div style={{
+              borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+              paddingTop: "1rem",
+              marginTop: "0.25rem"
+            }}>
+              <p style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "rgba(255, 255, 255, 0.4)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "0.75rem",
+                textAlign: "center"
+              }}>
+                {i18n.language === "id" ? "Cadangan Offline" : "Offline Backup"}
+              </p>
+              <div style={{
+                display: "flex",
+                gap: "0.5rem",
+                width: "100%"
+              }}>
+                <button
+                  onClick={handleExportBackupJson}
+                  className="btn btn-outline"
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem 0.5rem",
+                    fontSize: "0.72rem",
+                    background: "rgba(167, 139, 250, 0.03)",
+                    borderColor: "rgba(167, 139, 250, 0.2)",
+                    color: "#c084fc",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    borderRadius: "6px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.25rem",
+                    transition: "all 0.2s ease",
+                    borderWidth: "1px",
+                    borderStyle: "solid"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(167, 139, 250, 0.1)";
+                    e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.35)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(167, 139, 250, 0.03)";
+                    e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.2)";
+                  }}
+                >
+                  📤 {i18n.language === "id" ? "Ekspor" : "Export"}
+                </button>
+                <label
+                  className="btn btn-outline"
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem 0.5rem",
+                    fontSize: "0.72rem",
+                    background: "rgba(34, 211, 238, 0.03)",
+                    borderColor: "rgba(34, 211, 238, 0.2)",
+                    color: "#22d3ee",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    borderRadius: "6px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.25rem",
+                    transition: "all 0.2s ease",
+                    borderWidth: "1px",
+                    borderStyle: "solid"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(34, 211, 238, 0.1)";
+                    e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.35)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(34, 211, 238, 0.03)";
+                    e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.2)";
+                  }}
+                >
+                  📥 {i18n.language === "id" ? "Impor" : "Import"}
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportBackupJson}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            </div>
           </div>
         </aside>
 
@@ -4062,104 +4156,6 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     <IconCopy size={16} style={{ marginRight: "6px", verticalAlign: "middle" }} />
                     {t("preview.copy")}
                   </button>
-                </div>
-
-                {/* Local JSON Offline Backup & Restore Section */}
-                <div style={{
-                  marginTop: "2.5rem",
-                  paddingTop: "2rem",
-                  borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-                  textAlign: "center"
-                }}>
-                  <h4 style={{
-                    fontSize: "0.85rem",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    color: "rgba(255, 255, 255, 0.5)",
-                    marginBottom: "1rem"
-                  }}>
-                    {i18n.language === "id" ? "Penyimpanan Offline & Cadangan Klien" : "Offline Storage & Client Backup"}
-                  </h4>
-                  <p style={{
-                    fontSize: "0.8rem",
-                    color: "rgba(255,255,255,0.4)",
-                    maxWidth: "400px",
-                    margin: "0 auto 1.5rem auto",
-                    lineHeight: "1.4"
-                  }}>
-                    {i18n.language === "id"
-                      ? "Cadangkan seluruh data instrumen, variabel, dan matriks reliabilitas Anda ke dalam file JSON lokal secara aman untuk dipulihkan kapan saja."
-                      : "Backup all your instrument variables, parameters, and psychometric matrices locally into a JSON file to restore them at any time."}
-                  </p>
-
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "1rem",
-                    flexWrap: "wrap"
-                  }}>
-                    <button
-                      onClick={handleExportBackupJson}
-                      className="btn btn-outline"
-                      style={{
-                        padding: "0.6rem 1.2rem",
-                        fontSize: "0.82rem",
-                        background: "rgba(167, 139, 250, 0.05)",
-                        borderColor: "rgba(167, 139, 250, 0.25)",
-                        color: "#c084fc",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        cursor: "pointer",
-                        fontWeight: 600,
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
-                        e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.4)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "rgba(167, 139, 250, 0.05)";
-                        e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
-                      }}
-                    >
-                      📤 {i18n.language === "id" ? "Cadangkan Progres (JSON)" : "Backup Workspace (JSON)"}
-                    </button>
-
-                    <label
-                      className="btn btn-outline"
-                      style={{
-                        padding: "0.6rem 1.2rem",
-                        fontSize: "0.82rem",
-                        background: "rgba(34, 211, 238, 0.05)",
-                        borderColor: "rgba(34, 211, 238, 0.25)",
-                        color: "#22d3ee",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        cursor: "pointer",
-                        fontWeight: 600,
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "rgba(34, 211, 238, 0.12)";
-                        e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.4)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "rgba(34, 211, 238, 0.05)";
-                        e.currentTarget.style.borderColor = "rgba(34, 211, 238, 0.25)";
-                      }}
-                    >
-                      📥 {i18n.language === "id" ? "Pulihkan Cadangan" : "Restore Backup"}
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={handleImportBackupJson}
-                        style={{ display: "none" }}
-                      />
-                    </label>
-                  </div>
                 </div>
               </div>
             )}
