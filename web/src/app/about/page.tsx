@@ -140,17 +140,17 @@ export default function AboutPage() {
         {
           number: "01",
           title: "Math Estimators & Sensitivity",
-          desc: "Calculate precise sample sizes using established formulas (Slovin, Cochran, Lemeshow, Yamane, Daniel) with strict float precision ceiling rounding, and visualize them using a dynamic Neon SVG Sensitivity Curve."
+          desc: "Calculate precise sample sizes using established formulas (Slovin, Cochran, Lemeshow, Yamane, Daniel, etc.) with automatic ceiling rounding, and visualize trade-offs with a dynamic Neon SVG Sensitivity Curve."
         },
         {
           number: "02",
-          title: "Variables, Advisor & Reliability",
-          desc: "Map your variables to Stevens' scales to receive statistical test advice with generated Python/Go scripts. Evaluate pre-test pilot reliability (Cronbach's Alpha / KR-20) locally in a 100% client-side, E2EE-secured matrix."
+          title: "Paradigm & Dynamic Reliability",
+          desc: "Select your research instrument paradigm (Surveys, Secondary/Lab Data, or Qualitative). Evaluate E2EE survey reliability (Cronbach's Alpha / KR-20) or apply Lincoln & Guba (1985) qualitative trustworthiness checklists."
         },
         {
           number: "03",
-          title: "Chapter III Thesis Draft",
-          desc: "Convert your calculations, variable tables, statistical justifications, and Nunnally psychometric reliability metrics into a peer-reviewed standard Chapter III methodology chapter."
+          title: "Unified Backup & Chapter III Draft",
+          desc: "Protect progress globally using client-side E2EE offline JSON backup and restore in any step. Instantly compile a peer-review standard Chapter III methodology chapter tailored to your paradigm."
         }
       ],
       featuresTitle: "Core Platform Pillars",
@@ -158,22 +158,27 @@ export default function AboutPage() {
         {
           icon: "key",
           title: "Zero-Knowledge E2EE",
-          desc: "Your academic profile, research drafts, and variables are fully secured using AES-GCM 256 End-to-End Encryption (E2EE) locally on your device before transmission."
+          desc: "Your academic profile, variables, and research drafts are fully secured using AES-GCM 256 End-to-End Encryption (E2EE) locally on your device before transmission."
+        },
+        {
+          icon: "chart",
+          title: "Multi-Paradigm Workspace",
+          desc: "Seamlessly adapts to quantitative surveys, secondary/lab data validation, or qualitative Lincoln & Guba (1985) trustworthiness checklists depending on your research design."
         },
         {
           icon: "shield",
           title: "Privacy & Anti-Spam Shield",
-          desc: "Protecting users with self-hosted cryptographic SVG math captchas during registration to deter malicious spam, alongside decoupled privacy-preserving activity logs."
+          desc: "Protecting users with self-hosted cryptographic SVG math captchas and Fiber-level rate limiters on auth paths, decoupling all telemetry to maintain absolute privacy."
         },
         {
           icon: "helix",
           title: "High-Precision Calculus",
-          desc: "No more math errors. The backend Go parser handles formulas with high precision, giving peer-reviewed mathematical certainty to thesis boards."
+          desc: "No more math errors. The backend Go parser handles Slovin, Yamane, Lemeshow, and Daniel equations with ceiling rounding to guarantee academic precision."
         },
         {
           icon: "book",
           title: "Scholarly Pedagogy Module",
-          desc: "Learn methodology concepts as you compile drafts. The app offers Stevens' scale definitions and dynamic formula guidance on every screen."
+          desc: "Learn methodology concepts as you compile drafts. Includes Cohen's power standards (1988), Stevens' taxonomy guides, and Lincoln & Guba criteria."
         }
       ],
       mathSectionTitle: "Mathematical Estimator Equations",
@@ -389,7 +394,7 @@ export default function AboutPage() {
         { title: "Part B: Variables Operationalization Matrix", desc: "A comprehensive table linking variables, conceptual definitions, operational indicators, and Stevens scales." },
         { title: "Part C: Population & Sampling Protocol", desc: "Documents the exact mathematical formula choice, variable parameters, and ceiling rounding justifications." },
         { title: "Part D: Statistical Hypothesis Strategy", desc: "Outlines the specific parametric or non-parametric test schedules chosen to verify the study's claims." },
-        { title: "Part E: Instrument Validity & Reliability (Section 3.5)", desc: "Outlines pilot respondent size, item count, computed coefficient (Alpha/KR-20), and Nunnally standard reliability threshold." }
+        { title: "Part E: Instrument Validity & Reliability (Section 3.5)", desc: "Outlines survey reliability coefficients (Cronbach's Alpha/KR-20), secondary data quality assurance/outlier checks, or Lincoln & Guba trustworthiness strategies." }
       ],
       stackTitle: "Our Technology Stack",
       stackDesc: "Archeres is engineered with high-speed, lightweight components: Next.js App Router for dynamic glassmorphic rendering, Go Fiber for high-performance concurrent REST APIs, and SQLite with GORM for robust, isolated telemetry databases.",
@@ -405,17 +410,17 @@ export default function AboutPage() {
         {
           number: "01",
           title: "Kalkulator Sampel & Sensitivitas",
-          desc: "Menentukan ukuran sampel minimal secara presisi menggunakan kalkulasi rumus ilmiah populer (Slovin, Lemeshow, Cochran, Yamane, Daniel) dengan pembulatan ke atas otomatis, dan visualisasikan lewat neon Kurva Sensitivitas SVG."
+          desc: "Menentukan ukuran sampel minimal secara presisi menggunakan kalkulasi rumus ilmiah populer (Slovin, Lemeshow, Cochran, Yamane, Daniel, dll.) dengan pembulatan ke atas otomatis, dan visualisasikan lewat Kurva Sensitivitas SVG."
         },
         {
           number: "02",
-          title: "Variabel, Advisor & Reliabilitas",
-          desc: "Petakan variabel penelitian Anda ke skala Stevens untuk mendapatkan rekomendasi uji statistik berupa kode Python/Go. Uji coba instrumen (pilot pre-test) dengan estimasi reliabilitas (Cronbach's Alpha / KR-20) 100% lokal E2EE."
+          title: "Paradigma & Reliabilitas Dinamis",
+          desc: "Pilih paradigma instrumen Anda (Survei Kuesioner, Data Sekunder/Lab, atau Kualitatif). Uji reliabilitas kuesioner E2EE lokal (Cronbach's Alpha / KR-20) atau terapkan checklist keabsahan Lincoln & Guba (1985)."
         },
         {
           number: "03",
-          title: "Kompilasi Bab III Metodologi",
-          desc: "Mengompilasi kalkulasi sampel, tabel operasionalisasi variabel, pembenaran uji statistik, dan pengujian keandalan instrumen Nunnally menjadi draf Bab III berstandar akademik."
+          title: "Cadangan Sidebar & Draf Bab III",
+          desc: "Amankan progres Anda secara global melalui fitur cadangan offline JSON terenkripsi di sidebar kiri. Ekspor draf Bab III standar akademik secara instan sesuai paradigma riset Anda."
         }
       ],
       featuresTitle: "Pilar Utama Keunggulan Platform",
@@ -426,19 +431,24 @@ export default function AboutPage() {
           desc: "Kekayaan intelektual, profil peneliti, dan draf bab riset Anda dilindungi sepenuhnya secara lokal di browser menggunakan enkripsi ujung-ke-ujung (E2EE) AES-GCM 256."
         },
         {
+          icon: "chart",
+          title: "Antarmuka Multi-Paradigma",
+          desc: "Menyesuaikan secara dinamis untuk kuesioner survei, validasi data sekunder/eksperimen, atau checklist keabsahan Lincoln & Guba (1985) tergantung desain riset Anda."
+        },
+        {
           icon: "shield",
-          title: "Sistem Anti-Spam & Privasi",
-          desc: "Melindungi platform menggunakan verifikasi captcha matematika SVG mandiri terenkripsi pada saat pendaftaran, serta telemetri sesi terpisah tanpa identitas surel."
+          title: "Sistem Anti-Spam & Keamanan Kokoh",
+          desc: "Mengamankan otentikasi melalui captcha matematika SVG mandiri terenkripsi dan pembatasan laju (rate limiter) Fiber, serta memisahkan telemetri tanpa identitas surel."
         },
         {
           icon: "helix",
           title: "Kalkulasi Matematis Presisi Tinggi",
-          desc: "Menghindari risiko kesalahan hitung manual. Mesin komputasi backend Go mengevaluasi rumus dengan pembulatan matematika yang ketat untuk menjamin validitas metodologi di hadapan dewan penguji."
+          desc: "Menghindari kesalahan hitung manual. Mesin backend Go mengevaluasi rumus Slovin, Yamane, Lemeshow, dan Daniel dengan pembulatan ke atas demi menjamin validitas pengujian."
         },
         {
           icon: "book",
           title: "Pusat Edukasi Metodologi Interaktif",
-          desc: "Belajar secara aktif saat merancang draf penelitian. Pahami konsep dasar skala pengukuran Stevens, kegunaan setiap rumus sampel, serta konteks akademisnya langsung pada alur kerja Anda."
+          desc: "Belajar konsep dasar skala pengukuran Stevens, standar Cohen (1988), kriteria Lincoln & Guba, serta konteks akademisnya langsung pada alur kerja Anda."
         }
       ],
       mathSectionTitle: "Formulasi Matematika Ukuran Sampel & Reliabilitas",
@@ -654,7 +664,7 @@ export default function AboutPage() {
         { title: "Bagian B: Matriks Operasionalisasi Variabel", desc: "Tabel komprehensif yang menghubungkan variabel, definisi konseptual, indikator operasional, dan skala pengukuran Stevens." },
         { title: "Bagian C: Protokol Populasi & Perhitungan Sampel", desc: "Mendokumentasikan alasan pemilihan rumus sampel, parameter yang diinput, serta argumen matematis pembulatan ke atas." },
         { title: "Bagian D: Rencana Pengujian Hipotesis Statistik", desc: "Menyusun jadwal pengujian hipotesis (parametris/non-parametris) untuk menjawab seluruh rumusan masalah penelitian." },
-        { title: "Bagian E: Validitas & Reliabilitas Instrumen (Pasal 3.5)", desc: "Menguraikan ukuran sampel pilot uji coba, jumlah butir pertanyaan, koefisien keandalan terpilih (Alpha/KR-20), serta ambang batas keandalan Nunnally." }
+        { title: "Bagian E: Validitas & Reliabilitas Instrumen (Pasal 3.5)", desc: "Menguraikan koefisien keandalan kuesioner (Alpha/KR-20), penjaminan kualitas data sekunder/mitigasi pencilan, atau strategi keabsahan kualitatif Lincoln & Guba." }
       ],
       stackTitle: "Fondasi Teknologi Berkinerja Tinggi",
       stackDesc: "Archeres dirancang menggunakan arsitektur modern berkecepatan tinggi: Next.js App Router untuk antarmuka glassmorphic yang responsif, Go Fiber untuk kinerja konkurensi API backend yang efisien, serta basis data SQLite terisolasi via GORM untuk keandalan penyimpanan telemetri secara lokal.",

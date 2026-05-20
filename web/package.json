@@ -1,6 +1,6 @@
 {
   "name": "archeres-web",
-  "version": "0.9.9-beta",
+  "version": "1.0.0-stable",
   "private": true,
   "scripts": {
     "dev": "next dev",

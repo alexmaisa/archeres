@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/UI-Premium-a855f7" alt="UI-Premium">
-  <img src="https://img.shields.io/badge/version-v0.9.9--beta-f97316" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.0--stable-22c55e" alt="Version">
   <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-ef4444" alt="License">
   <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
   <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">
@@ -14,26 +14,28 @@
   <img src="https://img.shields.io/badge/Security-Zero--Knowledge%20E2EE-ec4899" alt="Security">
 </p>
 
-**Archeres** is a state-of-the-art, scholarly, and Zero-Knowledge End-to-End Encrypted (E2EE) Scientific Research Methodology Planner. Designed specifically for academic scholars, researchers, and university students, Archeres provides an interactive, mathematically rigorous environment to operationalize study variables, calculate scientifically sound sample sizes, and instantly compile peer-review-ready Chapter III thesis methodology drafts concurrently in English and Indonesian.
+**Archeres** is a state-of-the-art, scholarly, and Zero-Knowledge End-to-End Encrypted (E2EE) Scientific Research Methodology Planner. Designed for academic scholars and students, Archeres provides an interactive, mathematically rigorous environment to operationalize study variables, evaluate sample sizes, and instantly compile peer-review-ready Chapter III thesis methodology drafts concurrently in English and Indonesian.
 
 ---
 
 ## 🏛️ Core Pillars & Capabilities
 
-1. **Validated Mathematical Estimators & Sensitivity Curve**: High-precision, peer-reviewed sample size calculations powered by a Go backend. Instantly calculate sample sizes using **Slovin**, **Lemeshow**, **Cochran**, **Yamane**, **Daniel**, **Isaac & Michael**, **Arikunto**, **Gay & Diehl**, and **Kish Leslie** formulas, with a dynamic neon **SVG Sensitivity Curve Visualizer** mapping margin of error $e$ to sample size $n$.
-2. **Stevens' Scale Variable Operationalization & Advisor**: Operationalize variables into Nominal, Ordinal, Interval, or Ratio scales, and map indicators to unlock the **Smart Statistical Decision Tree Recommender** which generates copy-pasteable script templates in **Python (SciPy)** and **Go**.
-3. **🔒 E2EE Psychometric Reliability Planner**: A zero-knowledge client-side module to calculate pre-test pilot reliability. Evaluates internal consistency using **Cronbach's Alpha** (for continuous Likert scales) and **Kuder-Richardson 20 / KR-20** (for binary/dichotomous choices) calculated 100% locally in client-side RAM-only state under the **Nunnally Standard (1978)**.
-4. **Scholarly Pedagogy Module**: Learn as you build. Interactive Stevens' scale guides, Stevens' taxonomy definitions, and formula derivations are seamlessly integrated into every step of the research workspace.
-5. **Structured Chapter III Compiler**: Instantly generate structured Chapter 3 methodology markdown files dynamically formatted in academic Bahasa Indonesia and English concurrently, featuring the new **Section 3.5 (Instrument Validity & Reliability)** outlining pilot respondent profiles and calculated coefficients.
-6. **Privacy-First Anti-Spam Captcha**: Integrated zero-dependency, self-hosted cryptographic SVG math captcha during registration. Challenge calculations are conducted securely on the backend, generating distorted, highly randomized vector lines and noise clusters that block robotic spam sign-ups while maintaining perfect privacy (no cookies or external tracking).
+1. **High-Precision Estimators & Sensitivity Curve**: Precise sample sizes powered by Go backend estimators (**Slovin**, **Lemeshow**, **Cochran**, **Yamane**, **Daniel**, **Isaac & Michael**, **Arikunto**, **Gay & Diehl**, and **Kish Leslie** formulas) and a dynamic neon **SVG Sensitivity Curve Visualizer** mapping margin of error $e$ to sample size $n$.
+2. **Multi-Paradigm Step 3 Workspace**:
+   * *Quantitative Survey*: Local E2EE calculator for pre-test pilot reliability using **Cronbach's Alpha** (Likert scales) and **KR-20** (binary choices) under the **Nunnally Standard (1978)**.
+   * *Secondary & Lab Data*: Integrated data quality assurance methodological guidance for non-kuesioner quantitative studies.
+   * *Qualitative Research*: Active **Lincoln & Guba (1985)** trustworthiness framework checklist covering Data Triangulation, Member Checking, Audit Trail, and Referential Adequacy.
+3. **Stevens' Scale Variable Operationalization**: Operationalize variables into Nominal, Ordinal, Interval, or Ratio scales to unlock the **Smart Statistical Advisor** which recommends appropriate tests and generates copy-pasteable scripts in **Python (SciPy)** and **Go**.
+4. **Scholarly Pedagogy**: Stevens' taxonomy definitions, formula derivations, and standard guidelines integrated directly into the workspace.
+5. **Unified Sidebar Backup**: Sandboxed, zero-knowledge offline JSON workspace backups (fully portable and E2EE isolated) accessible globally across any step in the sidebar.
+6. **Dynamic Chapter III Compiler**: Instantly compiles structured Chapter III Bab 3 markdown drafts adapting dynamically to your paradigm (psychometric surveys vs. secondary data integrity vs. Lincoln & Guba strategies) in English and Indonesian concurrently.
+7. **Anti-Spam & Security Hardening**: Built-in distorted cryptographic SVG math captcha, Fiber-level authentication rate limiters (10 req/min/IP), SQLite WAL production database tuning, and Nginx premium security headers (CSP, HSTS).
 
 ---
 
-## 🔒 Zero-Knowledge E2EE Cryptographic Architecture Audit Map
+## 🔒 Zero-Knowledge Cryptographic Protocol Map
 
-Archeres implements a rigorous **Zero-Knowledge client-side cryptographic protocol** using the browser's native Web Crypto API. Plaintext intellectual property and researcher identity data never leave your local machine, rendering data completely inaccessible to server administrators, database leaks, or third-party eavesdroppers.
-
-### 🔑 Cryptographic Flow & Auditing Specifications
+Archeres implements a client-side cryptographic protocol using the native Web Crypto API. Plaintext intellectual property and user identity never touch the database, remaining 100% inaccessible to server administrators or database breaches.
 
 ```mermaid
 graph TD
@@ -46,20 +48,11 @@ graph TD
     F -->|Persisted| G
 ```
 
-1. **Key Derivation (KDF)**:
-   * During registration, the user's password is combined with a cryptographically secure server-provided `Vault Salt` and put through **PBKDF2** (SHA-256, 100,000 rounds) to derive a 256-bit **Password Wrapping Key** on the client side.
-2. **Master Encryption Key (MEK)**:
-   * A unique, high-entropy 256-bit **Master Encryption Key (MEK)** is randomly generated on the client side during sign-up. 
-   * This MEK is the root key used for all AES-GCM 256 data encryptions.
-3. **Vault Wrapping**:
-   * The MEK is wrapped (encrypted) with the derived Password Wrapping Key using AES-GCM 256. The resulting ciphertext is sent to the server as `passwordVault` along with a recovery-key vault `recoveryVault`.
-4. **Researcher Profile & Name E2EE**:
-   * The researcher's full name is encrypted on the client side using the MEK prior to transmission. 
-   * When administrators view audit logs or dashboard lookups, names are automatically masked as **"Encrypted User (E2EE)"** or **"Pengguna Terenkripsi (E2EE)"** based on the chosen language.
-5. **Research Design E2EE**:
-   * Project titles, variable definitions, sample formulas, parameters, and compiled drafts are encrypted locally using the MEK prior to API transmission. The database stores strictly ciphertext.
-6. **Local Psychometric Data Policy**:
-   * Raw response matrices for Cronbach's Alpha and KR-20 calculations are strictly kept in transient browser memory (RAM-only React state) and are never transmitted to backend servers or APIs, protecting researcher and respondent data.
+1. **Key Derivation (KDF)**: Derives a 256-bit **Password Wrapping Key** locally using PBKDF2 (SHA-256, 100,000 rounds) and a server-provided salt.
+2. **Master Encryption Key (MEK)**: A high-entropy 256-bit AES-GCM client-side key that encrypts all profile data, variables, parameters, and compiled Bab III drafts.
+3. **Vault Wrapping**: The MEK is wrapped with the Password Wrapping Key using AES-GCM 256 and sent to the server for cloud-synced E2EE storage.
+4. **Name Masking**: Full names are encrypted client-side. Server-side log audits mask all identities as **"Encrypted User (E2EE)"**.
+5. **RAM-Only Policy**: Raw psychometric test response matrices are processed strictly in transient client-side state and never sent to any server.
 
 ---
 
@@ -69,43 +62,27 @@ Archeres is structured as a monorepo consisting of a **Next.js App Router** fron
 
 ### Prerequisites
 * Go `1.21+`
-* Node.js `18+` (with `pnpm` package manager)
-* GCC/Make tools
+* Node.js `18+` (with `pnpm`)
+* GCC/Make
 
-### Makefile Helper Commands
-A comprehensive `Makefile` is located in the repository root to automate common tasks:
-
+### Essential Commands
 ```bash
-# 1. Install all backend (Go) and frontend (pnpm) dependencies
+# 1. Install all monorepo dependencies
 make install
 
-# 2. Run both Go backend and Next.js frontend concurrently in dev mode
+# 2. Run Go backend and Next.js frontend concurrently in dev mode
 make dev
 
-# 3. Start only the Go backend server (port 8080)
-make run-backend
-
-# 4. Start only the Next.js development server (port 3000)
-make run-web
-
-# 5. Execute all mathematical precision unit tests
+# 3. Execute all mathematical precision unit tests
 make test
 
-# 6. Stop all local processes occupying ports 3000 and 8080
+# 4. Stop all local processes occupying ports 3000 and 8080
 make stop
-
-# 7. Clean up build caches, local temporary databases, and NextJS folders
-make clean
 ```
 
 ---
 
 ## 🚀 Production Deployment (Docker Compose)
-
-Archeres is fully production-ready and optimized to be deployed via Docker. Production containers are designed with non-root privileges, slim Alpine base images, and secure environment isolation.
-
-### 1. Pre-built Registry Deployment (Recommended)
-Our CI/CD pipeline builds and publishes hardened, production-ready images to the container registry on every official release.
 
 Create a `compose.yaml` in your server directory:
 
@@ -146,36 +123,19 @@ volumes:
     name: archeres-db-volume
 ```
 
-Run the stack in detached mode:
+Run the stack:
 ```bash
 docker compose up -d
 ```
 
-### 2. Local Production Build
-If you prefer to build the production Docker images directly from source on your local machine, use `compose.build.yaml`:
-
-```bash
-# Build the production images locally
-docker compose -f compose.build.yaml build
-
-# Launch the locally built production stack
-docker compose -f compose.build.yaml up -d
-```
-
 ---
 
-## 🔄 CI/CD & Automated Publishing (Forgejo Actions)
+## 🔄 CI/CD & Automated Publishing
 
-The repository integrates a robust **Forgejo Actions** workflow located in `.forgejo/workflows/docker-publish.yml`. 
-
-On every Git release event (`release: [published]`), the workflow automatically:
-1. Checks out the codebase.
-2. Configures QEMU and Docker Buildx.
-3. Authenticates securely with our Docker container registry (`repo.alexmaisa.my.id`).
-4. Compiles, packages, and pushes high-performance, multi-arch Docker images for both `archeres-backend` and `archeres-web`, tagging them with the release tag name and `latest`.
+A Forgejo Actions pipeline (`.forgejo/workflows/docker-publish.yml`) automatically builds, packages, and publishes multi-architecture production Docker images to our private registry (`repo.alexmaisa.my.id`) upon every GitHub release event, tagging them with the release version and `latest`.
 
 ---
 
 ## ⚖️ License & Auditability
 
-This project is source-available and licensed under the **PolyForm Noncommercial License 1.0.0**. The complete source code of both the Next.js client and Go server is fully accessible to encourage public cryptographic audits, security reviews, and academic methodology validation. The software is 100% free for educational, academic, personal, and research purposes, but strictly prohibits commercial exploitation, SaaS hosting, or monetization without the explicit written authorization of **Benny Maisa**. See the [LICENSE](LICENSE) file for details.
+This project is source-available and licensed under the **PolyForm Noncommercial License 1.0.0**. The source code of both the Next.js client and Go server is fully accessible for cryptographic audits and academic methodology validation. Free for educational, personal, and research purposes, but strictly prohibits commercial exploitation or SaaS monetization without prior written authorization from **Benny Maisa**.
