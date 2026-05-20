@@ -27,6 +27,21 @@ func ConnectDB() {
 
 	log.Println("SQLite database connection established successfully.")
 
+	// Retrieve underlying sql.DB instance to configure SQLite driver settings
+	sqlDB, err := DB.DB()
+	if err == nil {
+		// Enable Write-Ahead Logging (WAL) mode for concurrency optimization
+		sqlDB.Exec("PRAGMA journal_mode=WAL;")
+		// Set a busy timeout of 5000ms before returning SQLITE_BUSY error
+		sqlDB.Exec("PRAGMA busy_timeout=5000;")
+		// Set pool limits appropriate for SQLite file-based database
+		sqlDB.SetMaxOpenConns(10)
+		sqlDB.SetMaxIdleConns(5)
+		log.Println("SQLite WAL mode and busy_timeout configured successfully.")
+	} else {
+		log.Printf("Warning: Failed to retrieve raw database connection for SQLite tuning: %v", err)
+	}
+
 	// Auto-migrate our models
 	err = DB.AutoMigrate(&models.User{}, &models.Project{}, &models.ResearchDesign{}, &models.LoginTelemetry{})
 	if err != nil {

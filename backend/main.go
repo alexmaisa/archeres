@@ -4,11 +4,14 @@ import (
 	"log"
 	"os"
 
+	"time"
+
 	"archeres/backend/config"
 	"archeres/backend/handlers"
 	"archeres/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
@@ -30,18 +33,32 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// 4. Archeres API Routing Structure
+	// 4. Rate Limiter Middleware for Authentication protection
+	authLimiter := limiter.New(limiter.Config{
+		Max:        10,
+		Expiration: 1 * time.Minute,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP()
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests. Please try again after 1 minute.",
+			})
+		},
+	})
+
+	// 5. Archeres API Routing Structure
 	api := app.Group("/api")
 
-	// Authentication & Session Routes
+	// Authentication & Session Routes (with rate-limiting for public/sensitive entrypoints)
 	auth := api.Group("/auth")
-	auth.Get("/captcha", handlers.GetCaptcha)
-	auth.Post("/register", handlers.Register)
-	auth.Post("/login", handlers.Login)
+	auth.Get("/captcha", authLimiter, handlers.GetCaptcha)
+	auth.Post("/register", authLimiter, handlers.Register)
+	auth.Post("/login", authLimiter, handlers.Login)
 	auth.Post("/logout", handlers.Logout)
 	auth.Get("/me", middleware.JWTMiddleware, handlers.Me)
-	auth.Post("/forgot-password", handlers.ForgotPassword)
-	auth.Post("/reset-password", handlers.ResetPassword)
+	auth.Post("/forgot-password", authLimiter, handlers.ForgotPassword)
+	auth.Post("/reset-password", authLimiter, handlers.ResetPassword)
 	auth.Post("/reset-vault", handlers.ResetVault)
 
 	// Research Project Management Routes (Protected / Login Required)
