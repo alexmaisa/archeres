@@ -111,3 +111,77 @@ func TestCalculateYamane(t *testing.T) {
 	}
 }
 
+// TestCalculateIsaacMichael verifies the Isaac & Michael formula at different significance levels
+func TestCalculateIsaacMichael(t *testing.T) {
+	tests := []struct {
+		N         int
+		errorRate float64
+		expected  int
+	}{
+		// Values may vary slightly from standard tables due to Ceil rounding but should be extremely close
+		{N: 100, errorRate: 0.05, expected: 80},  // Match Krejcie-Morgan for 5%
+		{N: 1000, errorRate: 0.01, expected: 944}, // Math: 1658.75 / 1.75865
+		{N: 1000, errorRate: 0.10, expected: 64},  // Math: 676.5 / 10.6665
+	}
+
+	for _, tt := range tests {
+		result := CalculateIsaacMichael(tt.N, tt.errorRate)
+		if result != tt.expected {
+			t.Errorf("CalculateIsaacMichael(N=%d, err=%.2f) = %d; want %d", tt.N, tt.errorRate, result, tt.expected)
+		}
+	}
+}
+
+// TestCalculateArikunto verifies Arikunto's percentage-based rule of thumb
+func TestCalculateArikunto(t *testing.T) {
+	tests := []struct {
+		N        int
+		percent  float64
+		expected int
+	}{
+		{N: 50, percent: 0.10, expected: 50},    // N < 100 -> total sampling
+		{N: 100, percent: 0.15, expected: 15},   // N >= 100 -> percentage
+		{N: 150, percent: 0.25, expected: 38},   // math.Ceil(150 * 0.25 = 37.5) -> 38
+		{N: 200, percent: -1.0, expected: 20},   // Invalid percent falls back to 10%
+	}
+
+	for _, tt := range tests {
+		result := CalculateArikunto(tt.N, tt.percent)
+		if result != tt.expected {
+			t.Errorf("CalculateArikunto(N=%d, percent=%.2f) = %d; want %d", tt.N, tt.percent, result, tt.expected)
+		}
+	}
+}
+
+// TestCalculateGayDiehl verifies Gay & Diehl's rule based on design type
+func TestCalculateGayDiehl(t *testing.T) {
+	tests := []struct {
+		designType   string
+		N            int
+		numVariables int
+		expected     int
+	}{
+		{designType: "Correlational", N: 1000, numVariables: 0, expected: 30},
+		{designType: "Experimental", N: 1000, numVariables: 0, expected: 60}, // 2 groups * 30
+		{designType: "Survey / Descriptive", N: 50, numVariables: 0, expected: 10}, // 20% of 50
+		{designType: "Survey / Descriptive", N: 150, numVariables: 0, expected: 30}, // 20% of 150 (N < 1000)
+		{designType: "Survey / Descriptive", N: 2000, numVariables: 0, expected: 200}, // 10% of 2000 (N >= 1000)
+		{designType: "Multiple Linear Regression", N: 1000, numVariables: 5, expected: 50},
+	}
+
+	for _, tt := range tests {
+		result := CalculateGayDiehl(tt.designType, tt.N, tt.numVariables)
+		if result != tt.expected {
+			t.Errorf("CalculateGayDiehl(design=%s, N=%d, vars=%d) = %d; want %d", tt.designType, tt.N, tt.numVariables, result, tt.expected)
+		}
+	}
+}
+
+// TestCalculateKishLeslie verifies Kish Leslie matches Cochran
+func TestCalculateKishLeslie(t *testing.T) {
+	result := CalculateKishLeslie(1.96, 0.5, 0.05)
+	expected := CalculateCochran(1.96, 0.5, 0.05)
+	if result != expected {
+		t.Errorf("CalculateKishLeslie = %d; want %d (matching Cochran)", result, expected)
+	}
+}
