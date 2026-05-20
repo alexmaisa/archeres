@@ -110,6 +110,123 @@ export default function WorkspaceClient() {
   const [previewLang, setPreviewLang] = useState<string>("id");
   // Toggle visibility of Right Preview Panel as a sliding drawer
   const [showPreview, setShowPreview] = useState<boolean>(false);
+  
+  // Custom states for premium utilities
+  const [codeTab, setCodeTab] = useState<"python" | "go">("python");
+  const [showReliability, setShowReliability] = useState<boolean>(false);
+  
+  // Reliability States
+  const [relType, setRelType] = useState<"cronbach" | "kr20">("cronbach");
+  const [relK, setRelK] = useState<number>(5);
+  const [relResp, setRelResp] = useState<number>(10);
+  const [sumVariances, setSumVariances] = useState<string>("2.5");
+  const [totVariance, setTotVariance] = useState<string>("12.4");
+  const [sumSuccessProd, setSumSuccessProd] = useState<string>("1.8");
+  const [relResult, setRelResult] = useState<number | null>(null);
+  const [relStatusKey, setRelStatusKey] = useState<string>("");
+  const [inputMode, setInputMode] = useState<"aggregate" | "grid">("aggregate");
+  const [isReliabilityIntegrated, setIsReliabilityIntegrated] = useState<boolean>(false);
+  
+  const [relMatrix, setRelMatrix] = useState<number[][]>(() => 
+    Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => 4))
+  );
+
+  const calculateReliability = () => {
+    if (relK <= 1 || relResp <= 1) {
+      setRelResult(null);
+      setRelStatusKey("");
+      return;
+    }
+
+    let result = 0;
+    if (inputMode === "aggregate") {
+      const k = relK;
+      const vt = parseFloat(totVariance) || 0;
+      if (vt <= 0) {
+        setRelResult(null);
+        setRelStatusKey("error_variance");
+        return;
+      }
+
+      if (relType === "cronbach") {
+        const viSum = parseFloat(sumVariances) || 0;
+        result = (k / (k - 1)) * (1 - viSum / vt);
+      } else {
+        const pqSum = parseFloat(sumSuccessProd) || 0;
+        result = (k / (k - 1)) * (1 - pqSum / vt);
+      }
+    } else {
+      // Grid mode
+      const k = relK;
+      const N = relResp;
+
+      // 1. Calculate item statistics
+      let viSum = 0; // for Cronbach
+      let pqSum = 0; // for KR-20
+
+      for (let j = 0; j < k; j++) {
+        const responses = [];
+        for (let i = 0; i < N; i++) {
+          const val = relMatrix[i]?.[j] !== undefined ? relMatrix[i][j] : (relType === "kr20" ? 1 : 4);
+          responses.push(val);
+        }
+
+        // Calculate mean
+        const mean = responses.reduce((acc, curr) => acc + curr, 0) / N;
+
+        // Calculate variance (sample variance with N-1 in denominator)
+        const squaredDiffs = responses.map(val => Math.pow(val - mean, 2));
+        const variance = squaredDiffs.reduce((acc, curr) => acc + curr, 0) / (N - 1);
+        viSum += variance;
+
+        // For KR-20
+        if (relType === "kr20") {
+          const p = responses.filter(v => v >= 0.5).length / N;
+          const q = 1 - p;
+          pqSum += p * q;
+        }
+      }
+
+      // 2. Calculate total test scores for each respondent
+      const totalScores = [];
+      for (let i = 0; i < N; i++) {
+        let sum = 0;
+        for (let j = 0; j < k; j++) {
+          const val = relMatrix[i]?.[j] !== undefined ? relMatrix[i][j] : (relType === "kr20" ? 1 : 4);
+          sum += val;
+        }
+        totalScores.push(sum);
+      }
+
+      // Calculate mean of total scores
+      const totalMean = totalScores.reduce((acc, curr) => acc + curr, 0) / N;
+
+      // Calculate total variance (sample variance)
+      const totalSquaredDiffs = totalScores.map(val => Math.pow(val - totalMean, 2));
+      const vt = totalSquaredDiffs.reduce((acc, curr) => acc + curr, 0) / (N - 1);
+
+      if (vt <= 0) {
+        setRelResult(null);
+        setRelStatusKey("error_variance");
+        return;
+      }
+
+      if (relType === "cronbach") {
+        result = (k / (k - 1)) * (1 - viSum / vt);
+      } else {
+        result = (k / (k - 1)) * (1 - pqSum / vt);
+      }
+    }
+
+    const rounded = Math.round(result * 10000) / 10000;
+    setRelResult(rounded);
+
+    if (rounded >= 0.90) setRelStatusKey("excellent");
+    else if (rounded >= 0.80) setRelStatusKey("good");
+    else if (rounded >= 0.70) setRelStatusKey("acceptable");
+    else if (rounded >= 0.60) setRelStatusKey("minimum");
+    else setRelStatusKey("unreliable");
+  };
 
   useEffect(() => {
     // Authenticate session locally
@@ -141,6 +258,32 @@ export default function WorkspaceClient() {
       setShowPreview(false);
     }
   }, [variables]);
+
+  // Synchronize response grid matrix dimension when relK or relResp changes
+  useEffect(() => {
+    setRelMatrix(prev => {
+      const defaultVal = relType === "kr20" ? 1 : 4;
+      const newMatrix = Array.from({ length: relResp }, (_, r) => {
+        const prevRow = prev[r] || [];
+        return Array.from({ length: relK }, (_, c) => {
+          if (prevRow[c] !== undefined) {
+            // Keep existing cell value but clamp if metric type changes
+            if (relType === "kr20") {
+              return prevRow[c] > 0.5 ? 1 : 0;
+            }
+            return prevRow[c];
+          }
+          return defaultVal;
+        });
+      });
+      return newMatrix;
+    });
+  }, [relK, relResp, relType]);
+
+  // Execute reliability calculations client-side E2EE reactively
+  useEffect(() => {
+    calculateReliability();
+  }, [relType, relK, relResp, sumVariances, totVariance, sumSuccessProd, inputMode, relMatrix]);
   const handleApproachChange = (apId: string) => {
     setApproach(apId);
     setMaxUnlockedStep(1); // Reset progression when paradigm changes
@@ -413,6 +556,305 @@ export default function WorkspaceClient() {
     setSampleSize(finalSize > N ? N : finalSize < 1 ? 1 : finalSize);
   };
 
+  const getSensitivityData = () => {
+    const N = Number(popSize);
+    const p = Number(proportion);
+    const q = 1 - p;
+    let z = 1.96;
+    if (confLevel === 0.90) z = 1.645;
+    else if (confLevel === 0.99) z = 2.576;
+
+    const dataPoints: { e: number; n: number }[] = [];
+    const minE = formula === "arikunto" ? 0.10 : 0.01;
+    const maxE = formula === "arikunto" ? 0.25 : 0.20;
+    const step = (maxE - minE) / 39; // exactly 40 points
+    
+    for (let i = 0; i < 40; i++) {
+      const e = minE + i * step;
+      let nVal = 0;
+      switch (formula) {
+        case "slovin":
+        case "yamane":
+          nVal = N / (1 + N * (e * e));
+          break;
+        case "cochran":
+        case "kish_leslie":
+          nVal = (z * z * p * q) / (e * e);
+          break;
+        case "lemeshow":
+          const n0L = (z * z * p * q) / (e * e);
+          nVal = n0L / (1 + (n0L - 1) / N);
+          break;
+        case "krejcie_morgan":
+          const chi2 = 3.841;
+          nVal = (chi2 * N * p * q) / ((e * e) * (N - 1) + chi2 * p * q);
+          break;
+        case "daniel":
+          nVal = (z * z * p * q) / (e * e);
+          break;
+        case "isaac_michael":
+          let chi2IM = 3.841;
+          if (e <= 0.01) chi2IM = 6.635;
+          else if (e <= 0.05) chi2IM = 3.841;
+          else chi2IM = 2.706;
+          nVal = (chi2IM * N * p * q) / ((e * e) * (N - 1) + chi2IM * p * q);
+          break;
+        case "arikunto":
+          if (N < 100) nVal = N;
+          else nVal = N * e;
+          break;
+        case "gay_diehl":
+          if (design === "Survey / Descriptive") {
+            if (N < 1000) nVal = N * 0.20;
+            else nVal = N * 0.10;
+          } else {
+            if (design === "Correlational") nVal = 30;
+            else if (design === "Experimental" || design === "Quasi-Experimental" || design === "Causal-Comparative") nVal = 60;
+            else nVal = variables.length > 0 ? 10 * variables.length : 30;
+          }
+          break;
+        default:
+          nVal = N / (1 + N * (e * e));
+      }
+
+      let roundedN = Math.ceil(nVal);
+      if (roundedN > N) roundedN = N;
+      if (roundedN < 1) roundedN = 1;
+      dataPoints.push({ e, n: roundedN });
+    }
+    return dataPoints;
+  };
+
+  const getStatisticalRecommendation = () => {
+    if (variables.length === 0) {
+      return {
+        testNameId: "Statistik Deskriptif dan Inferensial",
+        testNameEn: "Descriptive and Inferential Statistics",
+        whyId: "Belum ada variabel yang didefinisikan. Tambahkan variabel di atas untuk mengaktifkan analisis otomatis.",
+        whyEn: "No variables defined yet. Add variables above to enable automated advice.",
+        codePython: "# Define variables first to see code generator",
+        codeGo: "// Define variables first to see code generator"
+      };
+    }
+
+    const ivs = variables.filter(v => v.role === "Independent (Cause)" || v.role === "Independent (Sebab)" || v.role === "Independent (Sebab)");
+    const dvs = variables.filter(v => v.role === "Dependent (Effect)" || v.role === "Dependent (Akibat)");
+    
+    const isNominal = (scale: string) => scale.toLowerCase().includes("nominal");
+    const isOrdinal = (scale: string) => scale.toLowerCase().includes("ordinal");
+    const isIntervalOrRatio = (scale: string) => scale.toLowerCase().includes("interval") || scale.toLowerCase().includes("ratio") || scale.toLowerCase().includes("rasio");
+
+    // 1. Nominal IV + 1 continuous DV -> Independent T-Test
+    if (ivs.length === 1 && dvs.length === 1 && isNominal(ivs[0].scale) && isIntervalOrRatio(dvs[0].scale)) {
+      const ivName = ivs[0].name || "IV";
+      const dvName = dvs[0].name || "DV";
+      return {
+        testNameId: "Uji-t Dua Sampel Independen (Independent t-Test)",
+        testNameEn: "Independent Samples t-Test",
+        whyId: `Menganalisis perbedaan rata-rata variabel dependen '${dvName}' (rasio/interval) antara dua kelompok terpisah pada variabel bebas '${ivName}' (nominal).`,
+        whyEn: `Compares the mean score of the interval/ratio dependent variable '${dvName}' across two distinct categories of the independent variable '${ivName}'.`,
+        codePython: `import scipy.stats as stats
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("research_data.csv")
+# Group DV scores by IV categories
+group1 = df[df['${ivName}'] == df['${ivName}'].unique()[0]]['${dvName}']
+group2 = df[df['${ivName}'] == df['${ivName}'].unique()[1]]['${dvName}']
+
+# Run Independent t-Test
+t_stat, p_val = stats.ttest_ind(group1, group2, equal_var=False)
+print(f"t-Statistic: {t_stat:.4f}, p-Value: {p_val:.4f}")
+if p_val < 0.05:
+    print("Significantly different (Reject H0)")`,
+        codeGo: `package main
+
+import (
+	"fmt"
+	"math"
+)
+
+// Simple t-test calculation logic
+func runTTest(g1, g2 []float64) (float64, float64) {
+	mean1, var1 := calcStats(g1)
+	mean2, var2 := calcStats(g2)
+	n1, n2 := float64(len(g1)), float64(len(g2))
+	
+	tStat := (mean1 - mean2) / math.Sqrt((var1/n1) + (var2/n2))
+	df := n1 + n2 - 2
+	fmt.Printf("Computed t: %f on %f DoF\\n", tStat, df)
+	return tStat, df
+}
+
+func calcStats(data []float64) (float64, float64) {
+	sum := 0.0
+	for _, v := range data { sum += v }
+	mean := sum / float64(len(data))
+	vSum := 0.0
+	for _, v := range data { vSum += math.Pow(v-mean, 2) }
+	variance := vSum / float64(len(data)-1)
+	return mean, variance
+}`
+      };
+    }
+
+    // 2. Nominal IV + Nominal DV -> Chi-Square Test
+    if (ivs.length === 1 && dvs.length === 1 && isNominal(ivs[0].scale) && isNominal(dvs[0].scale)) {
+      const ivName = ivs[0].name || "IV";
+      const dvName = dvs[0].name || "DV";
+      return {
+        testNameId: "Uji Kai Kuadrat (Chi-Square Test of Independence)",
+        testNameEn: "Chi-Square Test of Independence",
+        whyId: `Menguji hubungan/asosiasi antara dua variabel kategorikal: '${ivName}' (nominal) dan '${dvName}' (nominal).`,
+        whyEn: `Tests the association between two categorical variables: '${ivName}' (nominal) and '${dvName}' (nominal).`,
+        codePython: `import scipy.stats as stats
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("research_data.csv")
+contingency_table = pd.crosstab(df['${ivName}'], df['${dvName}'])
+
+# Run Chi-Square test
+chi2, p_val, dof, expected = stats.chi2_contingency(contingency_table)
+print(f"Chi2: {chi2:.4f}, p-Value: {p_val:.4f}, DoF: {dof}")
+if p_val < 0.05:
+    print("Variables are significantly associated (Reject H0)")`,
+        codeGo: `package main
+
+import "fmt"
+
+func runChiSquare(observed [][]float64) {
+	// Compute expected frequencies: E_ij = (RowTotal * ColTotal) / GrandTotal
+	// Compute sum of (O_ij - E_ij)^2 / E_ij
+	fmt.Println("Compute Chi-square statistic and look up critical p-value")
+}`
+      };
+    }
+
+    // 3. Ordinal IV + Ordinal DV -> Spearman Correlation
+    if (ivs.length === 1 && dvs.length === 1 && (isOrdinal(ivs[0].scale) || isOrdinal(dvs[0].scale))) {
+      const ivName = ivs[0].name || "IV";
+      const dvName = dvs[0].name || "DV";
+      return {
+        testNameId: "Korelasi Peringkat Spearman (Spearman's Rank Correlation)",
+        testNameEn: "Spearman's Rank Correlation",
+        whyId: `Menguji tingkat kekuatan dan arah hubungan monotonik antara dua variabel berskala ordinal/peringkat: '${ivName}' dan '${dvName}'.`,
+        whyEn: `Measures the strength and direction of monotonic association between ordinal/ranked variables: '${ivName}' and '${dvName}'.`,
+        codePython: `import scipy.stats as stats
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("research_data.csv")
+
+# Run Spearman Correlation
+rho, p_val = stats.spearmanr(df['${ivName}'], df['${dvName}'])
+print(f"Spearman's rho: {rho:.4f}, p-Value: {p_val:.4f}")`,
+        codeGo: `package main
+
+import (
+	"fmt"
+)
+
+// Calculate Spearman Rank Correlation coefficient
+func runSpearman(x, y []float64) float64 {
+	// 1. Convert raw values to ranks
+	// 2. Compute Pearson correlation on the ranks
+	fmt.Println("Rank values and compute Spearman rho")
+	return 0.0
+}`
+      };
+    }
+
+    // 4. Multiple IVs + 1 continuous DV -> Multiple Linear Regression
+    if (ivs.length >= 2 && dvs.length === 1 && isIntervalOrRatio(dvs[0].scale)) {
+      const dvName = dvs[0].name || "DV";
+      return {
+        testNameId: "Regresi Linear Berganda (Multiple Linear Regression)",
+        testNameEn: "Multiple Linear Regression",
+        whyId: `Menguji pengaruh simultan dan parsial dari beberapa variabel bebas (${ivs.map(v => `'${v.name || "IV"}'`).join(", ")}) terhadap satu variabel terikat '${dvName}' (skala rasio/interval).`,
+        whyEn: `Evaluates the simultaneous and partial relationships between multiple independent variables (${ivs.map(v => `'${v.name || "IV"}'`).join(", ")}) and a single metric dependent outcome '${dvName}'.`,
+        codePython: `import statsmodels.api as sm
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("research_data.csv")
+X = df[[${ivs.map(v => `'${v.name || "IV"}'`).join(", ")}]]
+y = df['${dvName}']
+
+# Add intercept and fit OLS model
+X = sm.add_constant(X)
+model = sm.OLS(y, X).fit()
+print(model.summary())`,
+        codeGo: `package main
+
+import "fmt"
+
+func runMultipleRegression() {
+	// Multiple linear regression estimates: Beta = (X^T * X)^(-1) * X^T * Y
+	fmt.Println("Perform matrix multiplication, inversion, and solve for regression weights")
+}`
+      };
+    }
+
+    // 5. 1 continuous IV + 1 continuous DV -> Simple Linear Regression / Pearson
+    if (ivs.length === 1 && dvs.length === 1 && isIntervalOrRatio(ivs[0].scale) && isIntervalOrRatio(dvs[0].scale)) {
+      const ivName = ivs[0].name || "IV";
+      const dvName = dvs[0].name || "DV";
+      return {
+        testNameId: "Regresi Linear Sederhana & Korelasi Pearson",
+        testNameEn: "Simple Linear Regression & Pearson Correlation",
+        whyId: `Mengukur keeratan hubungan linear dan memodelkan pengaruh variabel bebas '${ivName}' (rasio/interval) terhadap variabel terikat '${dvName}' (rasio/interval).`,
+        whyEn: `Measures the strength of linear association (Pearson r) and models the effect of independent variable '${ivName}' on dependent outcome '${dvName}'.`,
+        codePython: `import scipy.stats as stats
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv("research_data.csv")
+
+# Pearson Correlation
+r_val, p_val = stats.pearsonr(df['${ivName}'], df['${dvName}'])
+print(f"Pearson Correlation r: {r_val:.4f}, p-Value: {p_val:.4f}")
+
+# Simple Linear Regression
+slope, intercept, r, p, se = stats.linregress(df['${ivName}'], df['${dvName}'])
+print(f"Regression Equation: Y = {slope:.4f} * X + {intercept:.4f}")`,
+        codeGo: `package main
+
+import "fmt"
+
+func runSimpleRegression(x, y []float64) (float64, float64) {
+	// Compute Slope (Beta_1) = sum((x_i - meanX)*(y_i - meanY)) / sum((x_i - meanX)^2)
+	// Compute Intercept (Beta_0) = meanY - Slope * meanX
+	fmt.Println("Compute Simple Linear Regression parameters")
+	return 0.0, 0.0
+}`
+      };
+    }
+
+    // Default Fallback
+    return {
+      testNameId: "Regresi Linear Berganda (Multiple Linear Regression)",
+      testNameEn: "Multiple Linear Regression",
+      whyId: "Sistem merekomendasikan Regresi Linear Berganda sebagai prosedur standar untuk menguji kontribusi variabel bebas terhadap variabel terikat.",
+      whyEn: "System recommends Multiple Linear Regression as the general-purpose procedure to analyze independent contributions to the dependent outcome.",
+      codePython: `import statsmodels.api as sm
+import pandas as pd
+
+df = pd.read_csv("research_data.csv")
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+model = sm.OLS(y, sm.add_constant(X)).fit()
+print(model.summary())`,
+      codeGo: `package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Descriptive and Inferential Statistics for E2EE variables")
+}`
+    };
+  };
+
   const handleAddVariable = () => {
     setVariables([...variables, { name: "", role: "Independent (Cause)", scale: "Interval (Ordered, Equal Distances)" }]);
   };
@@ -572,6 +1014,27 @@ Ukuran sampel atau jumlah informan dalam penelitian ini tidak ditentukan oleh ru
 2. **Fase Kualitatif:** Penentuan subjek dilakukan secara purposif (*Non-Probability*) dengan prinsip **Saturasi Data (Data Saturation)** guna memperoleh kedalaman wawasan kualitatif.`;
       }
 
+      // Recommender justification
+      let recJustification = "";
+      if (variables.length > 0) {
+        const rec = getStatisticalRecommendation();
+        if (analysisMethod === rec.testNameId || analysisMethod === rec.testNameEn) {
+          recJustification = `\n\n**Justifikasi Metodologis Pemilihan Uji:**\n${rec.whyId}`;
+        }
+      }
+
+      // Reliability subsection
+      let reliabilitySection = "";
+      if (isReliabilityIntegrated && relResult !== null) {
+        reliabilitySection = `\n\n## 3.5 Validitas dan Reliabilitas Instrumen\nAkurasi dan konsistensi instrumen penelitian diuji secara ilmiah melalui pengujian validitas dan reliabilitas. Uji coba instrumen (pilot study) dilakukan terhadap **${relResp}** responden di luar sampel penelitian namun memiliki karakteristik populasi yang sama.\n\n### 3.5.1 Uji Validitas Instrumen\nPengujian validitas butir kuesioner dilakukan menggunakan teknik korelasi Product Moment Pearson. Butir pertanyaan dinyatakan valid apabila nilai koefisien korelasi ($r_{hitung}$) lebih besar dari tabel distribusi nilai $r$ ($r_{tabel}$) pada tingkat signifikansi $5\\%$. Hanya butir-butir pertanyaan yang terbukti valid yang akan digunakan dalam pengumpulan data penelitian yang sesungguhnya.\n\n### 3.5.2 Uji Reliabilitas Instrumen\nKonsistensi internal instrumen kuesioner diukur menggunakan koefisien **${relType === "cronbach" ? "Cronbach's Alpha" : "Kuder-Richardson 20 (KR-20)"}**. Uji reliabilitas dilakukan terhadap **${relK}** butir pertanyaan yang telah dinyatakan valid.\nBerdasarkan hasil analisis komputasi client-side (E2EE), diperoleh koefisien reliabilitas sebesar **${relResult.toFixed(4)}**. Berdasarkan kriteria teoretis ilmiah (Nunnally & Bernstein, 1994), instrumen dinyatakan **${relResult >= 0.60 ? "RELIABEL" : "TIDAK RELIABEL"}** karena nilai koefisien yang diperoleh **${relResult >= 0.60 ? "memenuhi batas ambang minimum (\\ge 0.60)" : "di bawah ambang batas minimum (< 0.60)"}**, yang menunjukkan tingkat keandalan instrumen masuk dalam kategori **${
+          relStatusKey === "excellent" ? "Sangat Tinggi (Excellent)" :
+          relStatusKey === "good" ? "Tinggi (Good)" :
+          relStatusKey === "acceptable" ? "Sedang (Acceptable)" :
+          relStatusKey === "minimum" ? "Cukup/Minimum (Acceptable)" :
+          "Rendah/Tidak Reliabel (Unreliable)"
+        }**.`;
+      }
+
       return `# BAB III: METODOLOGI PENELITIAN
 
 ## 3.1 Pendekatan dan Desain Penelitian
@@ -589,7 +1052,7 @@ ${variables.length > 0 ? variables.map(v => `| ${v.name || "Unnamed"} | ${v.role
 
 ## 3.4 Rencana Analisis Data
 Berdasarkan jenis variabel dan skala data yang telah dipetakan, hipotesis penelitian ini akan diuji menggunakan instrumen statistik inferensial:
-* **${analysisMethod || "Statistik Deskriptif dan Inferensial"}**
+* **${analysisMethod || "Statistik Deskriptif dan Inferensial"}**${recJustification}${reliabilitySection}
 `;
     } else {
       let approachText = "Quantitative";
@@ -627,6 +1090,27 @@ The sample size is not determined by mathematical probability estimation formula
 2. **Qualitative Strand:** Participants are selected using purposive (*Non-Probability*) sampling, guided strictly by **Data Saturation** principles to yield rich qualitative depth.`;
       }
 
+      // Recommender justification
+      let recJustification = "";
+      if (variables.length > 0) {
+        const rec = getStatisticalRecommendation();
+        if (analysisMethod === rec.testNameId || analysisMethod === rec.testNameEn) {
+          recJustification = `\n\n**Methodological Justification for Test Selection:**\n${rec.whyEn}`;
+        }
+      }
+
+      // Reliability subsection
+      let reliabilitySection = "";
+      if (isReliabilityIntegrated && relResult !== null) {
+        reliabilitySection = `\n\n## 3.5 Instrument Validity and Reliability\nTo ensure accuracy and internal consistency, the research instrument underwent rigorous scientific validity and reliability pre-testing. A pilot study was conducted involving **${relResp}** respondents who share similar characteristic profiles with the target population but are excluded from the final research sample.\n\n### 3.5.1 Instrument Validity Testing\nItem validity was assessed using the Pearson Product-Moment Correlation Coefficient. An item is considered empirically valid if its correlation coefficient ($r_{calculated}$) exceeds the critical value from the $r$-table ($r_{table}$) at a $5\\%$ significance level. Only items that demonstrated statistical validity are retained for the final data collection instrument.\n\n### 3.5.2 Instrument Reliability Testing\nThe internal consistency of the questionnaire was calculated using the **${relType === "cronbach" ? "Cronbach's Alpha" : "Kuder-Richardson 20 (KR-20)"}** coefficient across **${relK}** validated items.\nBased on the client-side (E2EE) computational analysis, the calculated reliability coefficient is **${relResult.toFixed(4)}**. Under standard psychometric guidelines (Nunnally & Bernstein, 1994), an instrument is deemed **${relResult >= 0.60 ? "RELIABLE" : "UNRELIABLE"}** because the coefficient **${relResult >= 0.60 ? "exceeds the minimum academic threshold of \\ge 0.60" : "fails to meet the minimum threshold of < 0.60"}**, representing **${
+          relStatusKey === "excellent" ? "Excellent" :
+          relStatusKey === "good" ? "Good" :
+          relStatusKey === "acceptable" ? "Acceptable" :
+          relStatusKey === "minimum" ? "Questionable / Minimum" :
+          "Unreliable"
+        }** internal consistency.`;
+      }
+
       return `# CHAPTER III: RESEARCH METHODOLOGY
 
 ## 3.1 Research Approach and Design
@@ -644,7 +1128,7 @@ ${variables.length > 0 ? variables.map(v => `| ${v.name || "Unnamed"} | ${v.role
 
 ## 3.4 Data Analysis Plan
 Aligned with the scale of measurements and variable distribution, statistical hypothesis testing will be executed using:
-* **${analysisMethod || "Descriptive and Inferential Statistics"}**
+* **${analysisMethod || "Descriptive and Inferential Statistics"}**${recJustification}${reliabilitySection}
 `;
     }
   };
@@ -2674,6 +3158,128 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     {approach === "qual" ? t("wizard.targetParticipantsDesc") : t("wizard.sampleSizeDesc")}
                   </p>
                 </div>
+
+                {/* Component 1: Interactive Sampling Power & Sensitivity Visualizer */}
+                {approach !== "qual" && formula !== "saturation" && (
+                  <div style={{ marginTop: "1.5rem", padding: "1.25rem" }} className="glass-panel">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "rgba(255,255,255,0.9)" }}>
+                        📈 {t("wizard.visualizerTitle")}
+                      </span>
+                      <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "20px", background: "rgba(167, 139, 250, 0.1)", color: "#c084fc", border: "1px solid rgba(167, 139, 250, 0.2)" }}>
+                        {formula.toUpperCase().replace("_", " ")}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", margin: "0 0 1rem 0", lineHeight: 1.35 }}>
+                      {t("wizard.visualizerDesc")}
+                    </p>
+
+                    <div style={{ display: "flex", justifyContent: "center", position: "relative", padding: "0.5rem", background: "rgba(0,0,0,0.15)", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      {(() => {
+                        const sensData = getSensitivityData();
+                        const maxN = Math.max(...sensData.map(d => d.n), 50);
+                        const minE = formula === "arikunto" ? 0.10 : 0.01;
+                        const maxE = formula === "arikunto" ? 0.25 : 0.20;
+                        
+                        const points = sensData.map(d => {
+                          const x = 35 + ((d.e - minE) / (maxE - minE)) * 330;
+                          const y = 145 - (d.n / maxN) * 125;
+                          return `${x},${y}`;
+                        });
+                        const pathD = points.length > 0 ? `M ${points.join(" L ")}` : "";
+
+                        const currentX = 35 + ((marginError - minE) / (maxE - minE)) * 330;
+                        const currentY = 145 - (sampleSize / maxN) * 125;
+
+                        return (
+                          <svg width="100%" height="175" viewBox="0 0 400 175" style={{ overflow: "visible" }}>
+                            <defs>
+                              <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#a78bfa" />
+                                <stop offset="100%" stopColor="#22d3ee" />
+                              </linearGradient>
+                              <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.15" />
+                                <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+                              </linearGradient>
+                              <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                  <feMergeNode in="coloredBlur"/>
+                                  <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                              </filter>
+                            </defs>
+
+                            <line x1="35" y1="20" x2="365" y2="20" stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+                            <line x1="35" y1="82.5" x2="365" y2="82.5" stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+                            <line x1="35" y1="145" x2="365" y2="145" stroke="rgba(255,255,255,0.15)" />
+                            
+                            <line x1="35" y1="20" x2="35" y2="145" stroke="rgba(255,255,255,0.15)" />
+                            <line x1="200" y1="20" x2="200" y2="145" stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+                            <line x1="365" y1="20" x2="365" y2="145" stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+
+                            {points.length > 0 && (
+                              <path
+                                d={`${pathD} L 365,145 L 35,145 Z`}
+                                fill="url(#areaGradient)"
+                              />
+                            )}
+
+                            <path
+                              d={pathD}
+                              fill="none"
+                              stroke="url(#curveGradient)"
+                              strokeWidth="2.5"
+                              filter="url(#glow)"
+                              style={{ transition: "stroke 0.3s ease" }}
+                            />
+
+                            <text x="35" y="160" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">
+                              {(minE * 100).toFixed(0)}%
+                            </text>
+                            <text x="200" y="160" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">
+                              {t("wizard.visualizerXAxis")}
+                            </text>
+                            <text x="365" y="160" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">
+                              {(maxE * 100).toFixed(0)}%
+                            </text>
+
+                            <text x="27" y="148" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="end">
+                              0
+                            </text>
+                            <text x="27" y="86" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="end">
+                              {Math.ceil(maxN / 2)}
+                            </text>
+                            <text x="27" y="24" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="end">
+                              {maxN}
+                            </text>
+
+                            <line x1={currentX} y1="145" x2={currentX} y2={currentY} stroke="rgba(167, 139, 250, 0.4)" strokeDasharray="2,2" />
+                            <line x1="35" y1={currentY} x2={currentX} y2={currentY} stroke="rgba(167, 139, 250, 0.4)" strokeDasharray="2,2" />
+
+                            <circle
+                              cx={currentX}
+                              cy={currentY}
+                              r="6"
+                              fill="#22d3ee"
+                              stroke="#fff"
+                              strokeWidth="2"
+                              filter="url(#glow)"
+                            />
+                            
+                            <g transform={`translate(${currentX > 250 ? currentX - 100 : currentX + 15}, ${currentY > 100 ? currentY - 35 : currentY + 10})`}>
+                              <rect width="85" height="26" rx="4" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.1)" />
+                              <text x="8" y="16" fill="#fff" fontSize="8" fontWeight="bold">
+                                e={(marginError * 100).toFixed(1)}%, n={sampleSize}
+                              </text>
+                            </g>
+                          </svg>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -2738,14 +3344,574 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 <div style={styles.adviceCard} className="glass-panel">
                   <span style={styles.adviceLabel}>💡 {t("wizard.analysisLabel")}</span>
                   <p style={styles.inputHelp}>{t("wizard.analysisDesc")}</p>
-                  <input
-                    type="text"
-                    value={analysisMethod}
-                    onChange={(e) => setAnalysisMethod(e.target.value)}
-                    className="form-input"
-                    style={{ marginTop: "1rem" }}
-                    placeholder={t("wizard.analysisPlaceholder")}
-                  />
+                  
+                  {/* Smart Advisor Recommendation Card */}
+                  {variables.length > 0 && (
+                    <div style={{
+                      marginTop: "1.25rem",
+                      padding: "1rem",
+                      background: "rgba(124, 58, 237, 0.05)",
+                      border: "1px solid rgba(124, 58, 237, 0.25)",
+                      borderRadius: "10px",
+                      textAlign: "left"
+                    }} className="animate-fade-in">
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+                        <span style={{ fontSize: "0.72rem", textTransform: "uppercase", fontWeight: 700, color: "#a78bfa" }}>
+                          🧠 {t("wizard.advisorTitle")}
+                        </span>
+                        {analysisMethod === (i18n.language === "id" ? getStatisticalRecommendation().testNameId : getStatisticalRecommendation().testNameEn) && (
+                          <span style={{ fontSize: "0.68rem", padding: "0.1rem 0.4rem", borderRadius: "10px", background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.25)" }}>
+                            ✓ Active
+                          </span>
+                        )}
+                      </div>
+                      <h4 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#fff", margin: "0 0 0.5rem 0" }}>
+                        {i18n.language === "id" ? getStatisticalRecommendation().testNameId : getStatisticalRecommendation().testNameEn}
+                      </h4>
+                      <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.7)", margin: "0 0 0.75rem 0", lineHeight: 1.4 }}>
+                        <strong>{t("wizard.advisorWhy")}:</strong> {i18n.language === "id" ? getStatisticalRecommendation().whyId : getStatisticalRecommendation().whyEn}
+                      </p>
+
+                      <button
+                        onClick={() => {
+                          const rec = getStatisticalRecommendation();
+                          setAnalysisMethod(i18n.language === "id" ? rec.testNameId : rec.testNameEn);
+                        }}
+                        className="btn btn-outline"
+                        style={{
+                          width: "100%",
+                          padding: "0.45rem",
+                          fontSize: "0.78rem",
+                          borderColor: "rgba(167, 139, 250, 0.4)",
+                          color: "#c084fc",
+                          background: "rgba(167, 139, 250, 0.03)",
+                          marginBottom: "1rem"
+                        }}
+                      >
+                        ⚡ {t("wizard.advisorApplyBtn")}
+                      </button>
+
+                      <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+                          <button
+                            onClick={() => setCodeTab("python")}
+                            style={{
+                              flex: 1,
+                              padding: "0.4rem",
+                              fontSize: "0.74rem",
+                              background: codeTab === "python" ? "rgba(167, 139, 250, 0.15)" : "transparent",
+                              color: codeTab === "python" ? "#c084fc" : "rgba(255,255,255,0.4)",
+                              border: "none",
+                              cursor: "pointer",
+                              borderTopLeftRadius: "8px"
+                            }}
+                          >
+                            Python (SciPy)
+                          </button>
+                          <button
+                            onClick={() => setCodeTab("go")}
+                            style={{
+                              flex: 1,
+                              padding: "0.4rem",
+                              fontSize: "0.74rem",
+                              background: codeTab === "go" ? "rgba(167, 139, 250, 0.15)" : "transparent",
+                              color: codeTab === "go" ? "#c084fc" : "rgba(255,255,255,0.4)",
+                              border: "none",
+                              cursor: "pointer",
+                              borderTopRightRadius: "8px"
+                            }}
+                          >
+                            Go (Math)
+                          </button>
+                        </div>
+                        <pre style={{
+                          margin: 0,
+                          padding: "0.75rem",
+                          fontSize: "0.68rem",
+                          color: "#38bdf8",
+                          fontFamily: "monospace",
+                          overflowX: "auto",
+                          maxHeight: "150px",
+                          lineHeight: 1.35
+                        }}>
+                          <code>{codeTab === "python" ? getStatisticalRecommendation().codePython : getStatisticalRecommendation().codeGo}</code>
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ marginTop: "1rem", textAlign: "left" }}>
+                    <label style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)", fontWeight: 700 }}>
+                      {i18n.language === "id" ? "Metode Terpilih (Kustomisasi Manual)" : "Selected Method (Manual Override)"}
+                    </label>
+                    <input
+                      type="text"
+                      value={analysisMethod}
+                      onChange={(e) => setAnalysisMethod(e.target.value)}
+                      className="form-input"
+                      style={{ marginTop: "0.4rem" }}
+                      placeholder={t("wizard.analysisPlaceholder")}
+                    />
+                  </div>
+                </div>
+
+                {/* E2EE Instrument Reliability Panel */}
+                <div style={{
+                  marginTop: "2rem",
+                  padding: "1.5rem",
+                  borderColor: "rgba(167, 139, 250, 0.2)",
+                  background: "rgba(167, 139, 250, 0.02)",
+                  borderRadius: "12px",
+                  textAlign: "left"
+                }} className="glass-panel">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <span style={{
+                        fontSize: "0.9rem",
+                        fontWeight: 700,
+                        color: "#a78bfa",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem"
+                      }}>
+                        🔒 {t("wizard.reliabilityTitle")} <span style={{
+                          fontSize: "0.68rem",
+                          background: "rgba(167, 139, 250, 0.15)",
+                          color: "#c084fc",
+                          padding: "0.15rem 0.4rem",
+                          borderRadius: "4px",
+                          fontWeight: 600
+                        }}>ZERO-KNOWLEDGE E2EE</span>
+                      </span>
+                      <p style={{ ...styles.inputHelp, marginTop: "0.25rem", marginBottom: 0 }}>
+                        {t("wizard.reliabilityDesc")}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowReliability(!showReliability)}
+                      className="btn btn-outline"
+                      style={{
+                        padding: "0.4rem 0.8rem",
+                        fontSize: "0.78rem",
+                        borderColor: "rgba(167, 139, 250, 0.3)",
+                        color: "#c084fc",
+                        background: showReliability ? "rgba(167, 139, 250, 0.1)" : "transparent"
+                      }}
+                    >
+                      {showReliability ? (i18n.language === "id" ? "Tutup" : "Hide") : (i18n.language === "id" ? "Buka Kalkulator" : "Open Calculator")}
+                    </button>
+                  </div>
+
+                  {showReliability && (
+                    <div style={{ marginTop: "1.5rem" }} className="animate-fade-in">
+                      {/* Metric & Meta Row */}
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: isMobile ? "1fr" : "1.2fr 0.9fr 0.9fr",
+                        gap: "1rem",
+                        marginBottom: "1.25rem"
+                      }}>
+                        <div>
+                          <label style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 700, display: "block", marginBottom: "0.4rem" }}>
+                            {t("wizard.reliabilityType")}
+                          </label>
+                          <div style={{
+                            display: "flex",
+                            background: "rgba(0,0,0,0.2)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                            borderRadius: "6px",
+                            padding: "2px"
+                          }}>
+                            <button
+                              onClick={() => setRelType("cronbach")}
+                              style={{
+                                flex: 1,
+                                padding: "0.35rem 0.5rem",
+                                fontSize: "0.75rem",
+                                background: relType === "cronbach" ? "rgba(167, 139, 250, 0.15)" : "transparent",
+                                color: relType === "cronbach" ? "#c084fc" : "rgba(255,255,255,0.4)",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontWeight: 700
+                              }}
+                            >
+                              Cronbach's Alpha (Likert)
+                            </button>
+                            <button
+                              onClick={() => setRelType("kr20")}
+                              style={{
+                                flex: 1,
+                                padding: "0.35rem 0.5rem",
+                                fontSize: "0.75rem",
+                                background: relType === "kr20" ? "rgba(167, 139, 250, 0.15)" : "transparent",
+                                color: relType === "kr20" ? "#c084fc" : "rgba(255,255,255,0.4)",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontWeight: 700
+                              }}
+                            >
+                              KR-20 (Dichotomous)
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 700, display: "block", marginBottom: "0.4rem" }}>
+                            {t("wizard.reliabilityItems")}
+                          </label>
+                          <input
+                            type="number"
+                            min="2"
+                            max="50"
+                            value={relK}
+                            onChange={(e) => {
+                              const v = Math.min(50, Math.max(2, parseInt(e.target.value) || 2));
+                              setRelK(v);
+                            }}
+                            className="form-input"
+                            style={{ height: "34px", fontSize: "0.85rem" }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", fontWeight: 700, display: "block", marginBottom: "0.4rem" }}>
+                            {t("wizard.reliabilityResp")}
+                          </label>
+                          <input
+                            type="number"
+                            min="2"
+                            max="50"
+                            value={relResp}
+                            onChange={(e) => {
+                              const v = Math.min(50, Math.max(2, parseInt(e.target.value) || 2));
+                              setRelResp(v);
+                            }}
+                            className="form-input"
+                            style={{ height: "34px", fontSize: "0.85rem" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Input Mode Navigation Tabs */}
+                      <div style={{
+                        display: "flex",
+                        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                        marginBottom: "1.25rem"
+                      }}>
+                        <button
+                          onClick={() => setInputMode("aggregate")}
+                          style={{
+                            padding: "0.5rem 1rem",
+                            fontSize: "0.78rem",
+                            fontWeight: 700,
+                            background: "transparent",
+                            color: inputMode === "aggregate" ? "#c084fc" : "rgba(255,255,255,0.45)",
+                            border: "none",
+                            borderBottom: inputMode === "aggregate" ? "2px solid #a78bfa" : "none",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease"
+                          }}
+                        >
+                          📊 {t("wizard.reliabilityAggregateTab")}
+                        </button>
+                        <button
+                          onClick={() => setInputMode("grid")}
+                          style={{
+                            padding: "0.5rem 1rem",
+                            fontSize: "0.78rem",
+                            fontWeight: 700,
+                            background: "transparent",
+                            color: inputMode === "grid" ? "#c084fc" : "rgba(255,255,255,0.45)",
+                            border: "none",
+                            borderBottom: inputMode === "grid" ? "2px solid #a78bfa" : "none",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease"
+                          }}
+                        >
+                          🎛️ {t("wizard.reliabilityMatrixTab")}
+                        </button>
+                      </div>
+
+                      {/* Aggregate Inputs Panel */}
+                      {inputMode === "aggregate" && (
+                        <div style={{
+                          display: "grid",
+                          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                          gap: "1rem",
+                          padding: "1rem",
+                          background: "rgba(0,0,0,0.15)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255,255,255,0.04)"
+                        }} className="animate-fade-in">
+                          {relType === "cronbach" ? (
+                            <div>
+                              <label style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "0.3rem" }}>
+                                {t("wizard.reliabilitySumVariances")} (Σ s_i²)
+                              </label>
+                              <input
+                                type="text"
+                                value={sumVariances}
+                                onChange={(e) => setSumVariances(e.target.value)}
+                                className="form-input"
+                                placeholder="E.g., 2.5"
+                                style={{ height: "32px", fontSize: "0.8rem" }}
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <label style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "0.3rem" }}>
+                                {t("wizard.reliabilitySuccessProduct")} (Σ p_i q_i)
+                              </label>
+                              <input
+                                type="text"
+                                value={sumSuccessProd}
+                                onChange={(e) => setSumSuccessProd(e.target.value)}
+                                className="form-input"
+                                placeholder="E.g., 1.8"
+                                style={{ height: "32px", fontSize: "0.8rem" }}
+                              />
+                            </div>
+                          )}
+
+                          <div>
+                            <label style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", display: "block", marginBottom: "0.3rem" }}>
+                              {t("wizard.reliabilityTotalVariance")} (s_t²)
+                            </label>
+                            <input
+                              type="text"
+                              value={totVariance}
+                              onChange={(e) => setTotVariance(e.target.value)}
+                              className="form-input"
+                              placeholder="E.g., 12.4"
+                              style={{ height: "32px", fontSize: "0.8rem" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Interactive Simulation Grid Panel */}
+                      {inputMode === "grid" && (
+                        <div style={{
+                          padding: "1rem",
+                          background: "rgba(0,0,0,0.15)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255,255,255,0.04)"
+                        }} className="animate-fade-in">
+                          <p style={{ ...styles.inputHelp, fontSize: "0.7rem", color: "#38bdf8", marginBottom: "0.75rem" }}>
+                            {relType === "cronbach"
+                              ? (i18n.language === "id"
+                                  ? "✍️ Masukkan nilai kuesioner Likert (skor 1-5). Variabel dihitung real-time secara lokal."
+                                  : "✍️ Enter continuous Likert response values (scores 1-5). Math computes locally in real-time.")
+                              : (i18n.language === "id"
+                                  ? "⚡ Klik cell untuk toggle respon biner: 0 (Gagal/Salah) atau 1 (Sukses/Benar)."
+                                  : "⚡ Click grid cells to toggle dichotomous response: 0 (Failure) or 1 (Success).")}
+                          </p>
+
+                          <div style={{
+                            overflowX: "auto",
+                            maxHeight: "260px",
+                            overflowY: "auto",
+                            border: "1px solid rgba(255,255,255,0.05)",
+                            borderRadius: "6px"
+                          }}>
+                            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: `${relK * 60 + 80}px` }}>
+                              <thead>
+                                <tr style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                                  <th style={{
+                                    padding: "0.4rem",
+                                    fontSize: "0.7rem",
+                                    color: "rgba(255,255,255,0.4)",
+                                    textAlign: "center",
+                                    borderRight: "1px solid rgba(255,255,255,0.05)",
+                                    width: "70px",
+                                    position: "sticky",
+                                    left: 0,
+                                    background: "#0f172a",
+                                    zIndex: 10
+                                  }}>
+                                    Resp
+                                  </th>
+                                  {Array.from({ length: relK }).map((_, colIdx) => (
+                                    <th key={colIdx} style={{
+                                      padding: "0.4rem",
+                                      fontSize: "0.7rem",
+                                      color: "#a78bfa",
+                                      textAlign: "center"
+                                    }}>
+                                      Q{colIdx + 1}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {Array.from({ length: relResp }).map((_, rowIdx) => (
+                                  <tr key={rowIdx} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", background: rowIdx % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent" }}>
+                                    <td style={{
+                                      padding: "0.3rem",
+                                      fontSize: "0.7rem",
+                                      color: "rgba(255,255,255,0.5)",
+                                      textAlign: "center",
+                                      fontWeight: 600,
+                                      borderRight: "1px solid rgba(255,255,255,0.05)",
+                                      position: "sticky",
+                                      left: 0,
+                                      background: rowIdx % 2 === 0 ? "#121a2e" : "#0f172a",
+                                      zIndex: 1
+                                    }}>
+                                      R{rowIdx + 1}
+                                    </td>
+                                    {Array.from({ length: relK }).map((_, colIdx) => {
+                                      const cellValue = relMatrix[rowIdx]?.[colIdx] !== undefined ? relMatrix[rowIdx][colIdx] : (relType === "kr20" ? 1 : 4);
+                                      
+                                      if (relType === "kr20") {
+                                        return (
+                                          <td key={colIdx} style={{ padding: "0.25rem", textAlign: "center" }}>
+                                            <button
+                                              onClick={() => {
+                                                const nextMatrix = [...relMatrix];
+                                                if (!nextMatrix[rowIdx]) nextMatrix[rowIdx] = [];
+                                                nextMatrix[rowIdx][colIdx] = cellValue === 1 ? 0 : 1;
+                                                setRelMatrix(nextMatrix);
+                                              }}
+                                              style={{
+                                                width: "28px",
+                                                height: "28px",
+                                                borderRadius: "4px",
+                                                fontSize: "0.75rem",
+                                                fontWeight: 800,
+                                                background: cellValue === 1 ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.1)",
+                                                border: cellValue === 1 ? "1px solid rgba(34, 197, 94, 0.4)" : "1px solid rgba(239, 68, 68, 0.25)",
+                                                color: cellValue === 1 ? "#4ade80" : "#ef4444",
+                                                cursor: "pointer",
+                                                transition: "all 0.15s ease",
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                justifyContent: "center"
+                                              }}
+                                            >
+                                              {cellValue}
+                                            </button>
+                                          </td>
+                                        );
+                                      } else {
+                                        return (
+                                          <td key={colIdx} style={{ padding: "0.25rem", textAlign: "center" }}>
+                                            <input
+                                              type="number"
+                                              min="1"
+                                              max="5"
+                                              value={cellValue}
+                                              onChange={(e) => {
+                                                const val = Math.min(5, Math.max(1, parseInt(e.target.value) || 4));
+                                                const nextMatrix = [...relMatrix];
+                                                if (!nextMatrix[rowIdx]) nextMatrix[rowIdx] = [];
+                                                nextMatrix[rowIdx][colIdx] = val;
+                                                setRelMatrix(nextMatrix);
+                                              }}
+                                              className="form-input"
+                                              style={{
+                                                width: "36px",
+                                                height: "28px",
+                                                padding: "0 0.2rem",
+                                                textAlign: "center",
+                                                fontSize: "0.75rem",
+                                                borderRadius: "4px",
+                                                background: "rgba(255,255,255,0.03)",
+                                                border: "1px solid rgba(255,255,255,0.08)",
+                                                color: "#fff"
+                                              }}
+                                            />
+                                          </td>
+                                        );
+                                      }
+                                    })}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Result Display Box */}
+                      {relResult !== null && (
+                        <div style={{
+                          marginTop: "1.25rem",
+                          padding: "1rem",
+                          background: "rgba(167, 139, 250, 0.04)",
+                          border: "1px solid rgba(167, 139, 250, 0.15)",
+                          borderRadius: "10px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                          gap: "1rem"
+                        }} className="animate-fade-in">
+                          <div>
+                            <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.45)", textTransform: "uppercase", fontWeight: 700, display: "block" }}>
+                              {t("wizard.reliabilityResult")}
+                            </span>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", marginTop: "0.2rem" }}>
+                              <span style={{
+                                fontSize: "1.8rem",
+                                fontWeight: 800,
+                                color: relResult >= 0.60 ? "#4ade80" : "#f87171",
+                                fontFamily: "monospace",
+                                textShadow: relResult >= 0.60 ? "0 0 10px rgba(74,222,128,0.2)" : "0 0 10px rgba(248,113,113,0.2)"
+                              }}>
+                                {relResult.toFixed(4)}
+                              </span>
+                              <span style={{
+                                fontSize: "0.72rem",
+                                padding: "0.15rem 0.5rem",
+                                borderRadius: "10px",
+                                fontWeight: 700,
+                                background: relResult >= 0.60 ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)",
+                                border: relResult >= 0.60 ? "1px solid rgba(34, 197, 94, 0.3)" : "1px solid rgba(239, 68, 68, 0.3)",
+                                color: relResult >= 0.60 ? "#4ade80" : "#f87171"
+                              }}>
+                                {relResult >= 0.60 
+                                  ? (i18n.language === "id" ? "RELIABEL" : "RELIABLE") 
+                                  : (i18n.language === "id" ? "TIDAK RELIABEL" : "UNRELIABLE")}
+                              </span>
+                            </div>
+                            <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.6)", display: "block", marginTop: "0.25rem" }}>
+                              <strong>{t("wizard.reliabilityStatus")}:</strong> {
+                                relStatusKey === "excellent" ? (i18n.language === "id" ? "Sangat Tinggi (Excellent)" : "Excellent") :
+                                relStatusKey === "good" ? (i18n.language === "id" ? "Tinggi (Good)" : "Good") :
+                                relStatusKey === "acceptable" ? (i18n.language === "id" ? "Sedang (Acceptable)" : "Acceptable") :
+                                relStatusKey === "minimum" ? (i18n.language === "id" ? "Cukup/Minimum (Acceptable)" : "Questionable / Minimum") :
+                                (i18n.language === "id" ? "Rendah/Tidak Reliabel (Unreliable)" : "Unreliable")
+                              }
+                            </span>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              setIsReliabilityIntegrated(true);
+                              triggerAlert(t("wizard.reliabilityIntegrated"), t("common.notification"), "success");
+                            }}
+                            className="btn btn-primary"
+                            style={{
+                              padding: "0.5rem 1rem",
+                              fontSize: "0.8rem",
+                              background: isReliabilityIntegrated ? "rgba(34, 197, 94, 0.15)" : "linear-gradient(135deg, #7c3aed, #4f46e5)",
+                              border: isReliabilityIntegrated ? "1px solid #22c55e" : "none",
+                              color: isReliabilityIntegrated ? "#4ade80" : "#fff",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.4rem",
+                              cursor: "pointer"
+                            }}
+                          >
+                            {isReliabilityIntegrated ? "✓ Integrated" : `⚡ ${t("wizard.reliabilityIntegrateBtn")}`}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
