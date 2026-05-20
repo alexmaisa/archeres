@@ -252,6 +252,23 @@ export default function WorkspaceClient() {
     calculateSample();
   }, [formula, popSize, confLevel, marginError, proportion]);
 
+  // Synchronize formula and isPopKnown states to prevent statistical mismatch (e.g. finite formulas on infinite pop)
+  useEffect(() => {
+    if (approach === "quant" || approach === "mixed") {
+      if (isPopKnown) {
+        const finiteFormulas = ["slovin", "lemeshow", "krejcie_morgan", "yamane", "isaac_michael", "arikunto", "gay_diehl"];
+        if (!finiteFormulas.includes(formula)) {
+          setFormula("slovin");
+        }
+      } else {
+        const infiniteFormulas = ["cochran", "daniel", "kish_leslie", "gay_diehl"];
+        if (!infiniteFormulas.includes(formula)) {
+          setFormula("cochran");
+        }
+      }
+    }
+  }, [isPopKnown, formula, approach]);
+
   // Automatically shut draft preview drawer if all variables are removed
   useEffect(() => {
     if (variables.length === 0) {
@@ -1858,39 +1875,153 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             ? "Untuk riset bisnis dan sosial umum, tingkat kepercayaan 95% dan margin of error 5% adalah batas ambang yang paling diterima dan dapat dipertahankan secara akademis."
             : "For general business and social sciences, a 95% confidence level paired with a 5% margin of error is the most universally accepted academic threshold."
         };
-      case "quant_formula":
+      case "quant_formula": {
+        const popTypeStrId = isPopKnown ? "terbatas (finite)" : "tidak terbatas (infinite)";
+        const popTypeStrEn = isPopKnown ? "finite" : "infinite";
+        
+        let formulaNameId = "Slovin";
+        let formulaNameEn = "Slovin";
+        let formulaDetailsId = "Rumus Slovin: n = N / (1 + N(e²)). Sangat sederhana dan praktis untuk populasi terbatas (finite) yang terdata rapi.";
+        let formulaDetailsEn = "Slovin Formula: n = N / (1 + N(e²)). A widely accepted and simple equation specifically designed for finite populations.";
+        let formulaExample1Id = "Dengan populasi N = 500 dan toleransi kesalahan e = 5%, ukuran sampel minimal adalah n = 500 / (1 + 500 * 0.0025) = 222 responden.";
+        let formulaExample1En = "Example: With finite population N = 500 and margin of error e = 5%, the minimum sample size is n = 500 / (1 + 500 * 0.0025) = 222 respondents.";
+        let formulaExample2Id = "Dengan populasi N = 10.000 dan e = 5%, ukuran sampel minimal adalah n = 10.000 / (1 + 10.000 * 0.0025) = 385 responden.";
+        let formulaExample2En = "Example: With finite population N = 10,000 and margin of error e = 5%, the minimum sample size is n = 10,000 / (1 + 10.000 * 0.0025) = 385 respondents.";
+        let formulaTipId = "Tuliskan nilai N rujukan secara pasti di laporan Anda. Jangan membulatkan angka desimal ke bawah saat menghitung jumlah minimum sampel (selalu bulatkan ke atas, misal 222.22 menjadi 223).";
+        let formulaTipEn = "Ensure you declare a specific, verifiable value for N in your chapter. Never round down fractional sample calculations; always round up to the next integer (e.g., 222.12 rounds to 223).";
+
+        if (formula === "cochran") {
+          formulaNameId = "Cochran";
+          formulaNameEn = "Cochran";
+          formulaDetailsId = "Rumus Cochran: n = (z² * p * q) / e². Sangat cocok untuk populasi tidak terbatas (infinite) di mana jumlah subjek tidak diketahui secara pasti.";
+          formulaDetailsEn = "Cochran Formula: n = (z² * p * q) / e². Best suited for infinite or unknown populations where the exact population size is unspecified.";
+          formulaExample1Id = "Dengan tingkat kepercayaan 95% (z = 1,96), estimasi proporsi p = 0,5, dan toleransi kesalahan e = 5%, sampel minimal Cochran adalah n = (1,96² * 0,5 * 0,5) / 0,05² = 384 responden.";
+          formulaExample1En = "Example: With a 95% confidence level (z = 1.96), proportion estimate p = 0.5, and margin of error e = 5%, the Cochran minimum sample size is n = (1.96² * 0.5 * 0.5) / 0.05² = 384 respondents.";
+          formulaExample2Id = "Dengan tingkat kepercayaan 99% (z = 2,58), estimasi proporsi p = 0,5, dan e = 5%, sampel minimal Cochran adalah n = (2,58² * 0,5 * 0,5) / 0,05² = 666 responden.";
+          formulaExample2En = "Example: With a 99% confidence level (z = 2.58), proportion estimate p = 0.5, and margin of error e = 5%, the Cochran minimum sample size is n = (2.58² * 0.5 * 0.5) / 0.05² = 666 respondents.";
+          formulaTipId = "Gunakan nilai estimasi proporsi p = 0,5 untuk mendapatkan ukuran sampel paling aman (maksimal) apabila data prevalensi awal tidak diketahui.";
+          formulaTipEn = "Adopt proportion estimate p = 0.5 to secure the most conservative (largest) minimum sample size when prior prevalence data is unavailable.";
+        } else if (formula === "lemeshow") {
+          formulaNameId = "Lemeshow";
+          formulaNameEn = "Lemeshow";
+          formulaDetailsId = "Rumus Lemeshow (dengan koreksi populasi terbatas WHO): n = n₀ / (1 + (n₀ - 1)/N). Digunakan untuk menghitung sampel populasi terbatas (finite) berbasis estimasi proporsi.";
+          formulaDetailsEn = "Lemeshow Formula (with WHO finite correction): n = n₀ / (1 + (n₀ - 1)/N). Designed for calculating sample size for finite populations using proportion estimates.";
+          formulaExample1Id = "Dengan tingkat kepercayaan 95% (z = 1,96), proporsi p = 0,5, presisi d = 5%, dan populasi N = 500, sampel minimal Lemeshow terdiskon menjadi n = 384 / (1 + 383/500) = 217 responden.";
+          formulaExample1En = "Example: With a 95% confidence level (z = 1.96), proportion p = 0.5, precision d = 5%, and finite population N = 500, the corrected sample size is n = 384 / (1 + 383/500) = 217 respondents.";
+          formulaExample2Id = "Dengan populasi N = 10.000 dan parameter standar yang sama, sampel minimal Lemeshow adalah n = 384 / (1 + 383/10000) = 370 responden.";
+          formulaExample2En = "Example: With finite population N = 10,000 and identical baseline parameters, the Lemeshow sample size is n = 384 / (1 + 383/10000) = 370 respondents.";
+          formulaTipId = "Lemeshow dengan koreksi populasi terbatas WHO menyusutkan kebutuhan responden (finite correction factor) secara proporsional sesuai ukuran populasi N.";
+          formulaTipEn = "The Lemeshow formula with WHO finite correction reduces the respondent requirements proportionally as the target population size N decreases.";
+        } else if (formula === "krejcie_morgan") {
+          formulaNameId = "Krejcie & Morgan";
+          formulaNameEn = "Krejcie & Morgan";
+          formulaDetailsId = "Rumus Krejcie & Morgan: n = (χ² * N * p * q) / (e² * (N-1) + χ² * p * q). Berbasis uji Chi-Square untuk menentukan sampel populasi terbatas (finite).";
+          formulaDetailsEn = "Krejcie & Morgan Formula: n = (χ² * N * p * q) / (e² * (N-1) + χ² * p * q). Utilizes Chi-Square distribution values to solve sample sizing for finite populations.";
+          formulaExample1Id = "Dengan populasi N = 500 dan standardisasi 95% (χ² = 3,841, p = 0,5, e = 5%), ukuran sampel minimal adalah n = 217 responden.";
+          formulaExample1En = "Example: With finite population N = 500 and 95% standard criteria (χ² = 3.841, p = 0.5, e = 5%), the required sample is n = 217 respondents.";
+          formulaExample2Id = "Dengan populasi N = 10.000, ukuran sampel minimal Krejcie-Morgan adalah n = 370 responden.";
+          formulaExample2En = "Example: With finite population N = 10,000 and identical criteria, the Krejcie-Morgan required sample is n = 370 respondents.";
+          formulaTipId = "Rumus ini sangat populer karena menghasilkan ukuran sampel yang sama dengan tabel standar Krejcie & Morgan tanpa perlu menghitung manual.";
+          formulaTipEn = "This formula is highly popular as it matches the published Krejcie & Morgan table results without requiring manual compilation.";
+        } else if (formula === "yamane") {
+          formulaNameId = "Yamane";
+          formulaNameEn = "Yamane";
+          formulaDetailsId = "Rumus Yamane: n = N / (1 + N(e²)). Sangat identik dengan Slovin untuk perhitungan praktis populasi terbatas (finite).";
+          formulaDetailsEn = "Yamane Formula: n = N / (1 + N(e²)). Mathematically identical to Slovin's equation, widely used for finite population sizing.";
+          formulaExample1Id = "Dengan populasi N = 500 dan presisi e = 5%, ukuran sampel minimal adalah n = 500 / (1 + 500 * 0.0025) = 222 responden.";
+          formulaExample1En = "Example: With finite population N = 500 and precision e = 5%, the required sample is n = 222 respondents.";
+          formulaExample2Id = "Dengan populasi N = 10.000 dan e = 5%, ukuran sampel minimal adalah n = 385 responden.";
+          formulaExample2En = "Example: With finite population N = 10,000 and e = 5%, the required sample is n = 385 respondents.";
+          formulaTipId = "Pastikan Anda menuliskan tingkat presisi (e) secara rasional sesuai standar riset sosial (biasanya 5% atau 10%).";
+          formulaTipEn = "Ensure you explicitly state your choice of precision level (e) in line with social science standards (typically 5% or 10%).";
+        } else if (formula === "isaac_michael") {
+          formulaNameId = "Isaac & Michael";
+          formulaNameEn = "Isaac & Michael";
+          formulaDetailsId = "Rumus Isaac & Michael: Perhitungan berbasis tabel Chi-Square khusus dengan tingkat kesalahan 1%, 5%, atau 10% untuk populasi terbatas (finite).";
+          formulaDetailsEn = "Isaac & Michael Formula: A Chi-Square-based sampling model supporting multiple error tolerance tiers (1%, 5%, or 10%) for finite populations.";
+          formulaExample1Id = "Dengan populasi N = 500 dan tingkat kesalahan e = 5%, ukuran sampel minimal adalah n = 205 responden.";
+          formulaExample1En = "Example: With finite population N = 500 and error margin e = 5%, the minimum sample size is n = 205 respondents.";
+          formulaExample2Id = "Dengan populasi N = 10.000 dan e = 5%, ukuran sampel minimal adalah n = 336 responden.";
+          formulaExample2En = "Example: With finite population N = 10,000 and error margin e = 5%, the minimum sample size is n = 336 respondents.";
+          formulaTipId = "Rumus ini memberikan fleksibilitas akademis karena menyediakan parameter sensitivitas kesalahan yang berbeda.";
+          formulaTipEn = "This formula offers academic flexibility by presenting pre-calculated sensitivity matrices across multiple error tolerances.";
+        } else if (formula === "arikunto") {
+          formulaNameId = "Arikunto";
+          formulaNameEn = "Arikunto";
+          formulaDetailsId = "Rumus Praktis Arikunto: Pendekatan empiris (rule of thumb). Jika populasi N < 100, sampel diambil keseluruhan (sensus). Jika N ≥ 100, diambil sampel sebesar 10-15% atau 20-25% dari total populasi.";
+          formulaDetailsEn = "Arikunto Rule of Thumb: Empirical sampling rule. If population N < 100, collect the entire population (census). If N ≥ 100, sample 10-15% or 20-25% of the total cohort.";
+          formulaExample1Id = "Dengan populasi N = 50, karena kurang dari 100, maka ukuran sampel minimal adalah n = 50 responden (sampel jenuh).";
+          formulaExample1En = "Example: With finite population N = 50, since it is under 100, the required sample is n = 50 respondents (census/saturated).";
+          formulaExample2Id = "Dengan populasi N = 500 dan persentase pengambilan e = 10%, ukuran sampel minimal adalah n = 500 * 10% = 50 responden.";
+          formulaExample2En = "Example: With finite population N = 500 and sampling ratio setting e = 10%, the required sample size is n = 500 * 10% = 50 respondents.";
+          formulaTipId = "Metode Arikunto sangat populer di riset pendidikan tingkat sarjana di Indonesia karena simplisitas operasionalnya.";
+          formulaTipEn = "The Arikunto method is widely respected in Indonesian educational research due to its absolute operational simplicity.";
+        } else if (formula === "daniel") {
+          formulaNameId = "Daniel";
+          formulaNameEn = "Daniel";
+          formulaDetailsId = "Rumus Biostatistika Daniel: n = (z² * p * q) / e². Digunakan secara spesifik untuk penelitian bidang kedokteran dan biologi pada populasi tidak terbatas (infinite).";
+          formulaDetailsEn = "Daniel Bio-statistical Formula: n = (z² * p * q) / e². Tailored specifically for clinical, biological, and health studies with infinite populations.";
+          formulaExample1Id = "Dengan z = 1,96 (tingkat kepercayaan 95%), proporsi p = 0,5, dan toleransi kesalahan e = 5%, ukuran sampel Daniel adalah n = 384 responden.";
+          formulaExample1En = "Example: With z = 1.96 (95% confidence level), proportion estimate p = 0.5, and error margin e = 5%, the required sample is n = 384 respondents.";
+          formulaExample2Id = "Dengan z = 2,58 (tingkat kepercayaan 99%), proporsi p = 0,5, dan e = 5%, ukuran sampel Daniel adalah n = 666 responden.";
+          formulaExample2En = "Example: With z = 2.58 (99% confidence level), proportion estimate p = 0.5, and error margin e = 5%, the required sample is n = 666 respondents.";
+          formulaTipId = "Rumus ini identik dengan Cochran tetapi dirujuk secara akademis dalam literatur kedokteran (Wayne W. Daniel).";
+          formulaTipEn = "This formula shares mathematical properties with Cochran but is uniquely cited within medical literature (Wayne W. Daniel).";
+        } else if (formula === "kish_leslie") {
+          formulaNameId = "Kish Leslie";
+          formulaNameEn = "Kish Leslie";
+          formulaDetailsId = "Rumus Kish Leslie: n = (z² * p * q) / e². Digunakan untuk survei cross-sectional pada populasi tidak terbatas (infinite) dengan kerangka sampel tidak lengkap.";
+          formulaDetailsEn = "Kish Leslie Formula: n = (z² * p * q) / e². Standardized for cross-sectional sample surveys targeting infinite cohorts with incomplete sampling frames.";
+          formulaExample1Id = "Dengan z = 1,96 (kepercayaan 95%), p = 0,5, dan toleransi kesalahan e = 5%, sampel minimal Kish Leslie adalah n = 384 responden.";
+          formulaExample1En = "Example: With z = 1.96 (95% confidence level), proportion p = 0.5, and error e = 5%, the required sample is n = 384 respondents.";
+          formulaExample2Id = "Dengan z = 2,58 (kepercayaan 99%), p = 0,5, dan e = 5%, sampel minimal Kish Leslie adalah n = 666 responden.";
+          formulaExample2En = "Example: With z = 2.58 (99% confidence level), proportion p = 0.5, and error e = 5%, the required sample is n = 666 respondents.";
+          formulaTipId = "Kish Leslie adalah formula standar emas yang diajarkan dalam program statistik survei sosial internasional.";
+          formulaTipEn = "Kish Leslie represents the gold-standard formula taught in international social survey sampling curricula.";
+        } else if (formula === "gay_diehl") {
+          formulaNameId = "Gay & Diehl";
+          formulaNameEn = "Gay & Diehl";
+          formulaDetailsId = "Rumus Acuan Gay & Diehl: Rekomendasi batas sampel minimum berdasarkan desain penelitian (Descriptive: 10% dari populasi, Correlational: 30 subjek, Experimental: 15 subjek per kelompok).";
+          formulaDetailsEn = "Gay & Diehl Rule of Thumb: Hard minimum guidelines based on research design (Descriptive: 10% of N, Correlational: 30 subjects, Experimental: 15 subjects per cohort).";
+          formulaExample1Id = "Untuk desain eksperimental, minimal sampel kelompok eksperimen adalah n = 15 responden (dengan total 30 termasuk kelompok kontrol).";
+          formulaExample1En = "Example: For an experimental study design, the required minimum is n = 15 subjects per cell (giving a total of 30 including controls).";
+          formulaExample2Id = "Untuk desain korelasi, ukuran sampel minimum absolut adalah n = 30 responden.";
+          formulaExample2En = "Example: For a correlational research design, the absolute minimum sample required is n = 30 respondents.";
+          formulaTipId = "Rujukan yang sangat baik untuk studi eksperimen berskala kecil di laboratorium atau kelas sekolah.";
+          formulaTipEn = "An excellent academic reference for small-scale experimental designs in educational or laboratory environments.";
+        }
+
         return {
           title: isId ? "Formulasi & Teknik Pengambilan Sampel" : "Formulas & Sampling Techniques",
           badge: isId ? "Rumus Matematika" : "Mathematical Formula",
           definition: isId
-            ? `Prosedur perhitungan matematis untuk menentukan ukuran sampel minimal yang sah secara akademis. Di aplikasi Archeres, sistem merekomendasikan Formula ${formula === "slovin" ? "Slovin" : "Lemeshow"} karena Anda memilih populasi ${formula === "slovin" ? "terbatas (finite)" : "tidak terbatas (infinite)"}.`
-            : `The mathematical calculation procedures employed to establish a scientifically defensible minimum sample size. In Archeres, the system recommends the ${formula === "slovin" ? "Slovin Formula" : "Lemeshow Formula"} because you selected a ${formula === "slovin" ? "finite" : "infinite"} population type.`,
+            ? `Prosedur perhitungan matematis untuk menentukan ukuran sampel minimal yang sah secara akademis. Di aplikasi Archeres, sistem merekomendasikan Formula ${formulaNameId} karena Anda memilih populasi ${popTypeStrId}.`
+            : `The mathematical calculation procedures employed to establish a scientifically defensible minimum sample size. In Archeres, the system recommends the ${formulaNameEn} Formula because you selected a ${popTypeStrEn} population type.`,
           characteristics: isId
             ? [
-                formula === "slovin" ? "Rumus Slovin: n = N / (1 + N(e²)). Sangat sederhana dan praktis untuk populasi terbatas (finite) yang terdata rapi." : "Rumus Lemeshow: n = (z² * p * q) / d². Ideal untuk populasi tidak terbatas (infinite), sering digunakan dalam riset kesehatan masyarakat dengan estimasi proporsi p = 0.5.",
+                formulaDetailsId,
                 "Probability Sampling: Perhitungan ini wajib dipadukan dengan pengambilan sampel probabilitas agar asas acak (randomness) terpenuhi.",
                 "Simple Random Sampling: Setiap anggota populasi memiliki peluang acak yang sama persis untuk terpilih menjadi anggota sampel.",
                 "Stratified Random Sampling: Membagi populasi ke dalam sub-kelompok homogen (strata) sebelum pengundian dilakukan guna menjamin presisi."
               ]
             : [
-                formula === "slovin" ? "Slovin Formula: n = N / (1 + N(e²)). A widely accepted and simple equation specifically designed for finite populations." : "Lemeshow Formula: n = (z² * p * q) / d². Specially engineered for infinite or unknown populations, commonly adopting an estimated proportion p = 0.5.",
+                formulaDetailsEn,
                 "Probability Sampling Requirement: These formulas must be combined with random selection methods to satisfy core probability assumptions.",
                 "Simple Random Sampling: Every single member of the population has an identical, non-zero probability of being selected.",
                 "Stratified Random Sampling: Divides the population into homogeneous sub-groups (strata) before drawing, securing high statistical precision."
               ],
           examples: isId
             ? [
-                formula === "slovin" ? "Dengan populasi N = 500 dan toleransi kesalahan e = 5%, ukuran sampel minimal adalah n = 500 / (1 + 500 * 0.0025) = 222 responden." : "Dengan tingkat kepercayaan 95% (z = 1,96), estimasi proporsi p = 0,5, dan presisi d = 5%, sampel minimal Lemeshow adalah n = (1,96² * 0,5 * 0,5) / 0,05² = 384 responden.",
-                formula === "slovin" ? "Dengan populasi N = 10.000 dan e = 5%, ukuran sampel minimal adalah n = 10.000 / (1 + 10.000 * 0.0025) = 385 responden." : "Dengan tingkat kepercayaan 99% (z = 2,58), estimasi proporsi p = 0,5, dan presisi d = 5%, sampel minimal Lemeshow adalah n = (2,58² * 0,5 * 0,5) / 0,05² = 666 responden."
+                formulaExample1Id,
+                formulaExample2Id
               ]
             : [
-                formula === "slovin" ? "Example: With finite population N = 500 and margin of error e = 5%, the minimum sample size is n = 500 / (1 + 500 * 0.0025) = 222 respondents." : "Example: With a 95% confidence level (z = 1.96), proportion estimate p = 0.5, and precision d = 5%, the Lemeshow minimum sample size is n = (1.96² * 0.5 * 0.5) / 0.05² = 384 respondents.",
-                formula === "slovin" ? "Example: With finite population N = 10,000 and margin of error e = 5%, the minimum sample size is n = 10,000 / (1 + 10,000 * 0.0025) = 385 respondents." : "Example: With a 99% confidence level (z = 2.58), proportion estimate p = 0.5, and precision d = 5%, the Lemeshow minimum sample size is n = (2.58² * 0.5 * 0.5) / 0.05² = 666 respondents."
+                formulaExample1En,
+                formulaExample2En
               ],
-          tips: isId
-            ? (formula === "slovin" ? "Tuliskan nilai N rujukan secara pasti di laporan Anda. Jangan membulatkan angka desimal ke bawah saat menghitung jumlah minimum sampel (selalu bulatkan ke atas, misal 222.22 menjadi 223)." : "Jika Anda tidak memiliki data awal porsi prevalensi, gunakan p = 0,5 karena nilai ini menghasilkan varians maksimal dan ukuran sampel paling aman (maksimum).")
-            : (formula === "slovin" ? "Ensure you declare a specific, verifiable value for N in your chapter. Never round down fractional sample calculations; always round up to the next integer (e.g., 222.12 rounds to 223)." : "If you have no prior data on the population proportion, adopt p = 0.5 as it maximizes mathematical variance and yields the most conservative (largest) minimum sample size.")
+          tips: isId ? formulaTipId : formulaTipEn
         };
+      }
       case "mixed_dual":
         return {
           title: isId ? "Desain Sampling Ganda (Dual-Strand)" : "Dual-Strand Sampling Design",
@@ -2660,13 +2791,61 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                   {isId ? "Formulasi & Teknik Pengambilan Sampel" : "Formulas & Sampling Techniques"}
                 </h4>
                 <p style={styles.eduCardBody}>
-                  {formula === "slovin" 
-                    ? (isId 
-                      ? "Formula Slovin: Diterapkan ketika jumlah populasi (N) terukur secara pasti, disandingkan dengan teknik Probability Sampling seperti Simple Random atau Stratified." 
-                      : "Slovin Formula: Applied when population size (N) is finite and known, typically paired with probability methods like Simple or Stratified Random.")
-                    : (isId 
-                      ? "Formula Lemeshow: Ideal untuk populasi tak terhingga (seperti survei kesehatan umum), biasanya dipadukan dengan teknik penarikan sampel sistematis." 
-                      : "Lemeshow Formula: Suited for infinite/unknown populations (e.g., epidemiological survey) and often paired with systematic sampling.")}
+                  {(() => {
+                    if (formula === "slovin") {
+                      return isId
+                        ? "Formula Slovin: Diterapkan ketika jumlah populasi (N) terukur secara pasti, disandingkan dengan teknik Probability Sampling."
+                        : "Slovin Formula: Applied when population size (N) is finite and known, typically paired with probability sampling methods.";
+                    }
+                    if (formula === "cochran") {
+                      return isId
+                        ? "Formula Cochran: Sangat cocok untuk populasi tidak terbatas (infinite) di mana jumlah subjek tidak diketahui secara pasti."
+                        : "Cochran Formula: Best suited for infinite or unknown populations where the exact population size is unspecified.";
+                    }
+                    if (formula === "lemeshow") {
+                      return isId
+                        ? "Formula Lemeshow: Digunakan untuk menghitung sampel populasi terbatas (finite) berbasis estimasi proporsi dengan koreksi WHO."
+                        : "Lemeshow Formula: Designed for finite populations using proportion estimates paired with WHO finite correction.";
+                    }
+                    if (formula === "krejcie_morgan") {
+                      return isId
+                        ? "Formula Krejcie & Morgan: Berbasis uji Chi-Square untuk menentukan sampel representatif dari populasi terbatas (finite)."
+                        : "Krejcie & Morgan Formula: Utilizes Chi-Square distribution values to determine representative finite sample sizes.";
+                    }
+                    if (formula === "yamane") {
+                      return isId
+                        ? "Formula Yamane: Menggunakan pendekatan matematis presisi tinggi yang identik dengan Slovin untuk populasi terbatas (finite)."
+                        : "Yamane Formula: Uses a high-precision mathematical approach identical to Slovin's for finite populations.";
+                    }
+                    if (formula === "isaac_michael") {
+                      return isId
+                        ? "Formula Isaac & Michael: Perhitungan berbasis tabel Chi-Square khusus dengan tingkat kesalahan 1%, 5%, atau 10% untuk populasi terbatas."
+                        : "Isaac & Michael Formula: A Chi-Square-based sampling model supporting multiple error tolerance tiers for finite populations.";
+                    }
+                    if (formula === "arikunto") {
+                      return isId
+                        ? "Pendekatan Arikunto: Aturan praktis empiris (rule of thumb) untuk populasi terbatas (sensus jika N < 100, sampel 10-25% jika N >= 100)."
+                        : "Arikunto Rule: An empirical rule of thumb for finite populations (census if N < 100, 10-25% sample if N >= 100).";
+                    }
+                    if (formula === "daniel") {
+                      return isId
+                        ? "Formula Daniel: Disesuaikan secara spesifik untuk penelitian bidang kedokteran dan biostatistika pada populasi tidak terbatas."
+                        : "Daniel Formula: Tailored specifically for clinical, biological, and health studies with infinite populations.";
+                    }
+                    if (formula === "kish_leslie") {
+                      return isId
+                        ? "Formula Kish Leslie: Digunakan untuk survei cross-sectional pada populasi tidak terbatas (infinite) dengan kerangka sampel tidak lengkap."
+                        : "Kish Leslie Formula: Standardized for cross-sectional sample surveys targeting infinite cohorts with incomplete frames.";
+                    }
+                    if (formula === "gay_diehl") {
+                      return isId
+                        ? "Acuan Gay & Diehl: Panduan batas sampel minimum absolut berdasarkan desain penelitian (deskriptif, korelasi, atau eksperimen)."
+                        : "Gay & Diehl Rule: Hard minimum guidelines based on research design (descriptive, correlational, or experimental).";
+                    }
+                    return isId
+                      ? "Prosedur perhitungan matematis untuk menentukan ukuran sampel minimal yang sah secara akademis."
+                      : "The mathematical calculation procedures employed to establish a scientifically defensible minimum sample size.";
+                  })()}
                 </p>
               </div>
 
