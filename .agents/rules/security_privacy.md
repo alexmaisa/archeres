@@ -50,3 +50,12 @@ This file sets forth strict execution parameters for **Antigravity** and other p
 
 * **Dynamic Browser Locale Sniffing:**
   * Automatically matching user local preferences (Indonesian vs English) must utilize browser-level locale preferences (`navigator.language`) instead of logging geolocations, physical IP addresses, or GPS coordinates.
+
+---
+
+## 📌 6. Zero-Knowledge Psychometric & Local Calculations Compliance
+
+* **Absolute Client-Side Computations:**
+  * Raw survey responses, pilot respondent grids, and individual scoring items used for Kuder-Richardson 20 (KR-20) and Cronbach's Alpha calculation must be kept entirely in client-side memory (RAM-only React state).
+  * You must never write or deploy API endpoints that send individual respondent responses or data matrix cells to backend databases or server-side telemetry.
+  * Only aggregated statistical summaries (such as the calculated final coefficient, number of items, and number of pilot respondents) may be serialized inside the draft metadata, protecting raw researcher and respondent data.
