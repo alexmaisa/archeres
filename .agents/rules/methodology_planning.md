@@ -80,6 +80,23 @@ $$s = \frac{\chi^2 \cdot N \cdot P \cdot (1 - P)}{d^2 \cdot (N - 1) + \chi^2 \cd
 #### 5. Daniel Formula
 Used for biostatistics random sampling of proportions. Mapped mathematically to the Lemeshow / Cochran corrections.
 
+#### 6. Isaac & Michael Formula
+Uses Chi-Square distributions to estimate sample sizes based on fixed error rates (1%, 5%, 10%).
+
+#### 7. Suharsimi Arikunto Guideline (Rule of Thumb)
+A heuristic for Indonesian educational research:
+* If $N < 100$, sample the entire population ($n = N$).
+* If $N \ge 100$, sample between $10\%$ to $25\%$ of the population.
+
+#### 8. Gay & Diehl Guideline
+Recommends sample size based on the methodology design itself rather than statistical power:
+* **Descriptive / Survey:** $10\%$ to $20\%$ of the population.
+* **Correlational:** Minimum $30$ subjects.
+* **Experimental / Causal-Comparative:** Minimum $60$ subjects.
+
+#### 9. Kish Leslie Formula
+Used for cross-sectional studies on unknown or infinite populations to estimate proportions with a defined precision margin ($e$).
+
 ---
 
 ### Core Computation Rules:

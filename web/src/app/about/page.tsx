@@ -246,6 +246,56 @@ export default function AboutPage() {
             { char: "d", meaning: "Margin of precision desired" }
           ],
           note: "Note: Mathematically identical to Cochran's and Lemeshow's infinite population formulas. It is named after Wayne W. Daniel and is traditionally preferred in clinical, pharmacy, and biostatistics textbooks. In Archeres, it is recommended when the population size is unknown/infinite."
+        },
+        { 
+          id: "isaac_michael", 
+          name: "Isaac & Michael Formula", 
+          useCase: "Utilizes Chi-Square distributions to calculate representative sample sizes for finite populations with specific error rates (1%, 5%, 10%).",
+          context: "Used when determining sample size based on degrees of freedom and specific confidence intervals.",
+          reference: "Isaac, S., & Michael, W. B. (1981). Handbook in Research and Evaluation. EdITS Publishers.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "N", meaning: "Total finite population size" },
+            { char: "χ²", meaning: "Chi-square value for 1 degree of freedom" },
+            { char: "P", meaning: "Estimated proportion (default 0.5)" },
+            { char: "e", meaning: "Error rate (0.01, 0.05, 0.10)" }
+          ]
+        },
+        { 
+          id: "arikunto", 
+          name: "Suharsimi Arikunto Guideline", 
+          useCase: "A practical rule of thumb widely used in Indonesian academic circles. Suggests taking the entire population if N < 100, or a percentage (10%-25%) if N >= 100.",
+          context: "Used as a pragmatic heuristic for educational and social science research.",
+          reference: "Arikunto, S. (2010). Prosedur Penelitian: Suatu Pendekatan Praktik. Rineka Cipta.",
+          symbols: [
+            { char: "n", meaning: "Sample size" },
+            { char: "N", meaning: "Total finite population size" },
+            { char: "%", meaning: "Percentage to be sampled (10% - 25%)" }
+          ]
+        },
+        { 
+          id: "gay_diehl", 
+          name: "Gay & Diehl Guideline", 
+          useCase: "Recommends sample sizes based directly on the research design methodology (e.g., 30 for correlational, 60 for experimental, 10-20% for descriptive).",
+          context: "Used when a rigid statistical formula is less appropriate than methodological guidelines.",
+          reference: "Gay, L. R., & Diehl, P. L. (1992). Research Methods for Business and Management. Macmillan Publishing Company.",
+          symbols: [
+            { char: "n", meaning: "Sample size" },
+            { char: "N", meaning: "Total population size (for descriptive studies)" }
+          ]
+        },
+        { 
+          id: "kish_leslie", 
+          name: "Kish Leslie Formula", 
+          useCase: "Designed for estimating proportions in cross-sectional studies where the population size is unknown or infinite.",
+          context: "Commonly used in survey research and cross-sectional studies for infinite populations.",
+          reference: "Kish, L. (1965). Survey Sampling. John Wiley & Sons.",
+          symbols: [
+            { char: "n", meaning: "Minimum sample size required" },
+            { char: "Z", meaning: "Z-score for confidence level" },
+            { char: "p", meaning: "Estimated proportion (default 0.5)" },
+            { char: "e", meaning: "Margin of error" }
+          ]
         }
 
       ],
@@ -433,6 +483,56 @@ export default function AboutPage() {
             { char: "d", meaning: "Margin presisi kesalahan toleransi" }
           ],
           note: "Catatan: Secara matematis identik dengan rumus Cochran dan Lemeshow untuk populasi tidak terbatas. Dinamai berdasarkan Wayne W. Daniel dan secara tradisional disukai dalam buku teks klinis, farmasi, dan biostatistika. Di Archeres, rumus ini direkomendasikan ketika ukuran populasi tidak diketahui/tak terbatas."
+        },
+        { 
+          id: "isaac_michael", 
+          name: "Rumus Isaac & Michael", 
+          useCase: "Menggunakan distribusi Chi-Square untuk menghitung ukuran sampel yang representatif pada populasi terbatas dengan tingkat kesalahan spesifik (1%, 5%, 10%).",
+          context: "Digunakan saat menentukan ukuran sampel berdasarkan derajat kebebasan dan interval kepercayaan spesifik.",
+          reference: "Isaac, S., & Michael, W. B. (1981). Handbook in Research and Evaluation. EdITS Publishers.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "N", meaning: "Ukuran total populasi terbatas" },
+            { char: "χ²", meaning: "Nilai Chi-square untuk 1 derajat kebebasan" },
+            { char: "P", meaning: "Estimasi proporsi (default 0,5)" },
+            { char: "e", meaning: "Tingkat kesalahan (0,01, 0,05, 0,10)" }
+          ]
+        },
+        { 
+          id: "arikunto", 
+          name: "Pedoman Suharsimi Arikunto", 
+          useCase: "Sebuah pedoman praktis (*rule of thumb*) yang banyak digunakan di kalangan akademisi Indonesia. Menyarankan pengambilan seluruh populasi jika N < 100, atau persentase (10%-25%) jika N >= 100.",
+          context: "Digunakan sebagai heuristik pragmatis untuk penelitian pendidikan dan ilmu sosial.",
+          reference: "Arikunto, S. (2010). Prosedur Penelitian: Suatu Pendekatan Praktik. Rineka Cipta.",
+          symbols: [
+            { char: "n", meaning: "Ukuran sampel" },
+            { char: "N", meaning: "Total populasi terbatas" },
+            { char: "%", meaning: "Persentase yang akan dijadikan sampel (10% - 25%)" }
+          ]
+        },
+        { 
+          id: "gay_diehl", 
+          name: "Pedoman Gay & Diehl", 
+          useCase: "Merekomendasikan ukuran sampel secara langsung berdasarkan metodologi desain penelitian (misalnya, 30 untuk korelasional, 60 untuk eksperimental, 10-20% untuk deskriptif).",
+          context: "Digunakan ketika formula statistik yang kaku kurang sesuai dibandingkan pedoman metodologis langsung.",
+          reference: "Gay, L. R., & Diehl, P. L. (1992). Research Methods for Business and Management. Macmillan Publishing Company.",
+          symbols: [
+            { char: "n", meaning: "Ukuran sampel" },
+            { char: "N", meaning: "Ukuran total populasi (untuk studi deskriptif)" }
+          ]
+        },
+        { 
+          id: "kish_leslie", 
+          name: "Rumus Kish Leslie", 
+          useCase: "Dirancang untuk mengestimasi proporsi pada studi potong-lintang (*cross-sectional*) di mana ukuran populasi tidak diketahui atau tidak terbatas.",
+          context: "Biasa digunakan dalam survei penelitian dan studi *cross-sectional* untuk populasi tak terbatas.",
+          reference: "Kish, L. (1965). Survey Sampling. John Wiley & Sons.",
+          symbols: [
+            { char: "n", meaning: "Jumlah sampel minimal yang dibutuhkan" },
+            { char: "Z", meaning: "Z-score untuk tingkat kepercayaan" },
+            { char: "p", meaning: "Estimasi proporsi (default 0,5)" },
+            { char: "e", meaning: "Margin toleransi kesalahan" }
+          ]
         }
 
       ],
@@ -577,6 +677,41 @@ export default function AboutPage() {
             <div style={styles.fraction}>
               <span style={styles.numerator}>Z<sup>2</sup> &bull; P(1 - P)</span>
               <span style={styles.denominator}>d<sup>2</sup></span>
+            </div>
+          </div>
+        );
+      case "isaac_michael":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>&chi;<sup>2</sup> &bull; N &bull; P(1 - P)</span>
+              <span style={styles.denominator}>d<sup>2</sup>(N - 1) + &chi;<sup>2</sup> &bull; P(1 - P)</span>
+            </div>
+          </div>
+        );
+      case "arikunto":
+        return (
+          <div style={{ ...styles.mathExpr, flexDirection: "column", gap: "0.5rem", fontSize: "1rem" }}>
+            <span>if N &lt; 100 &rArr; n = N</span>
+            <span>if N &ge; 100 &rArr; n = N &bull; (10% - 25%)</span>
+          </div>
+        );
+      case "gay_diehl":
+        return (
+          <div style={{ ...styles.mathExpr, flexDirection: "column", gap: "0.5rem", fontSize: "0.95rem" }}>
+            <span>Descriptive: 10% - 20% of N</span>
+            <span>Correlational: 30 subjects</span>
+            <span>Experimental: 60 subjects</span>
+          </div>
+        );
+      case "kish_leslie":
+        return (
+          <div style={styles.mathExpr}>
+            <span>n = </span>
+            <div style={styles.fraction}>
+              <span style={styles.numerator}>Z<sup>2</sup> &bull; p &bull; q</span>
+              <span style={styles.denominator}>e<sup>2</sup></span>
             </div>
           </div>
         );
