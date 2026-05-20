@@ -127,6 +127,16 @@ export default function WorkspaceClient() {
   const [inputMode, setInputMode] = useState<"aggregate" | "grid">("aggregate");
   const [isReliabilityIntegrated, setIsReliabilityIntegrated] = useState<boolean>(false);
   
+  // Research instrument & Questionnaire toggle states
+  const [useQuestionnaire, setUseQuestionnaire] = useState<boolean>(true);
+  
+  // Qualitative Trustworthiness checkbox states
+  const [qualTriangulation, setQualTriangulation] = useState<boolean>(true);
+  const [qualMemberChecking, setQualMemberChecking] = useState<boolean>(true);
+  const [qualAuditTrail, setQualAuditTrail] = useState<boolean>(true);
+  const [qualPeerDebriefing, setQualPeerDebriefing] = useState<boolean>(false);
+  const [isTrustworthinessIntegrated, setIsTrustworthinessIntegrated] = useState<boolean>(false);
+  
   const [relMatrix, setRelMatrix] = useState<number[][]>(() => 
     Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => 4))
   );
@@ -431,6 +441,27 @@ export default function WorkspaceClient() {
           }
         }
         setMaxUnlockedStep(initialMaxStep);
+
+        // Load saved questionnaire and qualitative states from local storage (keyed by project ID)
+        if (typeof window !== "undefined") {
+          const savedUseQuest = localStorage.getItem(`archeres_${projectId}_useQuestionnaire`);
+          if (savedUseQuest !== null) setUseQuestionnaire(savedUseQuest === "true");
+          
+          const savedTriangulation = localStorage.getItem(`archeres_${projectId}_qualTriangulation`);
+          if (savedTriangulation !== null) setQualTriangulation(savedTriangulation === "true");
+          
+          const savedMemberChecking = localStorage.getItem(`archeres_${projectId}_qualMemberChecking`);
+          if (savedMemberChecking !== null) setQualMemberChecking(savedMemberChecking === "true");
+          
+          const savedAuditTrail = localStorage.getItem(`archeres_${projectId}_qualAuditTrail`);
+          if (savedAuditTrail !== null) setQualAuditTrail(savedAuditTrail === "true");
+          
+          const savedPeerDebriefing = localStorage.getItem(`archeres_${projectId}_qualPeerDebriefing`);
+          if (savedPeerDebriefing !== null) setQualPeerDebriefing(savedPeerDebriefing === "true");
+          
+          const savedTrustIntegrated = localStorage.getItem(`archeres_${projectId}_isTrustworthinessIntegrated`);
+          if (savedTrustIntegrated !== null) setIsTrustworthinessIntegrated(savedTrustIntegrated === "true");
+        }
 
         if (rd.designType && rd.designType !== "Undetermined") {
           setLastSavedState({
@@ -1006,7 +1037,13 @@ func main() {
           sumSuccessProd,
           relMatrix,
           isReliabilityIntegrated
-        }
+        },
+        useQuestionnaire,
+        qualTriangulation,
+        qualMemberChecking,
+        qualAuditTrail,
+        qualPeerDebriefing,
+        isTrustworthinessIntegrated
       }
     };
 
@@ -1059,6 +1096,32 @@ func main() {
           if (rel.sumSuccessProd !== undefined) setSumSuccessProd(rel.sumSuccessProd);
           if (rel.relMatrix) setRelMatrix(rel.relMatrix);
           if (rel.isReliabilityIntegrated !== undefined) setIsReliabilityIntegrated(rel.isReliabilityIntegrated);
+        }
+
+        // Restore questionnaire and qualitative validation states
+        if (data.useQuestionnaire !== undefined) {
+          setUseQuestionnaire(data.useQuestionnaire);
+          localStorage.setItem(`archeres_${projectId}_useQuestionnaire`, String(data.useQuestionnaire));
+        }
+        if (data.qualTriangulation !== undefined) {
+          setQualTriangulation(data.qualTriangulation);
+          localStorage.setItem(`archeres_${projectId}_qualTriangulation`, String(data.qualTriangulation));
+        }
+        if (data.qualMemberChecking !== undefined) {
+          setQualMemberChecking(data.qualMemberChecking);
+          localStorage.setItem(`archeres_${projectId}_qualMemberChecking`, String(data.qualMemberChecking));
+        }
+        if (data.qualAuditTrail !== undefined) {
+          setQualAuditTrail(data.qualAuditTrail);
+          localStorage.setItem(`archeres_${projectId}_qualAuditTrail`, String(data.qualAuditTrail));
+        }
+        if (data.qualPeerDebriefing !== undefined) {
+          setQualPeerDebriefing(data.qualPeerDebriefing);
+          localStorage.setItem(`archeres_${projectId}_qualPeerDebriefing`, String(data.qualPeerDebriefing));
+        }
+        if (data.isTrustworthinessIntegrated !== undefined) {
+          setIsTrustworthinessIntegrated(data.isTrustworthinessIntegrated);
+          localStorage.setItem(`archeres_${projectId}_isTrustworthinessIntegrated`, String(data.isTrustworthinessIntegrated));
         }
 
         triggerAlert(
@@ -1138,10 +1201,43 @@ Ukuran sampel atau jumlah informan dalam penelitian ini tidak ditentukan oleh ru
         }
       }
 
-      // Reliability subsection
+      // Reliability & Trustworthiness subsection
       let reliabilitySection = "";
-      if (isReliabilityIntegrated && relResult !== null) {
-        reliabilitySection = `\n\n## 3.5 Validitas dan Reliabilitas Instrumen\nAkurasi dan konsistensi instrumen penelitian diuji secara ilmiah melalui pengujian validitas dan reliabilitas. Uji coba instrumen (pilot study) dilakukan terhadap **${relResp}** responden di luar sampel penelitian namun memiliki karakteristik populasi yang sama.\n\n### 3.5.1 Uji Validitas Instrumen\nPengujian validitas butir kuesioner dilakukan menggunakan teknik korelasi Product Moment Pearson. Butir pertanyaan dinyatakan valid apabila nilai koefisien korelasi ($r_{hitung}$) lebih besar dari tabel distribusi nilai $r$ ($r_{tabel}$) pada tingkat signifikansi $5\\%$. Hanya butir-butir pertanyaan yang terbukti valid yang akan digunakan dalam pengumpulan data penelitian yang sesungguhnya.\n\n### 3.5.2 Uji Reliabilitas Instrumen\nKonsistensi internal instrumen kuesioner diukur menggunakan koefisien **${relType === "cronbach" ? "Cronbach's Alpha" : "Kuder-Richardson 20 (KR-20)"}**. Uji reliabilitas dilakukan terhadap **${relK}** butir pertanyaan yang telah dinyatakan valid.\nBerdasarkan hasil analisis komputasi client-side (E2EE), diperoleh koefisien reliabilitas sebesar **${relResult.toFixed(4)}**. Berdasarkan kriteria teoretis ilmiah (Nunnally & Bernstein, 1994), instrumen dinyatakan **${relResult >= 0.60 ? "RELIABEL" : "TIDAK RELIABEL"}** karena nilai koefisien yang diperoleh **${relResult >= 0.60 ? "memenuhi batas ambang minimum (\\ge 0.60)" : "di bawah ambang batas minimum (< 0.60)"}**, yang menunjukkan tingkat keandalan instrumen masuk dalam kategori **${
+      if (approach === "qual") {
+        if (isTrustworthinessIntegrated) {
+          let qualStrategies = [];
+          if (qualTriangulation) {
+            qualStrategies.push(`* **Triangulasi Data:** Mengorelasikan bukti dari berbagai sumber data (wawancara, observasi, dokumen) untuk melahirkan tema analisis yang utuh dan konsisten.`);
+          }
+          if (qualMemberChecking) {
+            qualStrategies.push(`* **Member Checking (Konfirmasi Anggota):** Mengembalikan hasil interpretasi atau tema draf kepada informan untuk memastikan akurasi data sesuai pengalaman mereka.`);
+          }
+          if (qualAuditTrail) {
+            qualStrategies.push(`* **Audit Trail & Deskripsi Mendalam (Thick Description):** Menyusun rekam jejak proses penelitian secara transparan serta menyajikan latar penelitian secara detail dan kaya konteks.`);
+          }
+          if (qualPeerDebriefing) {
+            qualStrategies.push(`* **Kecukupan Referensial:** Menggunakan materi mentah yang terdokumentasi (rekaman, transkrip wawancara) untuk menguji validitas interpretasi terhadap data asli.`);
+          }
+          if (qualStrategies.length === 0) {
+            qualStrategies.push(`* *Belum ada strategi keabsahan data kualitatif yang diintegrasikan oleh peneliti.*`);
+          }
+
+          reliabilitySection = `\n\n## 3.5 Keabsahan Data (Trustworthiness)
+Dalam penelitian kualitatif, keandalan ilmiah tidak diukur menggunakan estimasi reliabilitas statistik (Cronbach's Alpha/KR-20), melainkan melalui standar keabsahan data (*trustworthiness*) berdasarkan kerangka ilmiah Lincoln & Guba (1985). Untuk menjamin kredibilitas, transferabilitas, dependabilitas, dan konformabilitas hasil penelitian, peneliti secara sistematis menerapkan strategi keabsahan berikut:
+
+${qualStrategies.join("\n")}
+`;
+        }
+      } else if (!useQuestionnaire) {
+        reliabilitySection = `\n\n## 3.5 Validitas dan Keandalan Data Sekunder
+Penelitian ini bersandar pada data sekunder/pengukuran objektif laboratorium yang bersumber dari basis data resmi/teraudit. Oleh karena itu, pengujian reliabilitas instrumen kuesioner primer (seperti koefisien Cronbach's Alpha) dilewati secara metodologis. Sebagai gantinya, rigoritas dan integritas ilmiah data dijamin melalui prosedur verifikasi ketat sebagai berikut:
+
+1. **Autentisitas & Kredibilitas Sumber:** Data diperoleh dari basis data resmi/lembaga bereputasi yang telah melalui audit independen berkala.
+2. **Konsistensi Lintas Periode (Cross-Year Calibration):** Melakukan penyelarasan data antar tahun/sampel untuk memastikan tidak terjadi anomali pengumpulan data.
+3. **Pembersihan Data (Data Cleaning & Preprocessing):** Menerapkan deteksi pencilan (outliers) dan pembersihan data kosong secara sistematis sebelum analisis statistik inferensial dijalankan.`;
+      } else if (isReliabilityIntegrated && relResult !== null) {
+        reliabilitySection = `\n\n## 3.5 Validitas dan Reliabilitas Instrumen
+Akurasi dan konsistensi instrumen penelitian diuji secara ilmiah melalui pengujian validitas dan reliabilitas. Uji coba instrumen (pilot study) dilakukan terhadap **${relResp}** responden di luar sampel penelitian namun memiliki karakteristik populasi yang sama.\n\n### 3.5.1 Uji Validitas Instrumen\nPengujian validitas butir kuesioner dilakukan menggunakan teknik korelasi Product Moment Pearson. Butir pertanyaan dinyatakan valid apabila nilai koefisien korelasi ($r_{hitung}$) lebih besar dari tabel distribusi nilai $r$ ($r_{tabel}$) pada tingkat signifikansi $5\\%$. Hanya butir-butir pertanyaan yang terbukti valid yang akan digunakan dalam pengumpulan data penelitian yang sesungguhnya.\n\n### 3.5.2 Uji Reliabilitas Instrumen\nKonsistensi internal instrumen kuesioner diukur menggunakan koefisien **${relType === "cronbach" ? "Cronbach's Alpha" : "Kuder-Richardson 20 (KR-20)"}**. Uji reliabilitas dilakukan terhadap **${relK}** butir pertanyaan yang telah dinyatakan valid.\nBerdasarkan hasil analisis komputasi client-side (E2EE), diperoleh koefisien reliabilitas sebesar **${relResult.toFixed(4)}**. Berdasarkan kriteria teoretis ilmiah (Nunnally & Bernstein, 1994), instrumen dinyatakan **${relResult >= 0.60 ? "RELIABEL" : "TIDAK RELIABEL"}** karena nilai koefisien yang diperoleh **${relResult >= 0.60 ? "memenuhi batas ambang minimum (\\ge 0.60)" : "di bawah ambang batas minimum (< 0.60)"}**, yang menunjukkan tingkat keandalan instrumen masuk dalam kategori **${
           relStatusKey === "excellent" ? "Sangat Tinggi (Excellent)" :
           relStatusKey === "good" ? "Tinggi (Good)" :
           relStatusKey === "acceptable" ? "Sedang (Acceptable)" :
@@ -1214,9 +1310,41 @@ The sample size is not determined by mathematical probability estimation formula
         }
       }
 
-      // Reliability subsection
+      // Reliability & Trustworthiness subsection
       let reliabilitySection = "";
-      if (isReliabilityIntegrated && relResult !== null) {
+      if (approach === "qual") {
+        if (isTrustworthinessIntegrated) {
+          let qualStrategiesEn = [];
+          if (qualTriangulation) {
+            qualStrategiesEn.push(`* **Data Triangulation:** Corroborating evidence from multiple sources (interviews, field observations, archives) to build coherent thematic justifications.`);
+          }
+          if (qualMemberChecking) {
+            qualStrategiesEn.push(`* **Member Checking:** Returning findings and analytical interpretations to participants to confirm that they accurately represent their lived experiences.`);
+          }
+          if (qualAuditTrail) {
+            qualStrategiesEn.push(`* **Audit Trail & Thick Description:** Maintaining a transparent, detailed audit trail of research decisions and providing rich, contextualized details of the study setting to enable transferability.`);
+          }
+          if (qualPeerDebriefing) {
+            qualStrategiesEn.push(`* **Referential Adequacy:** Providing documented raw materials (recordings, field notes, transcripts) to test the validity of researchers' interpretations against the primary data.`);
+          }
+          if (qualStrategiesEn.length === 0) {
+            qualStrategiesEn.push(`* *No qualitative trustworthiness strategies have been integrated by the researcher yet.*`);
+          }
+
+          reliabilitySection = `\n\n## 3.5 Trustworthiness of Qualitative Data
+In qualitative research, scientific rigor is not measured by quantitative statistics (e.g., Cronbach's Alpha/KR-20), but is established through the academic framework of trustworthiness (Lincoln & Guba, 1985). To secure credibility, transferability, dependability, and confirmability, the researcher systematically implements the following strategies:
+
+${qualStrategiesEn.join("\n")}
+`;
+        }
+      } else if (!useQuestionnaire) {
+        reliabilitySection = `\n\n## 3.5 Validity and Reliability of Secondary Data
+Since this study utilizes audited secondary databases or objective laboratory measurements, primary questionnaire reliability testing (e.g., Cronbach's Alpha) is methodologically bypassed. To ensure scientific rigor and data integrity, data verification is established through the following institutional standards:
+
+1. **Source Authenticity & Credibility:** Data is retrieved from official, reputable databases that undergo periodic independent audits.
+2. **Cross-Period Calibration:** Data is aligned across years/samples to guarantee consistency and eliminate collection anomalies.
+3. **Data Cleaning & Preprocessing:** Systematically detecting outliers and handling missing values before running inferential statistical analysis.`;
+      } else if (isReliabilityIntegrated && relResult !== null) {
         reliabilitySection = `\n\n## 3.5 Instrument Validity and Reliability\nTo ensure accuracy and internal consistency, the research instrument underwent rigorous scientific validity and reliability pre-testing. A pilot study was conducted involving **${relResp}** respondents who share similar characteristic profiles with the target population but are excluded from the final research sample.\n\n### 3.5.1 Instrument Validity Testing\nItem validity was assessed using the Pearson Product-Moment Correlation Coefficient. An item is considered empirically valid if its correlation coefficient ($r_{calculated}$) exceeds the critical value from the $r$-table ($r_{table}$) at a $5\\%$ significance level. Only items that demonstrated statistical validity are retained for the final data collection instrument.\n\n### 3.5.2 Instrument Reliability Testing\nThe internal consistency of the questionnaire was calculated using the **${relType === "cronbach" ? "Cronbach's Alpha" : "Kuder-Richardson 20 (KR-20)"}** coefficient across **${relK}** validated items.\nBased on the client-side (E2EE) computational analysis, the calculated reliability coefficient is **${relResult.toFixed(4)}**. Under standard psychometric guidelines (Nunnally & Bernstein, 1994), an instrument is deemed **${relResult >= 0.60 ? "RELIABLE" : "UNRELIABLE"}** because the coefficient **${relResult >= 0.60 ? "exceeds the minimum academic threshold of \\ge 0.60" : "fails to meet the minimum threshold of < 0.60"}**, representing **${
           relStatusKey === "excellent" ? "Excellent" :
           relStatusKey === "good" ? "Good" :
@@ -4090,6 +4218,123 @@ Aligned with the scale of measurements and variable distribution, statistical hy
             {/* STEP 3: Variable & Measurement Scale Planner */}
             {activeStep === 3 && (
               <div style={styles.stepForm} className="animate-fade-in">
+                {/* Data Source & Research Instrument Selector Card */}
+                <div style={{
+                  padding: "1.5rem",
+                  borderColor: "rgba(167, 139, 250, 0.2)",
+                  background: "rgba(167, 139, 250, 0.02)",
+                  borderRadius: "12px",
+                  textAlign: "left"
+                }} className="glass-panel animate-fade-in">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                    <div>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "white", margin: 0 }}>
+                        📊 {t("wizard.instrumentSourceTitle")}
+                      </h3>
+                      <p style={{ ...styles.inputHelp, marginTop: "0.25rem", marginBottom: 0 }}>
+                        {t("wizard.instrumentSourceDesc")}
+                      </p>
+                    </div>
+                    {approach === "qual" && (
+                      <span style={{
+                        fontSize: "0.68rem",
+                        background: "rgba(167, 139, 250, 0.15)",
+                        color: "#c084fc",
+                        padding: "0.2rem 0.5rem",
+                        borderRadius: "12px",
+                        fontWeight: 700,
+                        border: "1px solid rgba(167, 139, 250, 0.25)"
+                      }}>
+                        QUALITATIVE PARADIGM
+                      </span>
+                    )}
+                  </div>
+
+                  {approach === "qual" ? (
+                    <div style={{
+                      padding: "1rem",
+                      background: "rgba(0,0,0,0.15)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.05)",
+                      fontSize: "0.85rem",
+                      color: "rgba(255, 255, 255, 0.7)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem"
+                    }}>
+                      <span>ℹ️</span>
+                      <span>
+                        {i18n.language === "id"
+                          ? "Pendekatan kualitatif secara metodologis menggunakan data non-numerik (wawancara, observasi) dan tidak memerlukan instrumen kuesioner kuantitatif primer."
+                          : "Qualitative research methodologically employs non-numerical data (interviews, observations) and bypasses quantitative questionnaire instruments."}
+                      </span>
+                    </div>
+                  ) : (
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                      gap: "1rem",
+                      marginTop: "1rem"
+                    }}>
+                      <div
+                        onClick={() => {
+                          setUseQuestionnaire(true);
+                          localStorage.setItem(`archeres_${projectId}_useQuestionnaire`, "true");
+                        }}
+                        style={{
+                          ...styles.radioCard,
+                          ...(useQuestionnaire ? styles.radioCardActive : {}),
+                          borderColor: useQuestionnaire ? "#a78bfa" : "rgba(255, 255, 255, 0.05)",
+                          background: useQuestionnaire ? "rgba(167, 139, 250, 0.05)" : "rgba(255, 255, 255, 0.01)"
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <input
+                            type="radio"
+                            checked={useQuestionnaire}
+                            onChange={() => {}}
+                            style={{ accentColor: "#c084fc", cursor: "pointer" }}
+                          />
+                          <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "white" }}>
+                            {t("wizard.instrumentQuestLabel")}
+                          </span>
+                        </div>
+                        <p style={{ ...styles.inputHelp, fontSize: "0.76rem", marginLeft: "1.5rem" }}>
+                          {t("wizard.instrumentQuestDesc")}
+                        </p>
+                      </div>
+
+                      <div
+                        onClick={() => {
+                          setUseQuestionnaire(false);
+                          localStorage.setItem(`archeres_${projectId}_useQuestionnaire`, "false");
+                        }}
+                        style={{
+                          ...styles.radioCard,
+                          ...(!useQuestionnaire ? styles.radioCardActive : {}),
+                          borderColor: !useQuestionnaire ? "#a78bfa" : "rgba(255, 255, 255, 0.05)",
+                          background: !useQuestionnaire ? "rgba(167, 139, 250, 0.05)" : "rgba(255, 255, 255, 0.01)"
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <input
+                            type="radio"
+                            checked={!useQuestionnaire}
+                            onChange={() => {}}
+                            style={{ accentColor: "#c084fc", cursor: "pointer" }}
+                          />
+                          <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "white" }}>
+                            {t("wizard.instrumentSecLabel")}
+                          </span>
+                        </div>
+                        <p style={{ ...styles.inputHelp, fontSize: "0.76rem", marginLeft: "1.5rem" }}>
+                          {t("wizard.instrumentSecDesc")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div style={styles.varsHeaderRow}>
                   <label className="form-label">{t("wizard.varLabel")}</label>
                   <button onClick={handleAddVariable} className="btn btn-outline" style={styles.addVarBtn}>
@@ -4260,14 +4505,15 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                 </div>
 
                 {/* E2EE Instrument Reliability Panel */}
-                <div style={{
-                  marginTop: "2rem",
-                  padding: "1.5rem",
-                  borderColor: "rgba(167, 139, 250, 0.2)",
-                  background: "rgba(167, 139, 250, 0.02)",
-                  borderRadius: "12px",
-                  textAlign: "left"
-                }} className="glass-panel">
+                {approach !== "qual" && useQuestionnaire && (
+                  <div style={{
+                    marginTop: "2rem",
+                    padding: "1.5rem",
+                    borderColor: "rgba(167, 139, 250, 0.2)",
+                    background: "rgba(167, 139, 250, 0.02)",
+                    borderRadius: "12px",
+                    textAlign: "left"
+                  }} className="glass-panel">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <span style={{
@@ -4743,6 +4989,259 @@ Aligned with the scale of measurements and variable distribution, statistical hy
                     </div>
                   )}
                 </div>
+                )}
+
+                {/* Methodological bypass note for Secondary Data */}
+                {approach !== "qual" && !useQuestionnaire && (
+                  <div style={{
+                    marginTop: "2rem",
+                    padding: "1.5rem",
+                    borderColor: "rgba(167, 139, 250, 0.2)",
+                    background: "rgba(167, 139, 250, 0.02)",
+                    borderRadius: "12px",
+                    textAlign: "left"
+                  }} className="glass-panel animate-fade-in">
+                    <h4 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#fff", margin: "0 0 0.5rem 0", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      💡 {i18n.language === "id" ? "Verifikasi Rigoritas Data Sekunder" : "Secondary Data Rigor Verification"}
+                    </h4>
+                    <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.5, margin: 0 }}>
+                      {t("wizard.instrumentSecCardNote")}
+                    </p>
+                    <div style={{
+                      marginTop: "1rem",
+                      padding: "0.75rem",
+                      background: "rgba(0,0,0,0.2)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255,255,255,0.04)",
+                      fontSize: "0.76rem",
+                      color: "rgba(255,255,255,0.5)"
+                    }}>
+                      {i18n.language === "id"
+                        ? "Penelitian Anda akan difokuskan pada pengujian konsistensi data lintas tahun, validasi sumber database (seperti audit eksternal, sertifikasi ISO), dan teknik pembersihan data (data cleaning/outlier detection)."
+                        : "Your study will focus on cross-year data consistency, database source validation (e.g., external audits, ISO certifications), and data preprocessing techniques (data cleaning/outlier detection)."}
+                    </div>
+                  </div>
+                )}
+
+                {/* Qualitative Trustworthiness Checklist */}
+                {approach === "qual" && (
+                  <div style={{
+                    marginTop: "2rem",
+                    padding: "1.5rem",
+                    borderColor: "rgba(167, 139, 250, 0.2)",
+                    background: "rgba(167, 139, 250, 0.02)",
+                    borderRadius: "12px",
+                    textAlign: "left"
+                  }} className="glass-panel animate-fade-in">
+                    <span style={{
+                      fontSize: "0.9rem",
+                      fontWeight: 700,
+                      color: "#a78bfa",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem"
+                    }}>
+                      🔒 {t("wizard.qualTrustworthinessTitle")}
+                      <span style={{
+                        fontSize: "0.68rem",
+                        background: "rgba(167, 139, 250, 0.15)",
+                        color: "#c084fc",
+                        padding: "0.15rem 0.4rem",
+                        borderRadius: "4px",
+                        fontWeight: 600
+                      }}>ACADEMIC VALIDATION</span>
+                    </span>
+                    <p style={{ ...styles.inputHelp, marginTop: "0.25rem", marginBottom: "1.25rem" }}>
+                      {t("wizard.qualTrustworthinessDesc")}
+                    </p>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                      {/* Checkbox 1: Triangulation */}
+                      <div
+                        onClick={() => {
+                          const nextVal = !qualTriangulation;
+                          setQualTriangulation(nextVal);
+                          localStorage.setItem(`archeres_${projectId}_qualTriangulation`, String(nextVal));
+                        }}
+                        style={{
+                          padding: "1rem",
+                          background: "rgba(255, 255, 255, 0.01)",
+                          border: `1px solid ${qualTriangulation ? "rgba(167, 139, 250, 0.3)" : "rgba(255, 255, 255, 0.05)"}`,
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "0.75rem",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={qualTriangulation}
+                          onChange={() => {}}
+                          style={{ marginTop: "0.2rem", accentColor: "#c084fc", cursor: "pointer" }}
+                        />
+                        <div>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#fff" }}>
+                            {t("wizard.qualTriangulationTitle")}
+                          </span>
+                          <p style={{ ...styles.inputHelp, fontSize: "0.75rem", margin: "0.15rem 0 0 0" }}>
+                            {t("wizard.qualTriangulationDesc")}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Checkbox 2: Member Checking */}
+                      <div
+                        onClick={() => {
+                          const nextVal = !qualMemberChecking;
+                          setQualMemberChecking(nextVal);
+                          localStorage.setItem(`archeres_${projectId}_qualMemberChecking`, String(nextVal));
+                        }}
+                        style={{
+                          padding: "1rem",
+                          background: "rgba(255, 255, 255, 0.01)",
+                          border: `1px solid ${qualMemberChecking ? "rgba(167, 139, 250, 0.3)" : "rgba(255, 255, 255, 0.05)"}`,
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "0.75rem",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={qualMemberChecking}
+                          onChange={() => {}}
+                          style={{ marginTop: "0.2rem", accentColor: "#c084fc", cursor: "pointer" }}
+                        />
+                        <div>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#fff" }}>
+                            {t("wizard.qualMemberCheckingTitle")}
+                          </span>
+                          <p style={{ ...styles.inputHelp, fontSize: "0.75rem", margin: "0.15rem 0 0 0" }}>
+                            {t("wizard.qualMemberCheckingDesc")}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Checkbox 3: Audit Trail */}
+                      <div
+                        onClick={() => {
+                          const nextVal = !qualAuditTrail;
+                          setQualAuditTrail(nextVal);
+                          localStorage.setItem(`archeres_${projectId}_qualAuditTrail`, String(nextVal));
+                        }}
+                        style={{
+                          padding: "1rem",
+                          background: "rgba(255, 255, 255, 0.01)",
+                          border: `1px solid ${qualAuditTrail ? "rgba(167, 139, 250, 0.3)" : "rgba(255, 255, 255, 0.05)"}`,
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "0.75rem",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={qualAuditTrail}
+                          onChange={() => {}}
+                          style={{ marginTop: "0.2rem", accentColor: "#c084fc", cursor: "pointer" }}
+                        />
+                        <div>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#fff" }}>
+                            {t("wizard.qualAuditTrailTitle")}
+                          </span>
+                          <p style={{ ...styles.inputHelp, fontSize: "0.75rem", margin: "0.15rem 0 0 0" }}>
+                            {t("wizard.qualAuditTrailDesc")}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Checkbox 4: Referential Adequacy */}
+                      <div
+                        onClick={() => {
+                          const nextVal = !qualPeerDebriefing;
+                          setQualPeerDebriefing(nextVal);
+                          localStorage.setItem(`archeres_${projectId}_qualPeerDebriefing`, String(nextVal));
+                        }}
+                        style={{
+                          padding: "1rem",
+                          background: "rgba(255, 255, 255, 0.01)",
+                          border: `1px solid ${qualPeerDebriefing ? "rgba(167, 139, 250, 0.3)" : "rgba(255, 255, 255, 0.05)"}`,
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "0.75rem",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={qualPeerDebriefing}
+                          onChange={() => {}}
+                          style={{ marginTop: "0.2rem", accentColor: "#c084fc", cursor: "pointer" }}
+                        />
+                        <div>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#fff" }}>
+                            {t("wizard.qualReferentialTitle")}
+                          </span>
+                          <p style={{ ...styles.inputHelp, fontSize: "0.75rem", margin: "0.15rem 0 0 0" }}>
+                            {t("wizard.qualReferentialDesc")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      marginTop: "1.5rem",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "1rem"
+                    }}>
+                      <div style={{ flex: 1, minWidth: "200px" }}>
+                        {isTrustworthinessIntegrated ? (
+                          <span style={{ fontSize: "0.78rem", color: "#4ade80", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            ✓ {t("wizard.qualIntegrated")}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: "0.74rem", color: "rgba(255,255,255,0.4)" }}>
+                            {i18n.language === "id" 
+                              ? "Konfigurasikan strategi validasi di atas lalu klik integrasikan."
+                              : "Configure the validation strategies above then click integrate."}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setIsTrustworthinessIntegrated(true);
+                          localStorage.setItem(`archeres_${projectId}_isTrustworthinessIntegrated`, "true");
+                          triggerAlert(t("wizard.qualIntegrated"), t("common.notification"), "success");
+                        }}
+                        className="btn btn-primary"
+                        style={{
+                          padding: "0.5rem 1rem",
+                          fontSize: "0.8rem",
+                          background: isTrustworthinessIntegrated ? "rgba(34, 197, 94, 0.15)" : "linear-gradient(135deg, #7c3aed, #4f46e5)",
+                          border: isTrustworthinessIntegrated ? "1px solid #22c55e" : "none",
+                          color: isTrustworthinessIntegrated ? "#4ade80" : "#fff",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
+                          cursor: "pointer"
+                        }}
+                      >
+                        {isTrustworthinessIntegrated ? "✓ Integrated" : `⚡ ${t("wizard.qualIntegrateBtn")}`}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
