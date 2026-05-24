@@ -2,7 +2,7 @@ name: archeres
 
 services:
   backend:
-    image: ghcr.io/alexmaisa/archeres-backend:${VERSION:-latest}
+    image: repo.alexmaisa.my.id/alexmaisa/archeres-backend:${VERSION:-latest}
     container_name: archeres-backend
     env_file: .env
     ports:
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   web:
-    image: ghcr.io/alexmaisa/archeres-web:${VERSION:-latest}
+    image: repo.alexmaisa.my.id/alexmaisa/archeres-web:${VERSION:-latest}
     container_name: archeres-web
     env_file: .env
     ports:
