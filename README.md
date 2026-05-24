@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/UI-Premium-a855f7" alt="UI-Premium">
-  <img src="https://img.shields.io/badge/version-v1.0.0--stable-22c55e" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.1--stable-22c55e" alt="Version">
   <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-ef4444" alt="License">
   <img src="https://img.shields.io/badge/Status-Active-22c55e" alt="Status">
   <img src="https://img.shields.io/badge/Platform-Web-64748b" alt="Platform">

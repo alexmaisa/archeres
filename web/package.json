@@ -1,6 +1,6 @@
 {
   "name": "archeres-web",
-  "version": "1.0.0-stable",
+  "version": "1.0.1-stable",
   "private": true,
   "scripts": {
     "preinstall": "npx only-allow pnpm",
